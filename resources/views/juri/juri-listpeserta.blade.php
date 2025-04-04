@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Manage Category - Admin')
+@section('title', 'User List')
 @section('content')
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
@@ -12,17 +12,19 @@
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5>Manage Category</h5>
-                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="icofont icofont-plus"></i>Tambah</button>
+                                        <h5>User List</h5>
+                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="ion-plus-round"></i>Tambah</button>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
-                                            <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
+                                            <table class="display table table-striped table-bordered table-styling" id="myTable" cellspacing="0" width="100%">
                                                 <thead>
-                                                    <tr>
+                                                    <tr class="table-primary">
                                                         <th class="text-center" style="width: 50px;">No</th>
-                                                        <th class="text-center">Category</th>
-                                                        <th class="text-center">Keterangan</th>
+                                                        <th class="text-center">Nama</th>
+                                                        <th class="text-center">Username</th>
+                                                        <th class="text-center">Email</th>
+                                                        <th class="text-center">Role</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -35,13 +37,15 @@
                                             $('#myTable').DataTable({
                                               processing: true,
                                               serverSide: true,
-                                              ajax: '{{ url("/get-category/data") }}',
-                                              searching: true, // Menampilkan fitur pencarian
-                                              lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
+                                              ajax: '{{ url("get-user/data") }}',
+                                              searching: true, 
+                                              lengthChange: true,
                                               columns: [
                                               { data: 'id', name: 'id' },
-                                              { data: 'namacategory', name: 'namacategory' },
-                                              { data: 'keterangan', name: 'keterangan' },
+                                              { data: 'nama', name: 'nama' },
+                                              { data: 'username', name: 'username' },
+                                              { data: 'email', name: 'email' },
+                                              { data: 'role', name: 'role' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });
@@ -61,22 +65,34 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addUserModalLabel">Tambah Category</h5>
+                            <h5 class="modal-title" id="addUserModalLabel">Tambah User</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
                             <!-- Form untuk menambah user -->
-                            <form action="{{ url('/category/store') }}" method="POST">
+                            <form action="{{ url('/user/store') }}" method="POST">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="namacategory">Nama Category</label>
-                                    <input type="text" class="form-control" id="namacategory" name="namacategory" required>
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="keterangan">Keterangan</label>
-                                    <input type="text" class="form-control" id="keterangan" name="keterangan" required>
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="role">Role</label>
+                                    <select class="form-control" id="role" name="role">
+                                        <option value="admin">Admin</option>
+                                        <option value="peserta">Peserta</option>
+                                        <option value="juri">Juri</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
                                 </div>
                                 <div class="modal-footer"><button type="submit" class="btn btn-primary">Submit</button></div>
                             </form>
@@ -84,7 +100,6 @@
                     </div>
                 </div>
             </div>
-                <div id="styleSelector">
 
                 </div>
             </div>

@@ -13,7 +13,7 @@
                                         <h5>Manage Main Dealer</h5>
                                         <button class="btn btn-primary btn-sm" data-toggle="modal"
                                             data-target="#addUserModal">
-                                            <i class="ion-plus-round"></i> Tambah
+                                            <i class="icofont icofont-plus"></i> Tambah
                                         </button>
                                     </div>
                                     <div class="card-block">

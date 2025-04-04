@@ -16,18 +16,27 @@
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
     <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\bootstrap\css\bootstrap.min.css') }}">
     <!-- ion icon css -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\ion-icon\css\ionicons.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\ion-icon\css\ionicons.min.css') }}">
     <!-- feather Awesome -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\feather\css\feather.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\font-awesome\css\font-awesome.min.css') }}">
+    <!-- ico font -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\icofont\css\icofont.css') }}">
     <!-- Data Table Css -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\datatables.net-bs4\css\dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="..\files\assets\pages\data-table\css\buttons.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\datatables.net-responsive-bs4\css\responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\datatables.net-bs4\css\dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\pages\data-table\css\buttons.dataTables.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\datatables.net-responsive-bs4\css\responsive.bootstrap4.min.css') }}">
+    <!-- Select 2 css -->
+    <link rel="stylesheet" href="{{ asset('files\bower_components\select2\css\select2.min.css') }}">
+    <!-- Multi Select css -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\bootstrap-multiselect\css\bootstrap-multiselect.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\multiselect\css\multi-select.css') }}">
     <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\jquery.mCustomScrollbar.css') }}">
 </head>
 
 <body>
@@ -90,7 +99,7 @@
                             <li class="user-profile header-notification">
                                 <div class="dropdown-primary dropdown">
                                     <div class="dropdown-toggle" data-toggle="dropdown">
-                                        <img src="..\files\assets\images\avatar-4.png" class="img-radius" alt="User-Profile-Image">
+                                        <img src="{{ asset('files\assets\images\avatar-4.png') }}" class="img-radius" alt="User-Profile-Image">
                                         <span>Hai, Kang Some</span>
                                         <i class="feather icon-chevron-down"></i>
                                     </div>
@@ -175,12 +184,12 @@
                                     </a>
                                     <ul class="pcoded-submenu">
                                         <li class=" ">
-                                            <a href="form-elements-component.htm">
+                                            <a href="{{ url('/admin/exams') }}">
                                                 <span class="pcoded-mtext">Manage Course</span>
                                             </a>
                                         </li>
                                         <li class=" ">
-                                            <a href="form-elements-add-on.htm">
+                                            <a href="{{ url('/admin/exams_sessions') }}">
                                                 <span class="pcoded-mtext">Session Course</span>
                                             </a>
                                         </li>
@@ -204,7 +213,7 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="pcoded-hasmenu">
+                                {{-- <li class="pcoded-hasmenu">
                                     <a href="#">
                                         <span class="pcoded-micon"><i class="feather icon-book"></i></span>
                                         <span class="pcoded-mtext">Course</span>
@@ -221,14 +230,34 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
-                            </ul>
-                            <ul class="pcoded-item pcoded-left-item">
+                                </li> --}}
                                 <li class="">
                                     <a href="editable-table.htm">
                                         <span class="pcoded-micon"><i class="feather icon-edit"></i></span>
                                         <span class="pcoded-mtext">Editable Table</span>
                                     </a>
+                                </li>
+                            </ul>
+                            <div class="pcoded-navigatio-lavel">Juri</div>
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="pcoded-hasmenu active pcoded-trigger">
+                                    <a href="{{ url('/admin') }}">
+                                        <span class="pcoded-micon"><i class="feather icon-home"></i></span>
+                                        <span class="pcoded-mtext">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="pcoded-hasmenu">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon"><i class="feather icon-clipboard"></i></span>
+                                        <span class="pcoded-mtext">Score Card</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class=" ">
+                                            <a href="{{ url('/peserta/list') }}">
+                                                <span class="pcoded-mtext">Peserta List</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>
@@ -241,39 +270,46 @@
 
     <!-- Warning Section Ends -->
     <!-- Required Jquery -->
-    <script data-cfasync="false" src="..\..\..\cdn-cgi\scripts\5c5dd728\cloudflare-static\email-decode.min.js"></script><script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\popper.js\js\popper.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
+    <script data-cfasync="false" src="..\..\..\cdn-cgi\scripts\5c5dd728\cloudflare-static\email-decode.min.js"></script><script type="text/javascript" src="{{ asset('files\bower_components\jquery\js\jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\jquery-ui\js\jquery-ui.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\popper.js\js\popper.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap\js\bootstrap.min.js') }}"></script>
     <!-- jquery slimscroll js -->
-    <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js') }}"></script>
     <!-- modernizr js -->
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\modernizr.js"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\modernizr\js\modernizr.js') }}"></script>
     <!-- Chart js -->
-    <script type="text/javascript" src="..\files\bower_components\chart.js\js\Chart.js"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\chart.js\js\Chart.js') }}"></script>
     <!-- amchart js -->
-    <script src="..\files\assets\pages\widget\amchart\amcharts.js"></script>
-    <script src="..\files\assets\pages\widget\amchart\serial.js"></script>
-    <script src="..\files\assets\pages\widget\amchart\light.js"></script>
-    <script src="..\files\assets\js\jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript" src="..\files\assets\js\SmoothScroll.js"></script>
-    <script src="..\files\assets\js\pcoded.min.js"></script>
+    <script src="{{ asset('files\assets\pages\widget\amchart\amcharts.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\widget\amchart\serial.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\widget\amchart\light.js') }}"></script>
+    <script src="{{ asset('files\assets\js\jquery.mCustomScrollbar.concat.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\js\SmoothScroll.js') }}"></script>
+    <script src="{{ asset('files\assets\js\pcoded.min.js') }}"></script>
     <!-- data-table js -->
-    <script src="..\files\bower_components\datatables.net\js\jquery.dataTables.min.js"></script>
-    <script src="..\files\bower_components\datatables.net-buttons\js\dataTables.buttons.min.js"></script>
-    <script src="..\files\assets\pages\data-table\js\jszip.min.js"></script>
-    <script src="..\files\assets\pages\data-table\js\pdfmake.min.js"></script>
-    <script src="..\files\assets\pages\data-table\js\vfs_fonts.js"></script>
-    <script src="..\files\bower_components\datatables.net-buttons\js\buttons.print.min.js"></script>
-    <script src="..\files\bower_components\datatables.net-buttons\js\buttons.html5.min.js"></script>
-    <script src="..\files\bower_components\datatables.net-bs4\js\dataTables.bootstrap4.min.js"></script>
-    <script src="..\files\bower_components\datatables.net-responsive\js\dataTables.responsive.min.js"></script>
-    <script src="..\files\bower_components\datatables.net-responsive-bs4\js\responsive.bootstrap4.min.js"></script>
+    <script src="{{ asset('files\bower_components\datatables.net\js\jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-buttons\js\dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\data-table\js\jszip.min.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\data-table\js\pdfmake.min.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\data-table\js\vfs_fonts.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-buttons\js\buttons.print.min.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-buttons\js\buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-bs4\js\dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-responsive\js\dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('files\bower_components\datatables.net-responsive-bs4\js\responsive.bootstrap4.min.js') }}"></script>
     <!-- custom js -->
-    <script src="..\files\assets\pages\data-table\js\data-table-custom.js"></script>
-    <script src="..\files\assets\js\vartical-layout.min.js"></script>
-    <script type="text/javascript" src="..\files\assets\pages\dashboard\custom-dashboard.js"></script>
-    <script type="text/javascript" src="..\files\assets\js\script.min.js"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\pages\advance-elements\select2-custom.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\data-table\js\data-table-custom.js') }}"></script>
+    <script src="{{ asset('files\assets\js\vartical-layout.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\pages\dashboard\custom-dashboard.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\js\script.min.js') }}"></script>
+    <!-- Select 2 js -->
+    <script type="text/javascript" src="{{ asset('files\bower_components\select2\js\select2.full.min.js') }}"></script>
+    <!-- Multiselect js -->
+    <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap-multiselect\js\bootstrap-multiselect.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\bower_components\multiselect\js\jquery.multi-select.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\js\jquery.quicksearch.js') }}"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>

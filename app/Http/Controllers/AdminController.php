@@ -105,4 +105,28 @@ class AdminController extends Controller
         return view('admin.adminjurilist');
     }
     
+    public function managecourselist ()
+    {
+        return view('admin.admin-managecourse');
+    }
+    public function addnewcourse ()
+    {
+        return view('admin.admin-addnewcourse');
+    }
+    public function detailcourse ()
+    {
+        return view('admin.admin-detailcourse');
+    }
+    public function createquestion ()
+    {
+        return view('admin.admin-addnewquestions');
+    }
+    public function sessionslist ()
+    {
+        return view('admin.admin-managesession');
+    }
+    public function sessiondetail ()
+    {
+        return view('admin.admin-detailsessions');
+    }
 }

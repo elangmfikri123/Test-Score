@@ -13,7 +13,7 @@
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5>User List</h5>
-                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="ion-plus-round"></i>Tambah</button>
+                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="icofont icofont-plus"></i> Tambah</button>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">

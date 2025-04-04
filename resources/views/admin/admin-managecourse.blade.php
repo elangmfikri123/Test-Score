@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Manage Category - Admin')
+@section('title', 'Manage Course')
 @section('content')
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
@@ -12,8 +12,10 @@
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5>Manage Category</h5>
-                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="icofont icofont-plus"></i>Tambah</button>
+                                        <h5>Course List</h5>
+                                        <a href="{{ url('/admin/exams/create') }}" class="btn btn-primary btn-sm">
+                                            <i class="ion-plus-round"></i> Tambah
+                                        </a>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
@@ -21,8 +23,10 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
+                                                        <th class="text-center">Course</th>
+                                                        <th class="text-center">Exam</th>
                                                         <th class="text-center">Category</th>
-                                                        <th class="text-center">Keterangan</th>
+                                                        <th class="text-center">Questions</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -35,13 +39,15 @@
                                             $('#myTable').DataTable({
                                               processing: true,
                                               serverSide: true,
-                                              ajax: '{{ url("/get-category/data") }}',
+                                              ajax: '{{ url("get-user/data") }}',
                                               searching: true, // Menampilkan fitur pencarian
                                               lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
                                               columns: [
                                               { data: 'id', name: 'id' },
-                                              { data: 'namacategory', name: 'namacategory' },
-                                              { data: 'keterangan', name: 'keterangan' },
+                                              { data: 'nama', name: 'nama' },
+                                              { data: 'username', name: 'username' },
+                                              { data: 'email', name: 'email' },
+                                              { data: 'role', name: 'role' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });
@@ -55,37 +61,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Modal Add User -->
-            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addUserModalLabel">Tambah Category</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Form untuk menambah user -->
-                            <form action="{{ url('/category/store') }}" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="namacategory">Nama Category</label>
-                                    <input type="text" class="form-control" id="namacategory" name="namacategory" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="keterangan">Keterangan</label>
-                                    <input type="text" class="form-control" id="keterangan" name="keterangan" required>
-                                </div>
-                                <div class="modal-footer"><button type="submit" class="btn btn-primary">Submit</button></div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                <div id="styleSelector">
-
                 </div>
             </div>
         </div>
