@@ -15,11 +15,16 @@ return new class extends Migration
     {
         Schema::create('course', function (Blueprint $table) {
             $table->id();
-            $table->string('nama')->nullable();
             $table->foreignId('category_id')->constrained('category')->onUpdate('cascade')->onDelete('cascade')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
+            $table->string('namacourse')->nullable();
+            $table->text('description')->nullable();
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
             $table->integer('duration_minutes')->nullable();
+            $table->string('randomanswer')->nullable();
+            $table->string('randomquestion')->nullable();
+            $table->string('showscore')->nullable();
+            $table->string('created_by')->nullable();
             $table->timestamps();
         });
     }

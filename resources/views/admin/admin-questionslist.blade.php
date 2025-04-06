@@ -18,19 +18,19 @@
                                             <tbody>
                                                 <tr>
                                                     <th>Nama Ujian</th>
-                                                    <td>Test KLHN 2025 - FLP</td>
+                                                    <td>{{ $course->namacourse }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Category</th>
-                                                    <td>Frontline People</td>
+                                                    <td>{{ $course->category->namacategory }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Jumlah Soal</th>
-                                                    <td>50 Soal</td>
+                                                    <td>{{ $course->questions_count ?? 0 }} Soal</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Durasi</th>
-                                                    <td>90 menit</td>
+                                                    <td>{{ $course->duration_minutes }} Menit</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -40,19 +40,19 @@
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5><i class="ion-help-circled"></i> Soal Ujian</h5>
-                                        <a href="{{ url('/admin/exams/create') }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ url('/admin/exams/' . $course->id . '/question-create') }}" class="btn btn-primary btn-sm">
                                             <i class="ion-plus-round"></i> Tambah
                                         </a>
                                     </div>
                                     <hr class="m-0">
-                                <div class="card-block">
+                                 <div class="card-block">
                                     <div class="table-responsive">
-                                        <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
+                                        <table class="display table table-bordered" id="myTable" cellspacing="0" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center" style="width: 50px;">No</th>
+                                                    <th class="text-center" style="width: 5px;">No</th>
                                                     <th class="text-center">Soal & Jawaban</th>
-                                                    <th class="text-center col-2">Action</th>
+                                                    <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -64,12 +64,12 @@
                                         $('#myTable').DataTable({
                                           processing: true,
                                           serverSide: true,
-                                          ajax: '{{ url("/get-peserta/data") }}',
-                                          searching: true, // Menampilkan fitur pencarian
-                                          lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
+                                          ajax: '{{ url("/dataquestion-answer/json/" . $course->id) }}',
+                                          searching: true, 
+                                          lengthChange: true, 
                                           columns: [
-                                          { data: 'id', name: 'id' },
-                                          { data: 'honda_id', name: 'honda_id' },
+                                          { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                                          { data: 'questions_answer', name: 'questions_answer' },
                                           { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                          ],
                                           });

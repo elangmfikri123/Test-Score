@@ -9,7 +9,6 @@
                     <div class="page-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <!-- Ajax data source (Arrays) table start -->
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5>Course List</h5>
@@ -24,9 +23,9 @@
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Course</th>
-                                                        <th class="text-center">Exam</th>
                                                         <th class="text-center">Category</th>
-                                                        <th class="text-center">Questions</th>
+                                                        <th class="text-center">Total Questions</th>
+                                                        <th class="text-center">Durations (Menit)</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -39,15 +38,15 @@
                                             $('#myTable').DataTable({
                                               processing: true,
                                               serverSide: true,
-                                              ajax: '{{ url("get-user/data") }}',
-                                              searching: true, // Menampilkan fitur pencarian
-                                              lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
+                                              ajax: '{{ url("/datacourse/json") }}',
+                                              searching: true,
+                                              lengthChange: true,
                                               columns: [
                                               { data: 'id', name: 'id' },
-                                              { data: 'nama', name: 'nama' },
-                                              { data: 'username', name: 'username' },
-                                              { data: 'email', name: 'email' },
-                                              { data: 'role', name: 'role' },
+                                              { data: 'namacourse', name: 'namacourse' },
+                                              { data: 'categoryname', name: 'categoryname' },
+                                              { data: 'totalquestion', name: 'totalquestion', className: 'text-center' },
+                                              { data: 'duration_minutes', name: 'duration_minutes', className: 'text-center' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });
@@ -56,7 +55,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Deferred rendering for speed table end -->
                             </div>
                         </div>
                     </div>

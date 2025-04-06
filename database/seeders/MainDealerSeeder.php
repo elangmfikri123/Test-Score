@@ -22,8 +22,12 @@ class MainDealerSeeder extends Seeder
             ],
             [
                 'kodemd' => 'B10',
-                'nama_md' => 'Menara Agung',
-            ]
+                'nama_md' => 'Indaco Trading Coy',
+            ],
+            [
+                'kodemd' => 'B3Z',
+                'nama_md' => 'CDN Aceh',
+            ],
         ])->each(function ($dealer) {
             MainDealer::create($dealer);
         });

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('namajuri')->nullable();
             $table->string('jabatan')->nullable();
             $table->string('division')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

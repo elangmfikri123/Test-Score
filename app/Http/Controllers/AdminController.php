@@ -8,17 +8,17 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function dashboard ()
+    public function dashboard()
     {
         return view('admin.admindashboard');
     }
-    public function userlist ()
+    public function userlist()
     {
         return view('admin.adminuserlist');
     }
     public function getusertable(Request $request)
     {
-    // Query dengan join ke tabel peserta dan juri
+        // Query dengan join ke tabel peserta dan juri
         $data = User::query()
             ->leftJoin('peserta', 'users.peserta_id', '=', 'peserta.id')
             ->leftJoin('juri', 'users.juri_id', '=', 'juri.id')
@@ -42,9 +42,9 @@ class AdminController extends Controller
                     ->orWhere('peserta.nama', 'like', '%' . $search . '%')
                     ->orWhere('peserta.email', 'like', '%' . $search . '%')
                     ->orWhere('juri.namajuri', 'like', '%' . $search . '%')
-                    ->orWhere('juri.jabatan', 'like', '%' . $search . '%'); 
+                    ->orWhere('juri.jabatan', 'like', '%' . $search . '%');
             });
-    }
+        }
 
         $result = DataTables()->of($data)
             ->addColumn('nama', function ($row) {
@@ -67,9 +67,9 @@ class AdminController extends Controller
             ->rawColumns(['action'])
             ->toJson();
 
-            return $result;
+        return $result;
     }
-    public function pesertalist ()
+    public function pesertalist()
     {
         return view('admin.adminpesertalist');
     }
@@ -84,7 +84,7 @@ class AdminController extends Controller
                     ->orWhere('nama', 'like', '%' . $search . '%');
             });
         }
-    
+
         $result = DataTables()->of($data)
             ->addColumn('maindealer', function ($row) {
                 return $row->maindealer ? $row->maindealer->nama_md : '-'; // Tampilkan nama main dealer
@@ -96,37 +96,12 @@ class AdminController extends Controller
             })
             ->rawColumns(['action'])
             ->toJson();
-    
+
         return $result;
     }
 
-    public function jurilist ()
+    public function jurilist()
     {
         return view('admin.adminjurilist');
-    }
-    
-    public function managecourselist ()
-    {
-        return view('admin.admin-managecourse');
-    }
-    public function addnewcourse ()
-    {
-        return view('admin.admin-addnewcourse');
-    }
-    public function detailcourse ()
-    {
-        return view('admin.admin-detailcourse');
-    }
-    public function createquestion ()
-    {
-        return view('admin.admin-addnewquestions');
-    }
-    public function sessionslist ()
-    {
-        return view('admin.admin-managesession');
-    }
-    public function sessiondetail ()
-    {
-        return view('admin.admin-detailsessions');
     }
 }

@@ -18,32 +18,33 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $peserta = Peserta::create([
-            'nama' => 'Peserta 1',  // Sesuaikan dengan field yang ada di tabel peserta
-            'email' => 'peserta1@example.com',  // Sesuaikan dengan field yang ada
-            'honda_id' => 'H123',
+            'nama' => 'Peserta 1', 
+            'email' => 'peserta1@example.com', 
+            'honda_id' => 'K2772822',
+            'category_id' => '1',
             'maindealer_id' => '1',
         ]);
 
         // Membuat juri
         $juri = Juri::create([
-            'namajuri' => 'Juri 1',  // Sesuaikan dengan field yang ada di tabel juri
+            'namajuri' => 'Juri 1', 
         ]);
         collect([
             [
-                'username' => 'peserta123',
+                'username' => 'Taufiq14',
                 'password' => bcrypt('password'),
                 'role' => 'peserta',
-                'peserta_id' => $peserta->id,  // ID peserta yang sudah dibuat
-                'juri_id' => null,  // Kosongkan karena ini peserta
+                'peserta_id' => $peserta->id,  
+                'juri_id' => null,  
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'username' => 'juri123',
+                'username' => 'juri990',
                 'password' => bcrypt('password'),
                 'role' => 'juri',
-                'peserta_id' => null,  // Kosongkan karena ini juri
-                'juri_id' => $juri->id,  // ID juri yang sudah dibuat
+                'peserta_id' => null,  
+                'juri_id' => $juri->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]

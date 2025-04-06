@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('honda_id')->nullable();
             $table->foreignId('maindealer_id')->constrained('maindealer')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->string('dealer')->nullable();
             $table->timestamps();
         });

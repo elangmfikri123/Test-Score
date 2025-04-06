@@ -17,6 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('course_id')->constrained('course')->onUpdate('cascade')->onDelete('cascade')->nullable();
             $table->foreignId('peserta_id')->constrained('peserta')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->enum('status_pengerjaan', ['belum_mulai', 'sedang_dikerjakan', 'selesai'])->default('belum_mulai');
+            $table->timestamp('start_exam')->nullable();
+            $table->timestamp('end_exam')->nullable();
             $table->timestamps();
         });
     }

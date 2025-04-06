@@ -14,60 +14,38 @@
                                     </div>
                                     <hr class="m-0">
                                     <div class="card-block">
-                                        <form action="{{ url('/user/store') }}" method="POST">
+                                        <form action="{{ url('/admin/course/store') }}" method="POST">
                                             @csrf
-                                            
+
                                             <div class="form-group">
-                                                <label for="username">Nama Ujian</label>
-                                                <input type="text" class="form-control" id="username" name="username" required placeholder="Name Course">
+                                                <label for="namacourse">Nama Ujian</label>
+                                                <input type="text" class="form-control" id="namacourse" name="namacourse"
+                                                    required placeholder="Nama Ujian">
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="category">Category</label>
-                                                <select class="form-control" id="category" name="category">
-                                                    <option value="">Select Category</option>
-                                                    <option value="admin">Admin</option>
-                                                    <option value="peserta">Peserta</option>
-                                                    <option value="juri">Juri</option>
+                                                <select class="form-control" id="category" name="category_id" required>
+                                                    <option disabled selected>Select Category</option>
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}">{{ $category->namacategory }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="deskripsi">Deskripsi</label>
-                                                <textarea class="form-control" id="deskripsi" name="deskripsi"></textarea>
-                                            </div>
-
-                                            <!-- Mulai Pembagian Form ke Kanan-Kiri -->
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="acak_soal">Acak Soal</label>
-                                                        <select class="form-control" id="acak_soal" name="acak_soal">
-                                                            <option value="">Select</option>
-                                                            <option value="Ya">Ya</option>
-                                                            <option value="Tidak">Tidak</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="acak_jawaban">Acak Jawaban</label>
-                                                        <select class="form-control" id="acak_jawaban" name="acak_jawaban">
-                                                            <option value="">Select</option>
-                                                            <option value="Ya">Ya</option>
-                                                            <option value="Tidak">Tidak</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                                <label for="description">Deskripsi</label>
+                                                <textarea class="form-control" id="description" name="description"></textarea>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="tampilkan_hasil">Tampilkan Hasil</label>
-                                                        <select class="form-control" id="tampilkan_hasil" name="tampilkan_hasil">
-                                                            <option value="">Select</option>
+                                                        <label for="randomquestion">Acak Soal</label>
+                                                        <select class="form-control" id="randomquestion"
+                                                            name="randomquestion" required>
+                                                            <option disabled selected>Select</option>
                                                             <option value="Ya">Ya</option>
                                                             <option value="Tidak">Tidak</option>
                                                         </select>
@@ -76,13 +54,60 @@
 
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="durasi">Durasi (Menit)</label>
-                                                        <input type="number" class="form-control" id="durasi" name="durasi" required placeholder="Menit">
+                                                        <label for="randomanswer">Acak Jawaban</label>
+                                                        <select class="form-control" id="randomanswer" name="randomanswer"
+                                                            required>
+                                                            <option disabled selected>Select</option>
+                                                            <option value="Ya">Ya</option>
+                                                            <option value="Tidak">Tidak</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="showscore">Tampilkan Hasil</label>
+                                                        <select class="form-control" id="showscore" name="showscore"
+                                                            required>
+                                                            <option disabled selected>Select</option>
+                                                            <option value="Ya">Ya</option>
+                                                            <option value="Tidak">Tidak</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="duration_minutes">Durasi (Menit)</label>
+                                                        <input type="number" class="form-control" id="duration_minutes"
+                                                            name="duration_minutes" required placeholder="Menit">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="start_date">Start Date</label>
+                                                    <input type="datetime-local" class="form-control" id="start_date"
+                                                        name="start_date" required>
+                                                </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="end_date">End Date</label>
+                                                    <input type="datetime-local" class="form-control" id="end_date"
+                                                        name="end_date" required>
+                                                </div>
+                                                </div>
+                                            </div>
+
                                             <div class="text-right">
-                                                <button type="submit" class="btn btn-success"><i class="ion-checkmark"></i>Submit</button>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="ion-checkmark"></i> Submit
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -96,16 +121,16 @@
     </div>
 
     <!-- Load TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/2tvyzqqps6o97w5bncqfwpavklp6rlv7mx7voja1cst93eub/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/2tvyzqqps6o97w5bncqfwpavklp6rlv7mx7voja1cst93eub/tinymce/7/tinymce.min.js"
+        referrerpolicy="origin"></script>
 
     <script>
         tinymce.init({
-            selector: '#deskripsi',
+            selector: '#description',
             height: 300,
             menubar: false,
             plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
             toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code'
         });
     </script>
-
 @endsection

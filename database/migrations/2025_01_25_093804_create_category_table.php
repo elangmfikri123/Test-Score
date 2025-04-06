@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('namacategory')->nullable();
             $table->string('keterangan')->nullable();
+            $table->string('created_by')->nullable();
             $table->timestamps();
         });
     }

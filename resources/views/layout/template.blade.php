@@ -189,8 +189,8 @@
                                             </a>
                                         </li>
                                         <li class=" ">
-                                            <a href="{{ url('/admin/exams_sessions') }}">
-                                                <span class="pcoded-mtext">Session Course</span>
+                                            <a href="{{ url('/admin/manage-participants') }}">
+                                                <span class="pcoded-mtext">Manage Participants</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -213,24 +213,6 @@
                                         </li>
                                     </ul>
                                 </li>
-                                {{-- <li class="pcoded-hasmenu">
-                                    <a href="#">
-                                        <span class="pcoded-micon"><i class="feather icon-book"></i></span>
-                                        <span class="pcoded-mtext">Course</span>
-                                    </a>
-                                    <ul class="pcoded-submenu">
-                                        <li class=" ">
-                                            <a href="ready-suggestion-form.htm">
-                                                <span class="pcoded-mtext">Course Manage</span>
-                                            </a>
-                                        </li>
-                                        <li class=" ">
-                                            <a href="ready-tabs-form.htm">
-                                                <span class="pcoded-mtext">Course Sesion</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li> --}}
                                 <li class="">
                                     <a href="editable-table.htm">
                                         <span class="pcoded-micon"><i class="feather icon-edit"></i></span>

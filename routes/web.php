@@ -8,6 +8,7 @@ use App\Http\Controllers\JuriController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MainDealerController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\PesertaCourseController;
@@ -46,12 +47,27 @@ Route::get('/get-maindealer/data', [MainDealerController::class, 'getmaindealer'
 Route::post('/maindealer/store', [MainDealerController::class, 'storemaindealer'])->name('maindealer.store');
 Route::delete('/maindealer/delete/{id}', [MainDealerController::class, 'deleteMainDealer'])->name('maindealer.delete');
 
-Route::get('/admin/exams', [AdminController::class, 'managecourselist']);
-Route::get('/admin/exams/create', [AdminController::class, 'addnewcourse']);
-Route::get('/admin/exams/detail', [AdminController::class, 'detailcourse']);
-Route::get('/admin/exams/question-create', [AdminController::class, 'createquestion']);
-Route::get('/admin/exams_sessions', [AdminController::class, 'sessionslist']);
-Route::get('/admin/exams_sessions/detail', [AdminController::class, 'sessiondetail']);
+Route::get('/admin/exams', [CourseController::class, 'managecourselist']);
+Route::get('/datacourse/json', [CourseController::class, 'showcourselist']);
+Route::get('/admin/exams/create', [CourseController::class, 'addnewcourse']);
+Route::post('/admin/course/store', [CourseController::class, 'store']);
+
+Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist']);
+Route::get('/dataquestion-answer/json/{id}', [CourseController::class, 'dataquestionAnswerJson']);
+Route::get('/admin/exams/{id}/question-create', [CourseController::class, 'createquestion']);
+Route::post('/admin/exams/{id}/question-store', [CourseController::class, 'storequestion']);
+
+Route::get('/admin/manage-participants', [CourseController::class, 'showCourseParticipants']);
+Route::get('/datacourseparticipants/json', [CourseController::class, 'JsonParticipantsCourse']);
+
+// Monitoring peserta
+Route::get('/admin/manage-participants/{id}', [CourseController::class, 'listParticipanstCourse'])->name('participants.monitoring');
+Route::get('/admin/enrolle/{id}/participantsdata', [CourseController::class, 'addParticipants'])->name('participants.add');
+
+// Menambahkan peserta
+Route::get('/monitoring/data/json/{id}', [CourseController::class, 'getEnrolledParticipantsJson']);
+Route::get('/pesertaenrolle/data/json/{id}', [CourseController::class, 'getNonEnrolledParticipantsJson']);
+Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 
 //JURI
 Route::get('/peserta/list', [JuriController::class, 'pesertalist']);

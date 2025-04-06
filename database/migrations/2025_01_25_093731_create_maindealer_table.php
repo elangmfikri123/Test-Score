@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('kodemd')->nullable();
             $table->string('nama_md')->nullable();
+            $table->string('singkatan')->nullable();
+            $table->string('created_by')->nullable();
             $table->timestamps();
         });
     }
