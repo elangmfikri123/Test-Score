@@ -24,6 +24,11 @@
     <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
     <!-- Syntax highlighter Prism css -->
     <link rel="stylesheet" type="text/css" href="..\files\assets\pages\prism\prism.css">
+    <!-- Select 2 css -->
+    <link rel="stylesheet" href="{{ asset('files\bower_components\select2\css\select2.min.css') }}">
+    <!-- Multi Select css -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\bootstrap-multiselect\css\bootstrap-multiselect.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\multiselect\css\multi-select.css') }}">
     <!-- Font Awesome -->
     <link rel="stylesheet" type="text/css" href="..\files\assets\icon\font-awesome\css\font-awesome.min.css">
     <!-- ion icon css -->
@@ -46,63 +51,7 @@
     </div>
     <!-- Pre-loader end -->
 
-    <div id="pcoded" class="pcoded">
-
-        <div class="pcoded-container">
-            <!-- Menu header start -->
-            <nav class="navbar header-navbar pcoded-header">
-                <div class="navbar-wrapper">
-
-                    <div class="navbar-logo">
-                        <a class="mobile-menu" id="mobile-collapse" href="#!">
-                            <i class="feather icon-menu"></i>
-                        </a>
-                        {{-- <a href="index-1.htm">
-                            <img class="img-fluid" src="..\files\assets\images\logo.png" alt="Theme-Logo" width = "75%">
-                        </a> --}}
-                        <a class="mobile-options">
-                            <i class="feather icon-more-horizontal"></i>
-                        </a>
-                    </div>
-
-                    <div class="navbar-container container-fluid">
-                        <ul class="nav-left">
-                            <li>
-                                <a href="#!" onclick="javascript:toggleFullScreen()">
-                                    <i class="feather icon-maximize full-screen"></i>
-                                </a>
-                            </li>
-                        </ul>
-                        <ul class="nav-right">
-                            <li class="user-profile header-notification">
-                                <div class="dropdown-primary dropdown">
-                                    <div class="dropdown-toggle" data-toggle="dropdown">
-                                        <img src="..\files\assets\images\avatar-4.png" class="img-radius" alt="User-Profile-Image">
-                                        <span>Hai, Kang Some</span>
-                                        <i class="feather icon-chevron-down"></i>
-                                    </div>
-                                    <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
-                                        <li>
-                                            <a href="auth-normal-sign-in.htm">
-                                                <i class="feather icon-log-out"></i> Logout
-                                            </a>
-                                        </li>
-                                    </ul>
-
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <!-- Menu header end -->
-            <div class="pcoded-main-container">
-                <nav class="pcoded-navbar">
-                </nav>
                 @yield('content')
-            </div>
-        </div>
-    </div>
 
     <!-- Required Jquery -->
     <script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>

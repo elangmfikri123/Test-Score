@@ -66,6 +66,8 @@ Route::get('/admin/enrolle/{id}/participantsdata', [CourseController::class, 'ad
 
 // Menambahkan peserta
 Route::get('/monitoring/data/json/{id}', [CourseController::class, 'getEnrolledParticipantsJson']);
+Route::delete('/monitoring/delete/{id}', [CourseController::class, 'deletePeserta'])->name('peserta.delete');
+
 Route::get('/pesertaenrolle/data/json/{id}', [CourseController::class, 'getNonEnrolledParticipantsJson']);
 Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 

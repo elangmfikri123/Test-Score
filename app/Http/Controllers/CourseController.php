@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Answer;
 use App\Models\Course;
-use App\Models\Category;
 use App\Models\Peserta;
+use App\Models\Category;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
@@ -23,8 +24,8 @@ class CourseController extends Controller
     }
     public function showcourselist(Request $request)
     {
-        $data = Course::with('category') // relasi ke kategori
-            ->withCount('questions');    // hitung total pertanyaan
+        $data = Course::with('category')
+            ->withCount('questions');
 
         if ($request->has('search') && !empty($request->search['value'])) {
             $search = $request->search['value'];
@@ -187,21 +188,51 @@ class CourseController extends Controller
 
     public function getEnrolledParticipantsJson($id)
     {
-        $pesertaCourses = PesertaCourse::with('peserta')
+        $pesertaCourses = PesertaCourse::with(['peserta', 'course'])
             ->where('course_id', $id)
             ->get();
-
+    
         return datatables()->of($pesertaCourses)
             ->addColumn('nama', fn($row) => $row->peserta->nama)
             ->addColumn('honda_id', fn($row) => $row->peserta->honda_id)
-            ->addColumn('namacategory', fn($row) => $row->peserta->category ?? '-') // ubah sesuai relasi jika ada
-            ->addColumn('durations', fn() => '90 menit') // sementara hardcode
-            ->addColumn('action', fn($row) => '<button class="btn btn-danger btn-sm">Hapus</button>')
-            ->rawColumns(['action'])
+            ->addColumn('namacategory', fn($row) => $row->peserta->category ?? '-')
+            ->addColumn('duration_minutes', function ($row) {
+                if ($row->status_pengerjaan === 'sedang_dikerjakan') {
+                    $endTime = Carbon::parse($row->selesai_ujian);
+                    $remaining = $endTime->diffInSeconds(now(), false);
+                    return $remaining > 0 ? $remaining : 0;
+                }
+    
+                if ($row->status_pengerjaan === 'belum_mulai') {
+                    return $row->course->duration_minutes * 60;
+                }
+    
+                return 0; // selesai
+            })
+            ->addColumn('status_pengerjaan', function ($row) {
+                $status = $row->status_pengerjaan ?? '-';
+                $badge = match ($status) {
+                    'belum_mulai' => '<label class="label label-warning">Belum Mulai</label>',
+                    'sedang_dikerjakan' => '<label class="label label-info">On Progress</label>',
+                    'selesai' => '<label class="label label-success">Selesai</label>',
+                    default => '<label class="label label-default">-</label>',
+                };
+                return $badge;
+            })
+            ->addColumn('action', function ($row) {
+                return '<button class="btn btn-danger btn-sm btn-delete" data-id="' . $row->id . '">Hapus</button>';
+            })
+            ->rawColumns(['status_pengerjaan', 'action'])
             ->make(true);
     }
-
-    // Datatable JSON untuk peserta yang belum dienroll
+    
+    public function deletePeserta($id)
+    {
+        $peserta = PesertaCourse::findOrFail($id);
+        $peserta->delete();
+        return response()->json(['status' => 'success']);
+    }
+    
     public function getNonEnrolledParticipantsJson($id)
     {
         $enrolledPesertaIds = PesertaCourse::where('course_id', $id)->pluck('peserta_id')->toArray();

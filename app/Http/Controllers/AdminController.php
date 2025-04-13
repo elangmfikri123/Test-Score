@@ -18,7 +18,6 @@ class AdminController extends Controller
     }
     public function getusertable(Request $request)
     {
-        // Query dengan join ke tabel peserta dan juri
         $data = User::query()
             ->leftJoin('peserta', 'users.peserta_id', '=', 'peserta.id')
             ->leftJoin('juri', 'users.juri_id', '=', 'juri.id')

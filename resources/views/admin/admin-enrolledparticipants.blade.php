@@ -12,7 +12,7 @@
                                 @csrf
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5>Enrolled Participants</h5>
+                                        <h5><i class="fa fa-user-plus"></i> Enrolled Participants</h5>
                                         <button type="submit" class="btn btn-success btn-sm">
                                             <i class="fa fa-save"></i> Simpan
                                         </button>

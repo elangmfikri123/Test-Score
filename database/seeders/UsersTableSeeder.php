@@ -18,20 +18,20 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $peserta = Peserta::create([
-            'nama' => 'Peserta 1', 
-            'email' => 'peserta1@example.com', 
-            'honda_id' => 'K2772822',
-            'category_id' => '1',
-            'maindealer_id' => '1',
+            'nama' => 'Peserta 2', 
+            'email' => 'peserta2@example.com', 
+            'honda_id' => 'K27728345',
+            'category_id' => '2',
+            'maindealer_id' => '2',
         ]);
 
         // Membuat juri
         $juri = Juri::create([
-            'namajuri' => 'Juri 1', 
+            'namajuri' => 'Juri 2', 
         ]);
         collect([
             [
-                'username' => 'Taufiq14',
+                'username' => 'Taufiq189',
                 'password' => bcrypt('password'),
                 'role' => 'peserta',
                 'peserta_id' => $peserta->id,  
@@ -40,7 +40,7 @@ class UsersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'username' => 'juri990',
+                'username' => 'juri9909',
                 'password' => bcrypt('password'),
                 'role' => 'juri',
                 'peserta_id' => null,  

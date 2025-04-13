@@ -1,137 +1,206 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layout.templateregister')
+@section('title', 'Registrasi Peserta')
+@section('content')
 
-<head>
-    <title>KLHN 2025 | REGISTERASI</title>
-    <!-- Meta -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="#">
-    <meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
-    <meta name="author" content="#">
-    <!-- Favicon icon -->
-    <link rel="icon" href="..\files\assets\images\favicon.ico" type="image/x-icon">
-    <!-- Google font-->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
-    <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
-    <!-- themify-icons line icon -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\themify-icons\themify-icons.css">
-    <!-- ico font -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\icofont\css\icofont.css">
-    <!-- feather Awesome -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
-    <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
-</head>
+<div class="pcoded-wrapper">
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <div class="d-flex justify-content-center align-items-start min-vh-100 pt-3">
+                        <div class="card w-100" style="max-width: 900px;">
+                            <div class="card-header text-center">
+                                <h3><strong>Registrasi Peserta KLHN 2025</strong></h3>
+                            </div>
+                            <div class="card-block">
+                                <!-- Progress Bar -->
+                                <div class="progress mb-4">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 16.66%" aria-valuenow="16.66" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                
+                                <!-- Step Indicator -->
+                                <div class="d-flex justify-content-between mb-4">
+                                    <span class="text-primary font-weight-bold">Step 1 of 6</span>
+                                </div>
+                                
+                                <!-- Form Step 1 -->
+                                <form id="registrationForm" class="step-form" data-step="1">
+                                    @include('partials.step1')
+                                    
+                                    <!-- Tambahkan field lainnya sesuai kebutuhan -->
+                                    
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-primary next-step">Next</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Form Step 2 (akan ditampilkan melalui JavaScript) -->
+                                <form id="step2Form" class="step-form d-none" data-step="2">
+                                    @include('partials.step2')
+                                    <!-- Konten step 2 -->
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                                        <button type="button" class="btn btn-primary next-step">Next</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Form Step 3 (akan ditampilkan melalui JavaScript) -->
+                                <form id="step3Form" class="step-form d-none" data-step="3">
+                                    @include('partials.step3')
 
-<body>
-<!-- Pre-loader start -->
-<div class="theme-loader">
-    <div class="ball-scale">
-        <div class='contain'>
-            <div class="ring">
-                <div class="frame"></div>
-            </div>
-            <div class="ring">
-                <div class="frame"></div>
-            </div>
-        </div>
+                                    <!-- Konten step 3 -->
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                                        <button type="button" class="btn btn-primary next-step">Next</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Form Step 4 (akan ditampilkan melalui JavaScript) -->
+                                <form id="step4Form" class="step-form d-none" data-step="4">
+                                    @include('partials.step4')
+
+                                    <!-- Konten step 4 -->
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                                        <button type="button" class="btn btn-primary next-step">Next</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Form Step 5 (akan ditampilkan melalui JavaScript) -->
+                                <form id="step5Form" class="step-form d-none" data-step="5">
+                                    @include('partials.step5')
+                                    <!-- Konten step 5 -->
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                                        <button type="button" class="btn btn-primary next-step">Next</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- Form Step 6 (akan ditampilkan melalui JavaScript) -->
+                                <form id="step6Form" class="step-form d-none" data-step="6">
+                                    @include('partials.step6')
+                                    <!-- Konten step 6 -->
+                                    <div class="text-right mt-4">
+                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                                        <button type="submit" class="btn btn-success">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>    
+                    </div>    
+                </div>    
+            </div>    
+        </div>    
     </div>
 </div>
-    <div id="pcoded" class="pcoded load-height">
-        <section class="login-block with-header">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <form class="md-float-material form-material m-t-40 m-b-40">
-                            <div class="auth-box card">
-                                <div class="card-block">
-                                    <div class="row m-b-20">
-                                        <div class="col-md-12">
-                                            <h3 class="text-center txt-primary">Form Registrasi</h3>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nama">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="nama" name="nama" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="honda_id">Honda ID</label>
-                                        <input type="text" class="form-control" id="honda_id" name="honda_id" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Main Dealer</label>
-                                        <div class="">
-                                            <select name="select" class="form-control">
-                                                <option value="opt1">Pilih Main Dealer</option>
-                                                <option value="opt2">Type 2</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="username">Dealer</label>
-                                        <input type="text" class="form-control" id="username" name="username" required>
-                                    </div>
-                                    <div class="row m-t-25 text-left">
-                                        <div class="col-12">
-                                            <div class="checkbox-fade fade-in-primary">
-                                                <label>
-                                                    <input type="checkbox" value="">
-                                                    <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
-                                                    <span class="text-inverse">Remember me</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row m-t-30">
-                                        <div class="col-md-12">
-                                            <button type="button" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Submit</button>
-            
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                </div>
-                <!-- end of col-sm-12 -->
-            </div>
-            <!-- end of row -->
-        </div>
-        <!-- end of container-fluid -->
 
-    </section>
-
-    <!-- Required Jquery -->
-    <script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\popper.js\js\popper.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
-    <!-- jquery slimscroll js -->
-    <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
-    <!-- modernizr js -->
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\modernizr.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\css-scrollbars.js"></script>
-    <!-- i18next.min.js -->
-    <script type="text/javascript" src="..\files\bower_components\i18next\js\i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\assets\js\common-pages.js"></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+<!-- JavaScript untuk handle step navigation -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.step-form');
+        const progressBar = document.querySelector('.progress-bar');
+        const stepIndicator = document.querySelector('.d-flex.justify-content-between.mb-4 span');
+        
+        // Inisialisasi - pastikan hanya step 1 yang tampil
+        document.getElementById('registrationForm').classList.remove('d-none');
+        
+        // Handle next step button
+        document.querySelectorAll('.next-step').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentForm = this.closest('.step-form');
+                const currentStep = parseInt(currentForm.dataset.step);
+                const nextStep = currentStep + 1;
+                
+                // Validasi form sebelum lanjut
+                if (validateForm(currentForm)) {
+                    // Sembunyikan semua form
+                    forms.forEach(form => form.classList.add('d-none'));
+                    
+                    // Tampilkan form berikutnya
+                    const nextForm = document.getElementById(`step${nextStep}Form`);
+                    if (nextForm) {
+                        nextForm.classList.remove('d-none');
+                        
+                        // Update progress bar
+                        const progressPercentage = (nextStep / 6) * 100;
+                        progressBar.style.width = `${progressPercentage}%`;
+                        progressBar.setAttribute('aria-valuenow', progressPercentage);
+                        
+                        // Update step indicator
+                        stepIndicator.textContent = `Step ${nextStep} of 6`;
+                        
+                        // Scroll ke atas form
+                        window.scrollTo({top: 0, behavior: 'smooth'});
+                    }
+                }
+            });
+        });
+        
+        // Handle previous step button
+        document.querySelectorAll('.prev-step').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentForm = this.closest('.step-form');
+                const currentStep = parseInt(currentForm.dataset.step);
+                const prevStep = currentStep - 1;
+                
+                // Sembunyikan semua form
+                forms.forEach(form => form.classList.add('d-none'));
+                
+                // Tampilkan form sebelumnya
+                const prevForm = document.getElementById(prevStep === 1 ? 'registrationForm' : `step${prevStep}Form`);
+                if (prevForm) {
+                    prevForm.classList.remove('d-none');
+                    
+                    // Update progress bar
+                    const progressPercentage = (prevStep / 6) * 100;
+                    progressBar.style.width = `${progressPercentage}%`;
+                    progressBar.setAttribute('aria-valuenow', progressPercentage);
+                    
+                    // Update step indicator
+                    stepIndicator.textContent = `Step ${prevStep} of 6`;
+                    
+                    // Scroll ke atas form
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                }
+            });
+        });
+        
+        // Fungsi validasi form
+        function validateForm(form) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                alert('Harap isi semua field yang wajib diisi!');
+            }
+            
+            return isValid;
+        }
+    });
+    </script>
 
-  gtag('config', 'UA-23581568-13');
-</script>
-</body>
+<style>
+    .step-form {
+        transition: all 0.3s ease;
+    }
+    
+    .is-invalid {
+        border-color: #dc3545;
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+    }
+</style>
 
-</html>
+@endsection
