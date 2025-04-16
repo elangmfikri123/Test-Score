@@ -19,55 +19,72 @@ class AdminController extends Controller
     public function getusertable(Request $request)
     {
         $data = User::query()
-            ->leftJoin('peserta', 'users.peserta_id', '=', 'peserta.id')
-            ->leftJoin('juri', 'users.juri_id', '=', 'juri.id')
+            ->leftJoin('peserta', 'users.id', '=', 'peserta.user_id')
+            ->leftJoin('juri', 'users.id', '=', 'juri.user_id')
+            ->leftJoin('admin', 'users.id', '=', 'admin.user_id')
+            ->leftJoin('adminmd', 'users.id', '=', 'adminmd.user_id')
             ->select(
                 'users.id',
                 'users.username',
                 'users.role',
+                'users.is_online',
                 'peserta.nama as peserta_nama',
                 'peserta.email as peserta_email',
                 'juri.namajuri as juri_nama',
-                'users.username as admin_nama',
-                'juri.jabatan as juri_jabatan'
+                'juri.email as juri_email',
+                'admin.nama_lengkap as admin_nama',
+                'admin.email as admin_email',
+                'adminmd.nama_lengkap as adminmd_nama',
+                'adminmd.email as adminmd_email'
             );
-
+    
         if ($request->has('search') && !empty($request->search['value'])) {
             $search = $request->search['value'];
             $data->where(function ($query) use ($search) {
-                $query->where('users.id', 'like', '%' . $search . '%')
-                    ->orWhere('users.username', 'like', '%' . $search . '%')
+                $query->where('users.username', 'like', '%' . $search . '%')
                     ->orWhere('users.role', 'like', '%' . $search . '%')
                     ->orWhere('peserta.nama', 'like', '%' . $search . '%')
                     ->orWhere('peserta.email', 'like', '%' . $search . '%')
                     ->orWhere('juri.namajuri', 'like', '%' . $search . '%')
-                    ->orWhere('juri.jabatan', 'like', '%' . $search . '%');
+                    ->orWhere('juri.email', 'like', '%' . $search . '%')
+                    ->orWhere('admin.nama_lengkap', 'like', '%' . $search . '%')
+                    ->orWhere('admin.email', 'like', '%' . $search . '%')
+                    ->orWhere('adminmd.nama_lengkap', 'like', '%' . $search . '%')
+                    ->orWhere('adminmd.email', 'like', '%' . $search . '%')
+                    ->orWhere('users.is_online', 'like', '%' . $search . '%');
             });
         }
-
+    
         $result = DataTables()->of($data)
+            ->addIndexColumn() 
             ->addColumn('nama', function ($row) {
-                if ($row->peserta_nama) {
-                    return $row->peserta_nama;
-                } elseif ($row->juri_nama) {
-                    return $row->juri_nama;
-                } else {
-                    return $row->admin_nama;
-                }
+                return $row->peserta_nama
+                    ?? $row->juri_nama
+                    ?? $row->admin_nama
+                    ?? $row->adminmd_nama
+                    ?? '-';
             })
             ->addColumn('email', function ($row) {
-                return $row->peserta_email ?? '';
+                return $row->peserta_email
+                    ?? $row->juri_email
+                    ?? $row->admin_email
+                    ?? $row->adminmd_email
+                    ?? '-';
+            })
+            ->addColumn('status', function ($row) {
+                return $row->is_online ? '<span class="badge bg-success">Online</span>' : '<span class="badge bg-secondary">Offline</span>';
             })
             ->addColumn('action', function ($row) {
                 $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
                 $edit = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
                 return $action . ' ' . $edit;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['status', 'action'])
             ->toJson();
-
+    
         return $result;
     }
+
     public function pesertalist()
     {
         return view('admin.adminpesertalist');

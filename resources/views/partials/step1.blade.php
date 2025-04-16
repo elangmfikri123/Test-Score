@@ -2,30 +2,33 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Kategory</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
-                                                <option value="">Pilih</option>
-                                                <option value="laki">Laki-laki</option>
-                                                <option value="perempuan">Perempuan</option>
+                                            <select class="form-control select2-init" name="category_id">
+                                                <option value="">Pilih Kategori</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->namacategory }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Main Dealer</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
-                                                <option value="">Pilih</option>
-                                                <option value="laki">Laki-laki</option>
-                                                <option value="perempuan">Perempuan</option>
+                                            <select class="form-control select2-init" name="main_dealer_id">
+                                                <option value="">Pilih Main Dealer</option>
+                                                @foreach($mainDealers as $dealer)
+                                                    <option value="{{ $dealer->id }}">{{ $dealer->kodemd }} - {{ $dealer->nama_md }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>  
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jabatan</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
-                                                <option value="">Pilih</option>
-                                                <option value="laki">Laki-laki</option>
-                                                <option value="perempuan">Perempuan</option>
+                                            <select class="form-control select2-init" name="position_id">
+                                                <option value="">Pilih Jabatan</option>
+                                                <option value="1">Manager</option>
+                                                <option value="2">Supervisor</option>
+                                                <option value="3">Staff</option>
                                             </select>
                                         </div>
                                     </div>

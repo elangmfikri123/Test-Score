@@ -20,11 +20,12 @@
                                             <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-center" style="width: 50px;">No</th>
+                                                        <th class="text-center" style="width: 20px;">No</th>
                                                         <th class="text-center">Nama</th>
                                                         <th class="text-center">Username</th>
                                                         <th class="text-center">Email</th>
                                                         <th class="text-center">Role</th>
+                                                        <th class="text-center">Status</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -41,12 +42,13 @@
                                               searching: true, // Menampilkan fitur pencarian
                                               lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
                                               columns: [
-                                              { data: 'id', name: 'id' },
-                                              { data: 'nama', name: 'nama' },
-                                              { data: 'username', name: 'username' },
-                                              { data: 'email', name: 'email' },
-                                              { data: 'role', name: 'role' },
-                                              { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+                                                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'  },
+                                                { data: 'nama', name: 'nama' },
+                                                { data: 'username', name: 'username' },
+                                                { data: 'email', name: 'email' },
+                                                { data: 'role', name: 'role' },
+                                                { data: 'status', name: 'status' },
+                                                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });
                                             });

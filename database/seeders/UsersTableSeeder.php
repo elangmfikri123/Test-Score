@@ -2,54 +2,82 @@
 
 namespace Database\Seeders;
 
-use App\Models\Juri;
 use App\Models\User;
 use App\Models\Peserta;
+use App\Models\Juri;
+use App\Models\Admin;
+use App\Models\AdminMD;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        $peserta = Peserta::create([
-            'nama' => 'Peserta 2', 
-            'email' => 'peserta2@example.com', 
-            'honda_id' => 'K27728345',
-            'category_id' => '2',
-            'maindealer_id' => '2',
-        ]);
-
-        // Membuat juri
-        $juri = Juri::create([
-            'namajuri' => 'Juri 2', 
-        ]);
-        collect([
-            [
-                'username' => 'Taufiq189',
+        // Peserta
+        for ($i = 1; $i <= 2; $i++) {
+            $user = User::create([
+                'username' => 'peserta' . $i,
                 'password' => bcrypt('password'),
                 'role' => 'peserta',
-                'peserta_id' => $peserta->id,  
-                'juri_id' => null,  
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'username' => 'juri9909',
+            ]);
+
+            Peserta::create([
+                'user_id' => $user->id,
+                'nama' => 'Peserta ' . $i,
+                'email' => 'peserta' . $i . '@example.com',
+                'honda_id' => 'HND' . rand(1000, 9999),
+                'maindealer_id' => 1,
+                'category_id' => 1,
+                'dealer' => 'Dealer ' . $i,
+            ]);
+        }
+
+        // Juri
+        for ($i = 1; $i <= 2; $i++) {
+            $user = User::create([
+                'username' => 'juri' . $i,
                 'password' => bcrypt('password'),
                 'role' => 'juri',
-                'peserta_id' => null,  
-                'juri_id' => $juri->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ])->each(function ($users) {
-            User::create($users);
-        });
+            ]);
+
+            Juri::create([
+                'user_id' => $user->id,
+                'namajuri' => 'Juri ' . $i,
+                'jabatan' => 'Jabatan ' . $i,
+                'division' => 'Divisi ' . $i,
+                'email' => 'juri' . $i . '@example.com',
+            ]);
+        }
+
+        // Admin
+        for ($i = 1; $i <= 2; $i++) {
+            $user = User::create([
+                'username' => 'admin' . $i,
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]);
+
+            Admin::create([
+                'user_id' => $user->id,
+                'nama_lengkap' => 'Admin ' . $i,
+                'email' => 'admin' . $i . '@example.com',
+            ]);
+        }
+
+        // Admin MD
+        for ($i = 1; $i <= 2; $i++) {
+            $user = User::create([
+                'username' => 'adminmd' . $i,
+                'password' => bcrypt('password'),
+                'role' => 'adminmd',
+            ]);
+
+            AdminMD::create([
+                'user_id' => $user->id,
+                'nama_lengkap' => 'Admin MD ' . $i,
+                'email' => 'adminmd' . $i . '@example.com',
+                'maindealer_id' => 1,
+            ]);
+        }
     }
 }

@@ -93,8 +93,17 @@
         </div>    
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        
+        $('.select2-init').select2({
+            minimumResultsForSearch: 1 
+        });
+    });
+</script>
 
-<!-- JavaScript untuk handle step navigation -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('.step-form');

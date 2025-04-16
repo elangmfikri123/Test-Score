@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('juri', function (Blueprint $table) {
+        Schema::create('adminmd', function (Blueprint $table) {
             $table->id();
-            $table->string('namajuri')->nullable();
-            $table->string('jabatan')->nullable();
-            $table->string('division')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('maindealer_id')->constrained('maindealer')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('nama_lengkap')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('juri');
+        Schema::dropIfExists('adminmd');
     }
 };

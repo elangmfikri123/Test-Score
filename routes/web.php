@@ -77,7 +77,6 @@ Route::get('/get-user/data', [AdminController::class, 'getusertable']);
 
 
 //PESERTA
-Route::get('/online-quiz/results', [PesertaCourseController::class, 'showquiz']);
-Route::get('/exam-confirmation/quiz', [PesertaCourseController::class, 'showconfirmation']);
-
 Route::get('/participants/quizlist', [PesertaController::class, 'showlistquiz']);
+Route::get('/exam-confirmation/quiz', [PesertaCourseController::class, 'showconfirmation']);
+Route::get('/online-quiz/results', [PesertaCourseController::class, 'showquiz']);

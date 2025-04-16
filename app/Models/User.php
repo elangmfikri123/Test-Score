@@ -21,8 +21,6 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
-        'peserta_id',
-        'juri_id',
     ];
 
     /**
@@ -44,13 +42,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    
+
     public function peserta()
     {
-        return $this->belongsTo(Peserta::class);
+        return $this->hasOne(Peserta::class);
     }
-
+    
     public function juri()
     {
-        return $this->belongsTo(Juri::class);
+        return $this->hasOne(Juri::class);
+    }
+    
+    public function admin()
+    {
+        return $this->hasOne(Admin::class);
+    }
+    
+    public function adminMD()
+    {
+        return $this->hasOne(AdminMD::class);
     }
 }
