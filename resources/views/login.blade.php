@@ -2,44 +2,46 @@
 <html lang="en">
 
 <head>
-    <title>KLHN 2025 | LOGIN</title>
+    <title>KLHN 2025 | Login</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="#">
-    <meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
+    <meta name="keywords"
+        content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
     <!-- Favicon icon -->
     <link rel="icon" href="..\files\assets\images\favicon.ico" type="image/x-icon">
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
     <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="..\files\bower_components\bootstrap\css\bootstrap.min.css">
-    <!-- themify-icons line icon -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\themify-icons\themify-icons.css">
-    <!-- ico font -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\icofont\css\icofont.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\bootstrap\css\bootstrap.min.css') }}">
+    <!-- ion icon css -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\ion-icon\css\ionicons.min.css') }}">
     <!-- feather Awesome -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\icon\feather\css\feather.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\feather\css\feather.css') }}">
+    <!-- themify-icons line icon -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\themify-icons\themify-icons.css') }}">
+    <!-- ico font -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\icofont\css\icofont.css') }}">
+    <!-- feather Awesome -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\icon\feather\css\feather.css') }}">
     <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="..\files\assets\css\style.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
 </head>
 
 <body>
-<!-- Pre-loader start -->
-<div class="theme-loader">
-    <div class="ball-scale">
-        <div class='contain'>
-            <div class="ring">
-                <div class="frame"></div>
-            </div>
-            <div class="ring">
-                <div class="frame"></div>
+    <!-- Pre-loader start -->
+    <div class="theme-loader">
+        <div class="ball-scale">
+            <div class='contain'>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
     <!-- Pre-loader end -->
     <div id="pcoded" class="pcoded load-height">
         <!-- Menu header end -->
@@ -48,84 +50,142 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
+                        @if ($errors->any())
+    <div class="alert alert-danger">
+        {{ $errors->first() }}
+    </div>
+@endif
                         <!-- Authentication card start -->
-                        <form class="md-float-material form-material m-t-40 m-b-40">
                             <div class="auth-box card">
                                 <div class="card-block">
                                     <div class="row m-b-20">
                                         <div class="col-md-12">
-                                            <h3 class="text-center txt-primary">Sign In</h3>
+                                            <h3 class="text-center txt-primary">Selamat Datang !</h3>
+                                            <p class="text-muted text-center p-b-5">Silakan masukan username, password
+                                                untuk masuk ke halaman.</p>
                                         </div>
                                     </div>
-                                    <p class="text-muted text-center p-b-5">Sign in with your regular account</p>
-                                    <div class="form-group form-primary">
+                                    <form method="POST" action="{{ route('login.submit') }}">
+                                        @csrf
+                                    <div class="form-group">
                                         <label>Username</label>
-                                        <input type="text" name="user-name" class="form-control" required="" placeholder="Username">
-                                        <span class="form-bar"></span>
+                                        <div class="input-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" id="basic-addon1"><i
+                                                        class="ion-person icon-black"></i></span>
+                                                <input type="text" name="username" class="form-control" required
+                                                    placeholder="Username">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group form-primary">
-                                        <label>Passowrd</label>
-                                        <input type="password" name="password" class="form-control" required="" placeholder="Password">
-                                        <span class="form-bar"></span>
-                                        <label class="float-label"></label>
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <div class="input-group">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" id="basic-addon1"><i
+                                                        class="ion-locked icon-black"></i></span>
+                                                <input type="password" id="password" name="password"
+                                                    class="form-control" required placeholder="Password">
+                                                <span class="input-group-addon" onclick="togglePassword()"
+                                                    style="cursor: pointer;">
+                                                    <i class="ion-eye-disabled" id="eye-icon"></i>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row m-t-25 text-left">
                                         <div class="col-12">
                                             <div class="checkbox-fade fade-in-primary">
                                                 <label>
                                                     <input type="checkbox" value="">
-                                                    <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                                    <span class="cr"><i
+                                                            class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
                                                     <span class="text-inverse">Remember me</span>
                                                 </label>
-                                            </div>
-                                            <div class="forgot-phone text-right f-right">
-                                                <a href="auth-reset-password.htm" class="text-right f-w-600"> Login With Honda ID ?</a>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row m-t-30">
                                         <div class="col-md-12">
-                                            <button type="button" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">LOGIN</button>
-            
+                                            <button type="submit"
+                                                class="btn btn-primary btn-block waves-effect text-center m-b-20">LOGIN</button>
                                         </div>
                                     </div>
-                                    <p class="text-inverse text-left">Don't have an account?<a href="{{ url('/registrasi') }}"> <b class="f-w-600">Register here </b></a>for free!</p>
+                                </form>
+                                    <p class="text-inverse text-left">Don't have an account?<a
+                                            href="{{ url('/registrasi') }}"> <b class="f-w-600">Register here
+                                            </b></a>for free!</p>
                                 </div>
                             </div>
                         </form>
+                    </div>
                 </div>
+                <!-- end of row -->
             </div>
-            <!-- end of row -->
-        </div>
-        <!-- end of container-fluid -->
+            <!-- end of container-fluid -->
 
-    </section>
+        </section>
+        <style>
+            .icon-black {
+                color: #444 !important;
+                font-size: 16px;
+            }
 
-    <!-- Required Jquery -->
-    <script type="text/javascript" src="..\files\bower_components\jquery\js\jquery.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\popper.js\js\popper.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
-    <!-- jquery slimscroll js -->
-    <script type="text/javascript" src="..\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
-    <!-- modernizr js -->
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\modernizr.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\modernizr\js\css-scrollbars.js"></script>
-    <!-- i18next.min.js -->
-    <script type="text/javascript" src="..\files\bower_components\i18next\js\i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
-    <script type="text/javascript" src="..\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
-    <script type="text/javascript" src="..\files\assets\js\common-pages.js"></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+            #eye-icon {
+                font-size: 16px;
+                color: #444;
+            }
+        </style>
+        <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const eyeIcon = document.getElementById('eye-icon');
 
-  gtag('config', 'UA-23581568-13');
-</script>
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.classList.remove('ion-eye-disabled');
+                    eyeIcon.classList.add('ion-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.classList.remove('ion-eye');
+                    eyeIcon.classList.add('ion-eye-disabled');
+                }
+            }
+        </script>
+
+        <!-- Required Jquery -->
+        <script type="text/javascript" src="{{ asset('files\bower_components\jquery\js\jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\jquery-ui\js\jquery-ui.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\popper.js\js\popper.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap\js\bootstrap.min.js') }}"></script>
+        <!-- jquery slimscroll js -->
+        <script type="text/javascript" src="{{ asset('files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js') }}">
+        </script>
+        <!-- modernizr js -->
+        <script type="text/javascript" src="{{ asset('files\bower_components\modernizr\js\modernizr.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\modernizr\js\css-scrollbars.js') }}"></script>
+        <!-- i18next.min.js -->
+        <script type="text/javascript" src="{{ asset('files\bower_components\i18next\js\i18next.min.js') }}"></script>
+        <script type="text/javascript"
+            src="{{ asset('files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js') }}"></script>
+        <script type="text/javascript"
+            src="{{ asset('files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js') }}">
+        </script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\jquery-i18next\js\jquery-i18next.min.js') }}">
+        </script>
+        <script type="text/javascript" src="{{ asset('files\assets\js\common-pages.js') }}"></script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'UA-23581568-13');
+        </script>
 </body>
 
 </html>

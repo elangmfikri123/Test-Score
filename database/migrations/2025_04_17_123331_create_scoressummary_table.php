@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('scores', function (Blueprint $table) {
+        Schema::create('scoressummary', function (Blueprint $table) {
             $table->id();
             $table->foreignId('formpenilaian_id')->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('juri_id')->constrained('juri')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('peserta_id')->constrained('peserta')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('parameter_id')->constrained('parameters')->onUpdate('cascade')->onDelete('cascade');
-            $table->float('score');
+            $table->text('noted');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scores');
+        Schema::dropIfExists('scoressummary');
     }
 };

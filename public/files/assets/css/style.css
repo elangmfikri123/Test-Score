@@ -2870,8 +2870,9 @@
     margin-bottom: 1.25em
 }
 
-.input-group-addon {
-    background-color: #01a9ac;
+
+.input-group-addon { 
+    background-color: #ced4da;
     color: #fff
 }
 

@@ -100,19 +100,17 @@
                                 <div class="dropdown-primary dropdown">
                                     <div class="dropdown-toggle" data-toggle="dropdown">
                                         <img src="{{ asset('files\assets\images\avatar-4.png') }}" class="img-radius" alt="User-Profile-Image">
-                                        <span>Hai, Kang Some</span>
+                                        <span>Hai, {{ Auth::user()->username }}</span>
                                         <i class="feather icon-chevron-down"></i>
                                     </div>
                                     <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
                                         <li>
-                                            <a href="user-profile.htm">
-                                                <i class="feather icon-user"></i> Profile
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="auth-normal-sign-in.htm">
-                                                <i class="feather icon-log-out"></i> Logout
-                                            </a>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" style="background: none; border: none; width: 100%; text-align: left;">
+                                                    <i class="feather icon-log-out"></i> Logout
+                                                </button>
+                                            </form>                            
                                         </li>
                                     </ul>
 
@@ -220,10 +218,12 @@
                                     </a>
                                 </li>
                             </ul>
+
+                            
                             <div class="pcoded-navigatio-lavel">Juri</div>
                             <ul class="pcoded-item pcoded-left-item">
                                 <li class="pcoded-hasmenu active pcoded-trigger">
-                                    <a href="{{ url('/admin') }}">
+                                    <a href="{{ url('/juri/index') }}">
                                         <span class="pcoded-micon"><i class="feather icon-home"></i></span>
                                         <span class="pcoded-mtext">Dashboard</span>
                                     </a>
@@ -237,6 +237,53 @@
                                         <li class=" ">
                                             <a href="{{ url('/peserta/list') }}">
                                                 <span class="pcoded-mtext">Peserta List</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+
+                            <div class="pcoded-navigatio-lavel">Admin Main Dealer</div>
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="pcoded-hasmenu active pcoded-trigger">
+                                    <a href="{{ url('/admin-maindealers/index') }}">
+                                        <span class="pcoded-micon"><i class="feather icon-home"></i></span>
+                                        <span class="pcoded-mtext">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="pcoded-hasmenu">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon"><i class="feather icon-clipboard"></i></span>
+                                        <span class="pcoded-mtext">Administrasi</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class=" ">
+                                            <a href="{{ url('/peserta/list') }}">
+                                                <span class="pcoded-mtext">Peserta List</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+                            <div class="pcoded-navigatio-lavel">Peserta</div>
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="pcoded-hasmenu active pcoded-trigger">
+                                    <a href="{{ url('/peserta/index') }}">
+                                        <span class="pcoded-micon"><i class="feather icon-home"></i></span>
+                                        <span class="pcoded-mtext">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="pcoded-hasmenu">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon"><i class="feather icon-clipboard"></i></span>
+                                        <span class="pcoded-mtext">Course</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class=" ">
+                                            <a href="{{ url('/coursespeserta/list') }}">
+                                                <span class="pcoded-mtext">List Course</span>
                                             </a>
                                         </li>
                                     </ul>
