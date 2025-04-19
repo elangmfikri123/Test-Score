@@ -12,9 +12,9 @@
         content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
     <!-- Favicon icon -->
-    <link rel="icon" href="..\files\assets\images\favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ asset('files\assets\images\favicon.ico') }}" type="image/x-icon">
     <!-- Google font-->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
     <!-- Required Fremwork -->
     <link rel="stylesheet" type="text/css" href="{{ asset('files\bower_components\bootstrap\css\bootstrap.min.css') }}">
     <!-- ion icon css -->
@@ -50,23 +50,26 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
-                        @if ($errors->any())
-    <div class="alert alert-danger">
-        {{ $errors->first() }}
-    </div>
-@endif
                         <!-- Authentication card start -->
-                            <div class="auth-box card">
-                                <div class="card-block">
-                                    <div class="row m-b-20">
-                                        <div class="col-md-12">
-                                            <h3 class="text-center txt-primary">Selamat Datang !</h3>
-                                            <p class="text-muted text-center p-b-5">Silakan masukan username, password
-                                                untuk masuk ke halaman.</p>
-                                        </div>
+                        <div class="auth-box card">
+                            <div class="card-block">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3 class="text-center txt-primary">Selamat Datang !</h3>
+                                        <p class="text-muted text-center p-b-5">Silakan masukan username, password
+                                            untuk masuk ke halaman.</p>
+                                            @if ($errors->any())
+                                            <div class="alert alert-warning background-warning" style="position: relative;">
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <i class="ion-close-circled text-white"></i>
+                                                </button>
+                                                <strong>Gagal Login !</strong> {{ $errors->first() }}
+                                            </div>
+                                            @endif
                                     </div>
-                                    <form method="POST" action="{{ route('login.submit') }}">
-                                        @csrf
+                                </div>
+                                <form method="POST" action="{{ route('login.submit') }}">
+                                    @csrf
                                     <div class="form-group">
                                         <label>Username</label>
                                         <div class="input-group">
@@ -81,16 +84,14 @@
                                     <div class="form-group">
                                         <label>Password</label>
                                         <div class="input-group">
-                                            <div class="input-group">
-                                                <span class="input-group-addon" id="basic-addon1"><i
-                                                        class="ion-locked icon-black"></i></span>
-                                                <input type="password" id="password" name="password"
-                                                    class="form-control" required placeholder="Password">
-                                                <span class="input-group-addon" onclick="togglePassword()"
-                                                    style="cursor: pointer;">
-                                                    <i class="ion-eye-disabled" id="eye-icon"></i>
-                                                </span>
-                                            </div>
+                                            <span class="input-group-addon" id="basic-addon1"><i
+                                                    class="ion-locked icon-black"></i></span>
+                                            <input type="password" id="password" name="password" class="form-control" autocomplete="off" inputmode="text"
+                                                required placeholder="Password">
+                                            <span class="input-group-addon" onclick="togglePassword()"
+                                                style="cursor: pointer;">
+                                                <i class="ion-eye-disabled" id="eye-icon"></i>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="row m-t-25 text-left">
@@ -108,15 +109,15 @@
                                     <div class="row m-t-30">
                                         <div class="col-md-12">
                                             <button type="submit"
-                                                class="btn btn-primary btn-block waves-effect text-center m-b-20">LOGIN</button>
+                                                class="btn btn-primary btn-block waves-effect text-center m-b-20">Login</button>
                                         </div>
                                     </div>
                                 </form>
-                                    <p class="text-inverse text-left">Don't have an account?<a
-                                            href="{{ url('/registrasi') }}"> <b class="f-w-600">Register here
-                                            </b></a>for free!</p>
-                                </div>
+                                <p class="text-inverse text-left">Don't have an account?<a
+                                        href="{{ url('/registrasi') }}"> <b class="f-w-600">Register here
+                                        </b></a>for free!</p>
                             </div>
+                        </div>
                         </form>
                     </div>
                 </div>
@@ -135,6 +136,9 @@
                 font-size: 16px;
                 color: #444;
             }
+            input::-ms-reveal {
+                display: none;
+            }
         </style>
         <script>
             function togglePassword() {
@@ -152,7 +156,7 @@
                 }
             }
         </script>
-
+        
         <!-- Required Jquery -->
         <script type="text/javascript" src="{{ asset('files\bower_components\jquery\js\jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('files\bower_components\jquery-ui\js\jquery-ui.min.js') }}"></script>

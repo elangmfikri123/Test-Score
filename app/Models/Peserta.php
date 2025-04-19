@@ -20,12 +20,14 @@ class Peserta extends Model
     {
         return $this->belongsTo(MainDealer::class);
     }
-
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'peserta_course');
     }
-
     public function answers()
     {
         return $this->hasMany(PesertaAnswer::class);
@@ -34,4 +36,5 @@ class Peserta extends Model
     {
         return $this->belongsToMany(Juri::class, 'juripeserta');
     }
+    
 }

@@ -16,7 +16,10 @@ class Category extends Model
     {
         return $this->hasMany(Course::class);
     }
-
+    public function peserta()
+    {
+        return $this->hasMany(Peserta::class);
+    }
     public function forms()
     {
         return $this->hasMany(FormPenilaian::class);

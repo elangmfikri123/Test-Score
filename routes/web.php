@@ -1,19 +1,22 @@
 <?php
 
+use App\Models\AdminMD;
 use App\Models\Category;
 use App\Models\MainDealer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Yajra\DataTables\Utilities\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminMDController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MainDealerController;
 use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
-use App\Models\AdminMD;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,10 +29,10 @@ use App\Models\AdminMD;
 |
 */
 
-Route::get('/', [AuthController::class, 'login']);
+Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::get('/check-session', [AuthController::class, 'checkSession'])->name('check.session');
 Route::get('/registrasi', [RegistrasiController::class, 'registrasi']);
 
 //ADMINISTRATOR
@@ -37,11 +40,13 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
     Route::get('/listuser', [AdminController::class, 'userlist']);
     Route::get('/get-user/data', [AdminController::class, 'getusertable']);
+    Route::post('/force-logout/{id}', [AuthController::class, 'forceLogout']);
 
     Route::get('/listpeserta', [AdminController::class, 'pesertalist']);
     Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
 
     Route::get('/listjuri', [AdminController::class, 'jurilist']);
+    Route::get('/datajuri/json', [AdminController::class, 'juriJson']);
 
     Route::get('/categorylist', [CategoryController::class, 'categorylist']);
     Route::get('/get-category/data', [CategoryController::class, 'getcategory']);
@@ -76,6 +81,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/pesertaenrolle/data/json/{id}', [CourseController::class, 'getNonEnrolledParticipantsJson']);
     Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 
+    Route::get('/admin/scorecardlist', [FormPenilaianController::class, 'show']);
+    Route::get('/scorecardlist/json', [FormPenilaianController::class, 'listScoreCardJson']);
+
 });
 
 // ADMIN MAIN DEALERS
@@ -89,7 +97,6 @@ Route::middleware(['auth', 'role:AdminMD'])->group(function () {
 Route::middleware(['auth', 'role:Juri'])->group(function () {
     Route::get('/juri/index', [JuriController::class, 'index']);
     Route::get('/peserta/list', [JuriController::class, 'pesertalist']);
-    Route::get('/get-user/data', [AdminController::class, 'getusertable']);
 
 });
 
@@ -97,7 +104,8 @@ Route::middleware(['auth', 'role:Juri'])->group(function () {
 Route::middleware(['auth', 'role:Peserta'])->group(function () {
     Route::get('/peserta/index', [PesertaController::class, 'index']);
     Route::get('/participants/quizlist', [PesertaController::class, 'showlistquiz']);
-    Route::get('/exam-confirmation/quiz', [PesertaCourseController::class, 'showconfirmation']);
+    Route::get('/quizlist/Json', [PesertaController::class, 'listJson']);
+    Route::get('/exam/confirmation/{encodedId}', [PesertaCourseController::class, 'showConfirmation']);
     Route::get('/online-quiz/results', [PesertaCourseController::class, 'showquiz']);
 });
 

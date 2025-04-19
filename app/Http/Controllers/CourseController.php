@@ -195,7 +195,7 @@ class CourseController extends Controller
         return datatables()->of($pesertaCourses)
             ->addColumn('nama', fn($row) => $row->peserta->nama)
             ->addColumn('honda_id', fn($row) => $row->peserta->honda_id)
-            ->addColumn('namacategory', fn($row) => $row->peserta->category ?? '-')
+            ->addColumn('namacategory', fn($row) => $row->peserta->category->namacategory ?? '-')
             ->addColumn('duration_minutes', function ($row) {
                 if ($row->status_pengerjaan === 'sedang_dikerjakan') {
                     $endTime = Carbon::parse($row->selesai_ujian);
@@ -207,7 +207,7 @@ class CourseController extends Controller
                     return $row->course->duration_minutes * 60;
                 }
     
-                return 0; // selesai
+                return 0; 
             })
             ->addColumn('status_pengerjaan', function ($row) {
                 $status = $row->status_pengerjaan ?? '-';

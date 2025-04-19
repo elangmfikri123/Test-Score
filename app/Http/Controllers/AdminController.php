@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Peserta;
+use App\Models\Juri;
 use App\Models\User;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -72,7 +73,9 @@ class AdminController extends Controller
                     ?? '-';
             })
             ->addColumn('status', function ($row) {
-                return $row->is_online ? '<span class="badge bg-success">Online</span>' : '<span class="badge bg-secondary">Offline</span>';
+                $status = $row->is_online ? '<span class="badge bg-success" style="cursor:pointer" onclick="handleStatusClick('.$row->id.', this)">Online</span>' 
+                                          : '<span class="badge bg-secondary">Offline</span>';
+                return $status;
             })
             ->addColumn('action', function ($row) {
                 $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
@@ -119,5 +122,24 @@ class AdminController extends Controller
     public function jurilist()
     {
         return view('admin.adminjurilist');
+    }
+
+    public function juriJson()
+    {
+        $data = Juri::with('user')->select('id', 'namajuri', 'jabatan', 'division');
+        $result = DataTables()->of($data)
+            ->addIndexColumn()
+            ->addColumn('nama', function($row) {
+                return $row->namajuri ?? $row->user->name ?? '-';
+            })
+            ->addColumn('action', function($row) {
+                $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                $edit = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                return $action . ' ' . $edit;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+
+        return $result;
     }
 }

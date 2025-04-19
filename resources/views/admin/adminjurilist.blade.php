@@ -36,11 +36,11 @@
                                         $('#myTable').DataTable({
                                           processing: true,
                                           serverSide: true,
-                                          ajax: '{{ url("/get-juri/data") }}',
+                                          ajax: '{{ url("/datajuri/json") }}',
                                           searching: true, 
                                           lengthChange: true,
                                           columns: [
-                                          { data: 'id', name: 'id' },
+                                          { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'  },
                                           { data: 'nama', name: 'nama' },
                                           { data: 'jabatan', name: 'jabatan' },
                                           { data: 'division', name: 'division', orderable: true, searchable: true },

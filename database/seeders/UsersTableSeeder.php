@@ -17,8 +17,8 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 2; $i++) {
             $user = User::create([
                 'username' => 'peserta' . $i,
-                'password' => bcrypt('password'),
-                'role' => 'peserta',
+                'password' => bcrypt('12345'),
+                'role' => 'Peserta',
             ]);
 
             Peserta::create([
@@ -36,8 +36,8 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 2; $i++) {
             $user = User::create([
                 'username' => 'juri' . $i,
-                'password' => bcrypt('password'),
-                'role' => 'juri',
+                'password' => bcrypt('12345'),
+                'role' => 'Juri',
             ]);
 
             Juri::create([
@@ -53,7 +53,7 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 2; $i++) {
             $user = User::create([
                 'username' => 'admin' . $i,
-                'password' => bcrypt('password'),
+                'password' => bcrypt('12345'),
                 'role' => 'Admin',
             ]);
 
@@ -68,8 +68,8 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 2; $i++) {
             $user = User::create([
                 'username' => 'adminmd' . $i,
-                'password' => bcrypt('password'),
-                'role' => 'adminmd',
+                'password' => bcrypt('12345'),
+                'role' => 'AdminMD',
             ]);
 
             AdminMD::create([

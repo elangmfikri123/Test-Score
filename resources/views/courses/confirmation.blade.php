@@ -43,27 +43,27 @@
                                                 <tbody>
                                                     <tr>
                                                         <th>ID Honda </th>
-                                                        <td>: 812888121212</td>
+                                                        <td>: {{ $pesertaCourse->peserta->honda_id ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Nama</th>
-                                                        <td>: Elang Muhammad Fikhri</td>
+                                                        <td>: {{ $pesertaCourse->peserta->nama ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Main Dealer</th>
-                                                        <td>: AHM-Astra Honda Motor</td>
+                                                        <td>: {{ $pesertaCourse->peserta->maindealer->nama_md ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Category</th>
-                                                        <td>: Frontline People</td>
+                                                        <td>: {{ $pesertaCourse->course->category->namacategory ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Exam</th>
-                                                        <td>: Frontline People-KLHN 2025</td>
+                                                        <td>: {{ $pesertaCourse->course->namacourse ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Durasi</th>
-                                                        <td>: 90 menit</td>
+                                                        <td>: {{ $pesertaCourse->course->duration_minutes ?? '-' }} Menit</td>
                                                     </tr>
                                                 </tbody>
                                             </table>

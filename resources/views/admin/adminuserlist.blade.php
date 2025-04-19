@@ -47,12 +47,58 @@
                                                 { data: 'username', name: 'username' },
                                                 { data: 'email', name: 'email' },
                                                 { data: 'role', name: 'role' },
-                                                { data: 'status', name: 'status' },
+                                                { data: 'status', name: 'status', className: 'text-center'},
                                                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });
                                             });
                                           </script>
+                                          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                          <script>
+                                            function handleStatusClick(userId, element) {
+                                                Swal.fire({
+                                                    title: 'Force Logout?',
+                                                    text: "Apakah Anda yakin ingin memaksa logout user ini?",
+                                                    icon: 'warning',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#3085d6',
+                                                    cancelButtonColor: '#d33',
+                                                    confirmButtonText: 'Ya, Logout',
+                                                    cancelButtonText: 'Cancel'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        // Lakukan AJAX request untuk force logout
+                                                        $.ajax({
+                                                            url: '/force-logout/' + userId,
+                                                            type: 'POST',
+                                                            data: {
+                                                                _token: '{{ csrf_token() }}'
+                                                            },
+                                                            success: function(response) {
+                                                                if (response.success) {
+                                                                    // Update tampilan
+                                                                    $(element).removeClass('bg-success').addClass('bg-secondary');
+                                                                    $(element).text('Offline');
+                                                                    
+                                                                    Swal.fire(
+                                                                        'Berhasil!',
+                                                                        response.message,
+                                                                        'success'
+                                                                    );
+                                                                }
+                                                            },
+                                                            error: function(xhr) {
+                                                                Swal.fire(
+                                                                    'Error!',
+                                                                    xhr.responseJSON.message || 'Terjadi kesalahan',
+                                                                    'error'
+                                                                );
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            </script>
                                         </div>
                                     </div>
                                 </div>

@@ -24,11 +24,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Category</th>
-                                                    <td>{{ $course->namacategory ?? '-' }}</td>
+                                                    <td>{{ $course->category->namacategory ?? '-' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Durasi</th>
-                                                    <td>{{ $course->namacourse }} Menit</td>
+                                                    <td>{{ $course->duration_minutes }} Menit</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -73,7 +73,7 @@
                                         const table = $('#myTable').DataTable({
                                             processing: true,
                                             serverSide: true,
-                                            ajax: '{{ url('/monitoring/data/json/' . $course->id) }}',
+                                            ajax: '{{ url("/monitoring/data/json/" . $course->id) }}',
                                             columns: [
                                                 { data: 'id', name: 'id' },
                                                 { data: 'honda_id', name: 'honda_id' },

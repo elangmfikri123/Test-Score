@@ -52,7 +52,7 @@
                                                 <tr>
                                                     <th class="text-center" style="width: 5px;">No</th>
                                                     <th class="text-center">Soal & Jawaban</th>
-                                                    <th class="text-center">Action</th>
+                                                    <th class="text-center" style="width: 20px;">Action</th>
                                                 </tr>
                                             </thead>
                                         </table>
