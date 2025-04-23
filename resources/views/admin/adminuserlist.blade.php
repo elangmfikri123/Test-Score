@@ -39,8 +39,8 @@
                                               processing: true,
                                               serverSide: true,
                                               ajax: '{{ url("get-user/data") }}',
-                                              searching: true, // Menampilkan fitur pencarian
-                                              lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
+                                              searching: true, 
+                                              lengthChange: true, 
                                               columns: [
                                                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'  },
                                                 { data: 'nama', name: 'nama' },
@@ -67,7 +67,6 @@
                                                     cancelButtonText: 'Cancel'
                                                 }).then((result) => {
                                                     if (result.isConfirmed) {
-                                                        // Lakukan AJAX request untuk force logout
                                                         $.ajax({
                                                             url: '/force-logout/' + userId,
                                                             type: 'POST',
@@ -76,7 +75,6 @@
                                                             },
                                                             success: function(response) {
                                                                 if (response.success) {
-                                                                    // Update tampilan
                                                                     $(element).removeClass('bg-success').addClass('bg-secondary');
                                                                     $(element).text('Offline');
                                                                     

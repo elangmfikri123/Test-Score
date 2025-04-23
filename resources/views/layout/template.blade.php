@@ -37,6 +37,7 @@
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\jquery.mCustomScrollbar.css') }}">
+    
 </head>
 
 <body>

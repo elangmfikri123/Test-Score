@@ -20,4 +20,8 @@ class PesertaCourse extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    public function answers()
+    {
+        return $this->hasMany(PesertaAnswer::class, 'peserta_id');
+    }
 }

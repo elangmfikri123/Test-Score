@@ -71,7 +71,7 @@
                                         <hr class="m-0">
                                         <!-- Card Footer untuk Mulai Ujian -->
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary mt-3">Mulai Mengerjakan</button>
+                                            <button class="btn btn-primary mt-3" id="btnMulaiUjian">Mulai Mengerjakan</button>
                                         </div>
                                     </div>
                                 </div>                                
@@ -82,4 +82,25 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('btnMulaiUjian').addEventListener('click', function (e) {
+            e.preventDefault();
+    
+            Swal.fire({
+                title: 'Yakin Untuk Memulai Ujian?',
+                text: "Waktu akan mulai dihitung setelah kamu klik 'Ya'",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Mulai',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/exam/{{ $pesertaCourse->id }}/1";
+                }
+            });
+        });
+    </script>
 @endsection

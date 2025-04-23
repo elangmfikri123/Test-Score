@@ -10,8 +10,9 @@
     <meta name="description" content="#">
     <meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
     <meta name="author" content="#">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon icon -->
-    <link rel="icon" href="{{ asset('files\assets\images\favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="data:,">
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
     <!-- Required Fremwork -->
@@ -83,9 +84,12 @@
                                     </div>
                                     <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
                                         <li>
-                                            <a href="auth-normal-sign-in.htm">
-                                                <i class="feather icon-log-out"></i> Logout
-                                            </a>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" style="background: none; border: none; width: 100%; text-align: left;">
+                                                    <i class="feather icon-log-out"></i> Logout
+                                                </button>
+                                            </form> 
                                         </li>
                                     </ul>
 

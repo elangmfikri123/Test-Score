@@ -47,8 +47,7 @@ class PesertaController extends Controller
                 return $row->course->end_date ? date('d-m-Y H:i', strtotime($row->course->end_date)) : '-';
             })
             ->addColumn('action', function ($row) {
-                $encodedId = Hashids::encode($row->id);
-                return '<a href="' . url('/exam/confirmation/' . $encodedId) . '" class="btn btn-sm btn-primary">Mulai</a>';
+                return '<a href="' . url('/exam/confirmation/' . $row->id) . '" class="btn btn-sm btn-primary">Mulai</a>';
             })
             ->rawColumns(['action'])
             ->make(true);

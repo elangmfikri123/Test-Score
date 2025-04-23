@@ -37,8 +37,8 @@
                                           processing: true,
                                           serverSide: true,
                                           ajax: '{{ url("/get-peserta/data") }}',
-                                          searching: true, // Menampilkan fitur pencarian
-                                          lengthChange: true, // Menampilkan fitur pengaturan jumlah data per halaman
+                                          searching: true, 
+                                          lengthChange: true,
                                           columns: [
                                           { data: 'id', name: 'id' },
                                           { data: 'honda_id', name: 'honda_id' },

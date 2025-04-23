@@ -76,7 +76,6 @@
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Inisialisasi DataTable
             $('#myTable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -88,8 +87,6 @@
                 {data: 'action',name: 'action', orderable: false, searchable: false, className: 'text-center'}
                 ]
             });
-
-            //Add Data Melalui Modal
             $('#addMainDealerForm').on('submit', function(e) {
                 e.preventDefault();
                 var formData = $(this).serialize();

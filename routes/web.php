@@ -105,7 +105,13 @@ Route::middleware(['auth', 'role:Peserta'])->group(function () {
     Route::get('/peserta/index', [PesertaController::class, 'index']);
     Route::get('/participants/quizlist', [PesertaController::class, 'showlistquiz']);
     Route::get('/quizlist/Json', [PesertaController::class, 'listJson']);
-    Route::get('/exam/confirmation/{encodedId}', [PesertaCourseController::class, 'showConfirmation']);
-    Route::get('/online-quiz/results', [PesertaCourseController::class, 'showquiz']);
+
+    Route::get('/exam/confirmation/{id}', [PesertaCourseController::class, 'showConfirmation']);
+    Route::get('/exam/{id}/{questionNumber}', [PesertaCourseController::class, 'showquiz'])->name('exam.start');
+    Route::get('/exam/ajax/question/{id}/{questionNumber}', [PesertaCourseController::class, 'getQuestionAjax']);
+    Route::get('/exam/ajax/answered-status/{pesertaId}/{courseId}', [PesertaCourseController::class, 'getAnsweredStatus']);
+    Route::post('/exam/ajax/answer', [PesertaCourseController::class, 'submitAnswerAjax']);
+
+
 });
 
