@@ -38,12 +38,13 @@ Route::get('/registrasi', [RegistrasiController::class, 'registrasi']);
 //ADMINISTRATOR
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
-    Route::get('/listuser', [AdminController::class, 'userlist']);
+    Route::get('/listuser', [AdminController::class, 'userlist'])->name('admin.userlist');
     Route::get('/get-user/data', [AdminController::class, 'getusertable']);
     Route::post('/force-logout/{id}', [AuthController::class, 'forceLogout']);
+    Route::post('/user/store', [AdminController::class, 'store'])->name('user.store');
 
-    Route::get('/listpeserta', [AdminController::class, 'pesertalist']);
-    Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
+    Route::get('/listpeserta/admin', [AdminController::class, 'pesertalist']);
+    Route::get('/get-peserta/data/admin', [AdminController::class, 'getpesertatable']);
 
     Route::get('/listjuri', [AdminController::class, 'jurilist']);
     Route::get('/datajuri/json', [AdminController::class, 'juriJson']);
@@ -89,6 +90,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 // ADMIN MAIN DEALERS
 Route::middleware(['auth', 'role:AdminMD'])->group(function () {
     Route::get('/admin-maindealers/index', [AdminMDController::class, 'index']);
+    Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
+    Route::get('/listpeserta', [AdminController::class, 'pesertalist']);
+    Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
 
 });
 

@@ -13,7 +13,7 @@
         </a>
         <ul class="pcoded-submenu">
             <li class=" ">
-                <a href="{{ url('/peserta/list') }}">
+                <a href="{{ url('/listpeserta') }}">
                     <span class="pcoded-mtext">Peserta List</span>
                 </a>
             </li>

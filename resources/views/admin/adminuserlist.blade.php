@@ -24,6 +24,7 @@
                                                         <th class="text-center">Nama</th>
                                                         <th class="text-center">Username</th>
                                                         <th class="text-center">Email</th>
+                                                        <th class="text-center" style="width: 20px;">Grub MD</th>
                                                         <th class="text-center">Role</th>
                                                         <th class="text-center">Status</th>
                                                         <th class="text-center">Action</th>
@@ -46,7 +47,8 @@
                                                 { data: 'nama', name: 'nama' },
                                                 { data: 'username', name: 'username' },
                                                 { data: 'email', name: 'email' },
-                                                { data: 'role', name: 'role' },
+                                                { data: 'maindealer', name: 'maindealer', className: 'text-center'},
+                                                { data: 'role', name: 'role', className: 'text-center' },
                                                 { data: 'status', name: 'status', className: 'text-center'},
                                                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
@@ -107,47 +109,101 @@
                 </div>
 
                 <!-- Modal Add User -->
-            <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addUserModalLabel">Tambah User</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Form untuk menambah user -->
-                            <form action="{{ url('/user/store') }}" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="username">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="role">Role</label>
-                                    <select class="form-control" id="role" name="role">
-                                        <option value="admin">Admin</option>
-                                        <option value="peserta">Peserta</option>
-                                        <option value="juri">Juri</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
-                                </div>
-                                <div class="modal-footer"><button type="submit" class="btn btn-primary">Submit</button></div>
-                            </form>
+                <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Tambah User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="createUserForm" action="{{ route('user.store') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Nama Lengkap</label>
+                                        <input type="text" name="nama" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" name="email" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" name="username" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <input type="password" name="password" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <select name="role" id="role" class="form-control" required onchange="toggleForm()">
+                                            <option value="Admin">Admin</option>
+                                            <option value="AdminMD">Admin MD</option>
+                                            <option value="Juri">Juri</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="maindealerField" style="display:none">
+                                        <label>Main Dealer</label>
+                                        <select class="form-control select2-maindealer" name="maindealer">
+                                            <option value="">Pilih Main Dealer</option>
+                                            @foreach($mainDealers as $md)
+                                                <option value="{{ $md->id }}">{{ $md->kodemd }} - {{ $md->nama_md }}</option>
+                                             @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="jabatanField" style="display:none">
+                                        <label>Jabatan</label>
+                                        <input type="text" class="form-control" name="jabatan">
+                                    </div>
+                                    <div class="form-group" id="divisionField" style="display:none">
+                                        <label for="division">Divisi</label>
+                                        <input type="text" class="form-control" name="division">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+                <script>
+function toggleForm() {
+    var role = $('#role').val();
+    
+    // Sembunyikan semua field tambahan
+    $('#maindealerField, #jabatanField, #divisionField').hide();
+    
+    // Tampilkan field sesuai role
+    if (role === 'AdminMD') {
+        $('#maindealerField').show();
+    } else if (role === 'Juri') {
+        $('#jabatanField, #divisionField').show();
+    }
+}
+
+$(document).ready(function() {
+    // Inisialisasi select2
+    $('.select2-maindealer').select2({
+        placeholder: "Pilih Main Dealer",
+        dropdownParent: $('#addUserModal') // Penting untuk select2 di modal
+    });
+
+    // Inisialisasi saat modal dibuka
+    $('#addUserModal').on('show.bs.modal', function () {
+        toggleForm();
+        $('.select2-maindealer').val(null).trigger('change'); // Reset select2
+    });
+});
+                    </script>
                 </div>
             </div>
         </div>
     </div>
+    
 @endsection

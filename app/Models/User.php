@@ -43,9 +43,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Admin::class);
     }
-    
-    public function adminMD()
-    {
-        return $this->hasOne(AdminMD::class);
-    }
 }

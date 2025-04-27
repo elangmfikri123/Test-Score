@@ -18,7 +18,7 @@
                                             </a>
                                         </li>
                                         <li class="">
-                                            <a href="{{ url('/listpeserta') }}">
+                                            <a href="{{ url('/listpeserta/admin') }}">
                                                 <span class="pcoded-mtext">Data Peserta</span>
                                             </a>
                                         </li>

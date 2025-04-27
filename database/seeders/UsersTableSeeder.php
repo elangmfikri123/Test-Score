@@ -26,7 +26,7 @@ class UsersTableSeeder extends Seeder
                 'nama' => 'Peserta ' . $i,
                 'email' => 'peserta' . $i . '@example.com',
                 'honda_id' => 'HND' . rand(1000, 9999),
-                'maindealer_id' => 1,
+                'maindealer_id' => 2,
                 'category_id' => 1,
             ]);
         }
@@ -50,6 +50,7 @@ class UsersTableSeeder extends Seeder
 
         // Admin
         for ($i = 1; $i <= 2; $i++) {
+            // Admin
             $user = User::create([
                 'username' => 'admin' . $i,
                 'password' => bcrypt('12345'),
@@ -60,22 +61,21 @@ class UsersTableSeeder extends Seeder
                 'user_id' => $user->id,
                 'nama_lengkap' => 'Admin ' . $i,
                 'email' => 'admin' . $i . '@example.com',
+                'maindealer_id' => null,  // Admin tidak memiliki maindealer_id
             ]);
-        }
 
-        // Admin MD
-        for ($i = 1; $i <= 2; $i++) {
-            $user = User::create([
+            // AdminMD
+            $userMD = User::create([
                 'username' => 'adminmd' . $i,
                 'password' => bcrypt('12345'),
                 'role' => 'AdminMD',
             ]);
 
-            AdminMD::create([
-                'user_id' => $user->id,
-                'nama_lengkap' => 'Admin MD ' . $i,
+            Admin::create([
+                'user_id' => $userMD->id,
+                'nama_lengkap' => 'Admin MD' . $i,
                 'email' => 'adminmd' . $i . '@example.com',
-                'maindealer_id' => 1,
+                'maindealer_id' => 2,  // AdminMD memiliki kode maindealer
             ]);
         }
     }
