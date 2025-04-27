@@ -124,13 +124,32 @@
     <script src="https://cdn.tiny.cloud/1/2tvyzqqps6o97w5bncqfwpavklp6rlv7mx7voja1cst93eub/tinymce/7/tinymce.min.js"
         referrerpolicy="origin"></script>
 
-    <script>
-        tinymce.init({
-            selector: '#description',
-            height: 300,
-            menubar: false,
-            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-            toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code'
-        });
-    </script>
+        <script>
+            tinymce.init({
+                selector: '#description',
+                height: 300,
+                menubar: false,
+                plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+                toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
+                automatic_uploads: true, 
+                file_picker_types: 'image',
+                file_picker_callback: function(callback, value, meta) {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+                    input.click();
+                    input.onchange = function() {
+                        var file = input.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            // Use the callback to insert the image
+                            callback(e.target.result, {
+                                alt: file.name
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                }
+            });
+        </script>
 @endsection

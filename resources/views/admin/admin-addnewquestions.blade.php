@@ -108,7 +108,26 @@
                                             menubar: false,
                                             resize: false,
                                             plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                                            toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code'
+                                            toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
+                                            automatic_uploads: true, 
+                                            file_picker_types: 'image',
+                                            file_picker_callback: function(callback, value, meta) {
+                                                var input = document.createElement('input');
+                                                input.setAttribute('type', 'file');
+                                                input.setAttribute('accept', 'image/*');
+                                                input.click();
+                                                input.onchange = function() {
+                                                    var file = input.files[0];
+                                                    var reader = new FileReader();
+                                                    reader.onload = function(e) {
+                                                        // Use the callback to insert the image
+                                                        callback(e.target.result, {
+                                                            alt: file.name
+                                                        });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                };
+                                            }
                                         });
                                     }
 
@@ -146,7 +165,26 @@
                                             menubar: false,
                                             resize: false,
                                             plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                                            toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code'
+                                            toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
+                                            automatic_uploads: true, 
+                                            file_picker_types: 'image',
+                                            file_picker_callback: function(callback, value, meta) {
+                                                var input = document.createElement('input');
+                                                input.setAttribute('type', 'file');
+                                                input.setAttribute('accept', 'image/*');
+                                                input.click();
+                                                input.onchange = function() {
+                                                    var file = input.files[0];
+                                                    var reader = new FileReader();
+                                                    reader.onload = function(e) {
+                                                        // Use the callback to insert the image
+                                                        callback(e.target.result, {
+                                                            alt: file.name
+                                                        });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                };
+                                            }
                                         });
 
                                         answerIndex++;
