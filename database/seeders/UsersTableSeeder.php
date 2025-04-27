@@ -28,7 +28,6 @@ class UsersTableSeeder extends Seeder
                 'honda_id' => 'HND' . rand(1000, 9999),
                 'maindealer_id' => 1,
                 'category_id' => 1,
-                'dealer' => 'Dealer ' . $i,
             ]);
         }
 

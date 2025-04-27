@@ -17,16 +17,28 @@ class CategorySeeder extends Seeder
     {
         collect([
             [
-                'namacategory' => 'Frontline People',
-                'keterangan' => 'Frontline People',
+                'namacategory' => 'Frontline People Sales',
+                'keterangan' => 'FLP SALES',
+            ],
+            [
+                'namacategory' => 'Frontline People Non Sales',
+                'keterangan' => 'FLP NON SALES',
             ],
             [
                 'namacategory' => 'Delivery Man',
-                'keterangan' => 'Delivery Man',
+                'keterangan' => 'DVM',
             ],
             [
-                'namacategory' => 'Sales',
-                'keterangan' => 'Sales',
+                'namacategory' => 'Team Leader',
+                'keterangan' => 'TEAM LEADER',
+            ],
+            [
+                'namacategory' => 'Pimpinan Jaringan',
+                'keterangan' => 'PINJAR',
+            ],
+            [
+                'namacategory' => 'Customer Relation Officer',
+                'keterangan' => 'CRO',
             ],
         ])->each(function ($dealer) {
             Category::create($dealer);
