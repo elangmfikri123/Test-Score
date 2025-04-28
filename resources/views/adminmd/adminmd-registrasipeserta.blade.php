@@ -22,7 +22,7 @@
                                     
                                     <!-- Step Indicator -->
                                     <div class="d-flex justify-content-between mb-4">
-                                        <span class="text-primary font-weight-bold">Step 1 of 6</span>
+                                        <span class="text-primary font-weight-bold">Step 1 of 4</span>
                                     </div>
                                     
                                     <!-- Form Step 1 -->
@@ -64,29 +64,10 @@
                                         <!-- Konten step 4 -->
                                         <div class="text-right mt-4">
                                             <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                            <button type="button" class="btn btn-primary next-step">Next</button>
-                                        </div>
-                                    </form>
-                                    
-                                    <!-- Form Step 5 (akan ditampilkan melalui JavaScript) -->
-                                    <form id="step5Form" class="step-form d-none" data-step="5">
-                                        @include('partials.step5')
-                                        <!-- Konten step 5 -->
-                                        <div class="text-right mt-4">
-                                            <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                            <button type="button" class="btn btn-primary next-step">Next</button>
-                                        </div>
-                                    </form>
-                                    
-                                    <!-- Form Step 6 (akan ditampilkan melalui JavaScript) -->
-                                    <form id="step6Form" class="step-form d-none" data-step="6">
-                                        @include('partials.step6')
-                                        <!-- Konten step 6 -->
-                                        <div class="text-right mt-4">
-                                            <button type="button" class="btn btn-secondary prev-step">Previous</button>
                                             <button type="submit" class="btn btn-success">Submit</button>
                                         </div>
                                     </form>
+                                    
                                 </div>
                             </div>    
                             <!-- Deferred rendering for speed table end -->
@@ -137,12 +118,12 @@
                         nextForm.classList.remove('d-none');
                         
                         // Update progress bar
-                        const progressPercentage = (nextStep / 6) * 100;
+                        const progressPercentage = (nextStep / 4) * 100;
                         progressBar.style.width = `${progressPercentage}%`;
                         progressBar.setAttribute('aria-valuenow', progressPercentage);
                         
                         // Update step indicator
-                        stepIndicator.textContent = `Step ${nextStep} of 6`;
+                        stepIndicator.textContent = `Step ${nextStep} of 4`;
                         
                         // Scroll ke atas form
                         window.scrollTo({top: 0, behavior: 'smooth'});
@@ -167,12 +148,12 @@
                     prevForm.classList.remove('d-none');
                     
                     // Update progress bar
-                    const progressPercentage = (prevStep / 6) * 100;
+                    const progressPercentage = (prevStep / 4) * 100;
                     progressBar.style.width = `${progressPercentage}%`;
                     progressBar.setAttribute('aria-valuenow', progressPercentage);
                     
                     // Update step indicator
-                    stepIndicator.textContent = `Step ${prevStep} of 6`;
+                    stepIndicator.textContent = `Step ${prevStep} of 4`;
                     
                     // Scroll ke atas form
                     window.scrollTo({top: 0, behavior: 'smooth'});

@@ -16,11 +16,12 @@ return new class extends Migration
         Schema::create('files_pesertas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('peserta_id')->constrained('peserta')->onDelete('cascade')->nullable();
-            $table->string('judul_project');
-            $table->string('tahun_pembuatan_project');
-            $table->string('file_project');
-            $table->string('foto_profil');
-            $table->string('ktp');
+            $table->string('file_lampiranklhn')->nullable();
+            $table->string('judul_project')->nullable();
+            $table->string('tahun_pembuatan_project')->nullable();
+            $table->string('file_project')->nullable();
+            $table->string('foto_profil')->nullable();
+            $table->string('ktp')->nullable();
             $table->timestamps();
         });
     }

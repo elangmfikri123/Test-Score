@@ -1,8 +1,9 @@
-                                    <h6 class="mb-3"><strong>Identitas Peserta</strong></h6>
+                            <!-- Identitsa Peserta -->
+                                <h6 class="mb-3"><strong>Identitas Peserta</strong></h6>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Kategory</label>
+                                        <label class="col-sm-3 col-form-label">Kategory *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="category_id">
+                                            <select class="form-control select2-init" name="category_id" >
                                                 <option value="" disabled selected>Pilih Kategori</option>
                                                 @foreach($categories as $category)
                                                     <option value="{{ $category->id }}">{{ $category->namacategory }}</option>
@@ -11,9 +12,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Main Dealer</label>
+                                        <label class="col-sm-3 col-form-label">Main Dealer *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="main_dealer_id">
+                                            <select class="form-control select2-init" name="main_dealer_id" >
                                                 <option value="" disabled selected>Pilih Main Dealer</option>
                                                 @foreach($mainDealers as $dealer)
                                                     <option value="{{ $dealer->id }}">{{ $dealer->kodemd }} - {{ $dealer->nama_md }}</option>
@@ -22,9 +23,9 @@
                                         </div>
                                     </div>  
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Jabatan</label>
+                                        <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="position_id">
+                                            <select class="form-control select2-init" name="position_id" >
                                                 <option value="" disabled selected>Pilih Jabatan</option>
                                                 <option value="1">Manager</option>
                                                 <option value="2">Supervisor</option>
@@ -33,57 +34,61 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Honda ID</label>
+                                        <label class="col-sm-3 col-form-label">Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID">
+                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Nama Lengkap</label>
+                                        <label class="col-sm-3 col-form-label">Nama Lengkap *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Nama">
+                                            <input type="text" class="form-control" placeholder="Masukkan Nama" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Tanggal Mendapat Honda ID</label>
+                                        <label class="col-sm-3 col-form-label">Tanggal Mendapat Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control">
+                                            <input type="date" class="form-control" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mulai Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Lama Bekerja Bersama Honda</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan">
+                                            <input type="date" class="form-control" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Lama Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan">
+                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Tempat Lahir</label>
+                                        <label class="col-sm-3 col-form-label">Jenis Kelamin *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir">
+                                            <select class="form-control select2-init" name="position_id" >
+                                                <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                                                <option value="1">Laki-laki</option>
+                                                <option value="2">Perempuan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Tempat Lahir *</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control">
+                                            <input type="date" class="form-control" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Agama</label>
+                                        <label class="col-sm-3 col-form-label">Agama *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
+                                            <select class="form-control" >
                                                 <option value="">Pilih</option>
                                                 <option value="Islam">Islam</option>
                                                 <option value="Kristen Protestan">Kristen Protestan</option>
@@ -95,21 +100,21 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">No. Handphone</label>
+                                        <label class="col-sm-3 col-form-label">No. Handphone/WhatsApp *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone">
+                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone/WhatsApp" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">No. Handphone +62</label>
+                                        <label class="col-sm-3 col-form-label">No. Handphone (AstraPay) *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. WhatsApp">
+                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone (AstraPay)" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Pendidikan Terakhir</label>
+                                        <label class="col-sm-3 col-form-label">Pendidikan Terakhir *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
+                                            <select class="form-control" >
                                                 <option value="">Pilih</option>
                                                 <option value="SMA/SMK Sederajat">SMA/SMK Sederajat</option>
                                                 <option value="Diploma">Diploma</option>
@@ -120,21 +125,15 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Email</label>
+                                        <label class="col-sm-3 col-form-label">Email *</label>
                                         <div class="col-sm-9">
-                                            <input type="email" class="form-control" placeholder="Masukkan email">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan nama">
+                                            <input type="email" class="form-control" placeholder="Masukkan email" >
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Ukuran Baju Peserta *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control">
+                                            <select class="form-control" >
                                                 <option value="">Pilih</option>
                                                 <option value="S">S</option>
                                                 <option value="M">M</option>
@@ -147,16 +146,54 @@
                                             </select>
                                         </div>
                                     </div>
-
-                                    <h6 class="mb-3"><strong>Social Media Pribadi (Jika Ada)</strong></h6>
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Link URL Profile Facebook</label>
+                                        <label class="col-sm-3 col-form-label">Pantangan Makanan</label>
                                         <div class="col-sm-9">
                                             <input type="text" class="form-control" placeholder="Masukkan nama">
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Link URL Profile X (Twitter)</label>
+                                        <label class="col-sm-3 col-form-label">Riwayat Penyakit</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" placeholder="Masukkan nama">
+                                        </div>
+                                    </div>
+
+                                    <h6 class="mb-3"><strong>History Keikutsertaan KLHN</strong></h6>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
+                                        <div class="col-sm-9">
+                                            <input type="number" class="form-control" placeholder="Masukkan nama" >
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Kategori</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control select2-init" name="position_id" >
+                                                <option value="" disabled selected>Pilih Kategori</option>
+                                                <option value="1">Front Line People</option>
+                                                <option value="2">Deliveryman</option>
+                                                <option value="3">Kepala Cabang</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control select2-init" name="position_id" >
+                                                <option value="" disabled selected>Pilih Status</option>
+                                                <option value="1">Peserta</option>
+                                                <option value="2">Juara 1</option>
+                                                <option value="3">Juara 2</option>
+                                                <option value="3">Juara 3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                            <!-- Data Social Media -->        
+                                    <h6 class="mb-3"><strong>Social Media Pribadi (Jika Ada)</strong></h6>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Link URL Profile Facebook</label>
                                         <div class="col-sm-9">
                                             <input type="text" class="form-control" placeholder="Masukkan nama">
                                         </div>

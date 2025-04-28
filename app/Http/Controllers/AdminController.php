@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Juri;
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\Category;
 use App\Models\Peserta;
 use App\Models\MainDealer;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        return view('admin.admindashboard');
+        $category = Category::with('category');
+        return view('admin.admindashboard', compact('category'));
     }
     public function userlist()
     {

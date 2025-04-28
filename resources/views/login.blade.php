@@ -113,9 +113,9 @@
                                         </div>
                                     </div>
                                 </form>
-                                <p class="text-inverse text-left">Don't have an account?<a
+                                <!--<p class="text-inverse text-left">Don't have an account?<a
                                         href="{{ url('/registrasi') }}"> <b class="f-w-600">Register here
-                                        </b></a>for free!</p>
+                                        </b></a>for free!</p>-->
                             </div>
                         </div>
                         </form>

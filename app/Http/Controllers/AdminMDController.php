@@ -18,4 +18,24 @@ class AdminMDController extends Controller
         $categories = Category::select('id', 'namacategory')->get();
         return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
     }
+
+    public function createRegister (Request $request) 
+    {
+
+    }
+
+    public function showSubmission ()
+    {
+        return view('adminmd.adminmd-submissionklhr');
+    }
+    public function registerSubmission ()
+    {
+        $mainDealers = MainDealer::select('id', 'kodemd', 'nama_md')->get();
+        return view('adminmd.adminmd-registrasiklhr', compact('mainDealers'));
+    }
+
+    public function createSubmission (Request $request) 
+    {
+
+    }
 }
