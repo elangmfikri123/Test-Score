@@ -191,7 +191,7 @@
                                         updateCheckboxBehavior();
                                         updateRemoveButtonBehavior();
                                     });
-
+                                    
                                     function updateCheckboxBehavior() {
                                         document.querySelectorAll('.is_correct').forEach(checkbox => {
                                             checkbox.removeEventListener('change', checkbox.changeHandler); // avoid duplicate
