@@ -9,17 +9,17 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5><i class="feather icon-edit"></i> Submission KLHR</h5>
+                                <div class="card-header text-center">
+                                    <h3><strong>Submission KLHR</strong></h3>
                                 </div>
                                 <hr class="m-0">
                                 <div class="card-block">
-                                    <form action="{{ url('/admin/course/store') }}" method="POST">
+                                    <form action="{{ route('submission.store') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">Main Dealer *</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control select2-init" name="main_dealer_id" >
+                                                <select class="form-control select2-init" name="maindealer_id" required>
                                                     <option value="" disabled selected>Pilih Main Dealer</option>
                                                     @foreach($mainDealers as $dealer)
                                                         <option value="{{ $dealer->id }}">{{ $dealer->kodemd }} - {{ $dealer->nama_md }}</option>
@@ -30,38 +30,49 @@
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">Link Publikasi KLHR 1 *</label>
                                             <div class="col-sm-9">
-                                                <input type="url" class="form-control" placeholder="Link publikasi KLHR" >
+                                                <input type="url" class="form-control" name="link_klhr1" placeholder="Link publikasi KLHR" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Link Publikasi KLHR 2 *</label>
+                                            <label class="col-sm-3 col-form-label">Link Publikasi KLHR 2</label>
                                             <div class="col-sm-9">
-                                                <input type="ulr" class="form-control" placeholder="Link publikasi KLHR" >
+                                                <input type="url" class="form-control" name="link_klhr2" placeholder="Link publikasi KLHR">
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">Link Publikasi KLHR 3 *</label>
+                                            <label class="col-sm-3 col-form-label">Link Publikasi KLHR 3</label>
                                             <div class="col-sm-9">
-                                                <input type="ulr" class="form-control" placeholder="Link publikasi KLHR" >
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">File Submission New Format *</label>
-                                            <div class="col-sm-9">
-                                                <input type="file" class="form-control" placeholder="Masukkan Honda ID" >
+                                                <input type="url" class="form-control" name="link_klhr3" placeholder="Link publikasi KLHR">
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">File Submission TTD KANWIL *</label>
+                                            <label class="col-sm-3 col-form-label"></label>
                                             <div class="col-sm-9">
-                                                <input type="file" class="form-control" placeholder="Masukkan Honda ID" >
+                                                <i class="feather icon-file" style="italic"></i><em><a href="{{ asset('templates/template_submission.xlsx') }}">Download Template File Submission</a></em>
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-sm-3 col-form-label">File Submission Dokumentasi Pelaksaan (.pdf) *</label>
+                                            <label class="col-sm-3 col-form-label">File Submission (.xlsx) *</label>
                                             <div class="col-sm-9">
-                                                <input type="file" class="form-control" placeholder="Masukkan Honda ID" >
+                                                <input type="file" class="form-control" name="file_submission" accept=".xlsx,.xls" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">File Submission Tanda Tangan (.pdf) *</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="form-control" name="file_ttdkanwil" accept=".pdf" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label"></label>
+                                            <div class="col-sm-9">
+                                                <i class="feather icon-file" style="italic"></i><em><a href="{{ asset('templates/template_evidence.pdf') }}">Download Template File Submission Evidence</a></em>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">File Submission Evidence Pelaksaan (.pdf) *</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="form-control" name="file_dokumpelaksanaan" accept=".pdf" required>
                                             </div>
                                         </div>
                                         <div class="text-right">
@@ -83,7 +94,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
-        
         $('.select2-init').select2({
             minimumResultsForSearch: 1 
         });

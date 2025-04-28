@@ -12,9 +12,9 @@ class SubmissionKlhr extends Model
     protected $table = 'submission_klhrs';
     protected $guarded = ['id'];
 
-    public function course()
+    public function maindealer()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(MainDealer::class);
     }
 
 }

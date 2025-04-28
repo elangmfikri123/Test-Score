@@ -9,20 +9,8 @@
                     <div class="card-block info-breadcrumb">
                         <div class="breadcrumb-header">
                             <h5>Selamat Datang Admin Main Dealer</h5>
-                            <span>lorem ipsum dolor sit amet, consectetur adipisicing elit</span>
                         </div>
                         <div class="page-header-breadcrumb">
-                            <ul class="breadcrumb-title">
-                                <li class="breadcrumb-item">
-                                    <a href="#!">
-                                        <i class="icofont icofont-home"></i>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item"><a href="#!">Breadcrumb</a>
-                                </li>
-                                <li class="breadcrumb-item"><a href="#!">Caption Breadcrumb</a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>

@@ -147,7 +147,7 @@
                                     </div>
                                     <div class="form-group" id="maindealerField" style="display:none">
                                         <label>Main Dealer</label>
-                                        <select class="form-control select2-maindealer" name="maindealer">
+                                        <select class="form-control select2-maindealer" name="maindealer_id">
                                             <option value="">Pilih Main Dealer</option>
                                             @foreach($mainDealers as $md)
                                                 <option value="{{ $md->id }}">{{ $md->kodemd }} - {{ $md->nama_md }}</option>

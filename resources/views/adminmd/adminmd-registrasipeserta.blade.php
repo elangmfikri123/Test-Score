@@ -24,9 +24,10 @@
                                     <div class="d-flex justify-content-between mb-4">
                                         <span class="text-primary font-weight-bold">Step 1 of 4</span>
                                     </div>
-                                    
+                                    <form method="POST" enctype="multipart/form-data" action="{{ route('registrasi.store') }}">
+                                        @csrf
                                     <!-- Form Step 1 -->
-                                    <form id="registrationForm" class="step-form" data-step="1">
+                                    <div id="registrationForm" class="step-form" data-step="1">
                                         @include('partials.step1')
                                         
                                         <!-- Tambahkan field lainnya sesuai kebutuhan -->
@@ -34,20 +35,20 @@
                                         <div class="text-right mt-4">
                                             <button type="button" class="btn btn-primary next-step">Next</button>
                                         </div>
-                                    </form>
+                                    </div>
                                     
                                     <!-- Form Step 2 (akan ditampilkan melalui JavaScript) -->
-                                    <form id="step2Form" class="step-form d-none" data-step="2">
+                                    <div id="step2Form" class="step-form d-none" data-step="2">
                                         @include('partials.step2')
                                         <!-- Konten step 2 -->
                                         <div class="text-right mt-4">
                                             <button type="button" class="btn btn-secondary prev-step">Previous</button>
                                             <button type="button" class="btn btn-primary next-step">Next</button>
                                         </div>
-                                    </form>
+                                    </div>
                                     
                                     <!-- Form Step 3 (akan ditampilkan melalui JavaScript) -->
-                                    <form id="step3Form" class="step-form d-none" data-step="3">
+                                    <div id="step3Form" class="step-form d-none" data-step="3">
                                         @include('partials.step3')
     
                                         <!-- Konten step 3 -->
@@ -55,10 +56,10 @@
                                             <button type="button" class="btn btn-secondary prev-step">Previous</button>
                                             <button type="button" class="btn btn-primary next-step">Next</button>
                                         </div>
-                                    </form>
+                                    </div>
                                     
                                     <!-- Form Step 4 (akan ditampilkan melalui JavaScript) -->
-                                    <form id="step4Form" class="step-form d-none" data-step="4">
+                                    <div id="step4Form" class="step-form d-none" data-step="4">
                                         @include('partials.step4')
     
                                         <!-- Konten step 4 -->
@@ -66,8 +67,8 @@
                                             <button type="button" class="btn btn-secondary prev-step">Previous</button>
                                             <button type="submit" class="btn btn-success">Submit</button>
                                         </div>
-                                    </form>
-                                    
+                                    </div>
+                                </form>
                                 </div>
                             </div>    
                             <!-- Deferred rendering for speed table end -->
@@ -92,6 +93,54 @@
 </script>
 
 <script>
+
+let riwayatCount = 1;
+const maxRiwayat = 3;
+
+document.getElementById('add-riwayat-klhn').addEventListener('click', function() {
+    if (riwayatCount >= maxRiwayat) {
+        alert('Maksimal hanya 3 riwayat yang dapat ditambahkan.');
+        return;
+    }
+
+    const riwayatContainer = document.getElementById('riwayat-klhn-container');
+    const newRiwayat = `
+        <div class="form-group row riwayat-klhn">
+            <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
+            <div class="col-sm-9">
+                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[${riwayatCount}][tahun_keikutsertaan]" required>
+            </div>
+        </div>
+        <div class="form-group row riwayat-klhn">
+            <label class="col-sm-3 col-form-label">Kategori</label>
+            <div class="col-sm-9">
+                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][vcategory]" required>
+                    <option value="" disabled selected>Pilih Kategori</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->namacategory }}">{{ $category->namacategory }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-group row riwayat-klhn mb-3">
+            <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
+            <div class="col-sm-9">
+                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][status_kepesertaan]" required>
+                    <option value="" disabled selected>Pilih Status</option>
+                    <option value="Peserta">Peserta</option>
+                    <option value="Juara 1">Juara 1</option>
+                    <option value="Juara 2">Juara 2</option>
+                    <option value="Juara 3">Juara 3</option>
+                </select>
+            </div>
+        </div>
+    `;
+    riwayatContainer.insertAdjacentHTML('beforeend', newRiwayat);
+    riwayatCount++;
+});
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('.step-form');
         const progressBar = document.querySelector('.progress-bar');

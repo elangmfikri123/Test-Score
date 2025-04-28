@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('peserta', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('category_id')->nullable();
             $table->foreignId('maindealer_id')->constrained('maindealer')->onUpdate('cascade')->onDelete('cascade')->nullable();
             $table->string('jabatan')->nullable();
@@ -39,6 +39,7 @@ return new class extends Migration
             $table->string('link_facebook')->nullable();
             $table->string('link_instagram')->nullable();
             $table->string('link_tiktok')->nullable();
+            $table->string('status_lolos')->nullable();
             $table->string('created_by')->nullable();
             $table->timestamps();
         });

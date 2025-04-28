@@ -47,7 +47,7 @@ class AdminController extends Controller
                 'md_admin.kodemd as admin_kodemd',
                 'md_peserta.kodemd as peserta_kodemd'
             );
-    
+
         if ($request->has('search') && !empty($request->search['value'])) {
             $search = $request->search['value'];
             $data->where(function ($query) use ($search) {
@@ -64,7 +64,7 @@ class AdminController extends Controller
                     ->orWhere('users.is_online', 'like', '%' . $search . '%');
             });
         }
-    
+
         $result = DataTables()->of($data)
             ->addIndexColumn()
             ->addColumn('nama', function ($row) {
@@ -100,14 +100,13 @@ class AdminController extends Controller
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
-    
+
         return $result;
     }
-    
+
 
     public function store(Request $request)
     {
-        // Validasi data
         $validated = $request->validate([
             'username' => 'required|unique:users|max:255',
             'password' => 'required|min:6',
@@ -121,15 +120,12 @@ class AdminController extends Controller
 
         DB::beginTransaction();
         try {
-            // Buat user baru
             $user = User::create([
                 'username' => $validated['username'],
                 'password' => Hash::make($validated['password']),
                 'role' => $validated['role'],
                 'is_online' => false
             ]);
-
-            // Simpan data sesuai role
             if (in_array($validated['role'], ['Admin', 'AdminMD'])) {
                 Admin::create([
                     'user_id' => $user->id,
@@ -169,54 +165,54 @@ class AdminController extends Controller
         abort(403, 'Unauthorized action.');
     }
 
-public function getpesertatable(Request $request)
-{
-    // Ambil data admin yang sedang login
-    $admin = Admin::where('user_id', auth()->id())->first();
-    
-    // Ambil data peserta dengan relasi maindealer
-    $data = Peserta::with('maindealer');
+    public function getpesertatable(Request $request)
+    {
+        $admin = Admin::where('user_id', auth()->id())->first();
+        $data = Peserta::with('maindealer');
+        if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
+            $data->where('maindealer_id', $admin->maindealer_id);
+        }
 
-    // Jika role AdminMD, filter peserta berdasarkan maindealer_id
-    if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer) {
-        $data->whereHas('maindealer', function ($query) use ($admin) {
-            $query->where('id', $admin->maindealer_id); // Pastikan menggunakan maindealer_id yang benar
-        });
+        if (auth()->user()->role === 'Admin') {
+            $data = Peserta::with('maindealer');
+        }
+        if ($request->has('search') && !empty($request->search['value'])) {
+            $search = $request->search['value'];
+            $data->where(function ($query) use ($search) {
+                $query->where('id', 'like', '%' . $search . '%')
+                    ->orWhere('honda_id', 'like', '%' . $search . '%')
+                    ->orWhere('nama', 'like', '%' . $search . '%');
+            });
+        }
+        $result = DataTables()->of($data)
+            ->addIndexColumn()
+            ->addColumn('maindealer', function ($row) {
+                return $row->maindealer ? $row->maindealer->nama_md : '-';
+            })
+            ->addColumn('status', function ($row) {
+                if (auth()->user()->role === 'AdminMD') {
+                    return match ($row->status_lolos) {
+                        'Verified'    => '<label class="label label-warning">Verified</label>',
+                        'Lolos'       => '<label class="label label-success">Lolos</label>',
+                        'Tidak Lolos' => '<label class="label label-danger">Tidak Lolos</label>',
+                        default       => '<label class="label label-default">Belum Diverifikasi</label>',
+                    };
+                } else {
+                    return $row->status_lolos ? $row->status_lolos : '-';
+                }
+            })
+            ->addColumn('createdtime', function ($row) {
+                return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
+            })
+            ->addColumn('action', function ($row) {
+                return '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+            })
+            ->rawColumns(['status', 'action'])
+            ->toJson();
+
+        return $result;
     }
 
-    // Jika role Admin, tidak perlu filter apapun
-    if (auth()->user()->role === 'Admin') {
-        // Pastikan tidak ada filter berdasarkan maindealer_id
-        $data = Peserta::with('maindealer'); // Ambil semua data peserta
-    }
-    
-    // Jika ada pencarian, tambahkan filter pencarian
-    if ($request->has('search') && !empty($request->search['value'])) {
-        $search = $request->search['value'];
-        $data->where(function ($query) use ($search) {
-            $query->where('id', 'like', '%' . $search . '%')
-                ->orWhere('honda_id', 'like', '%' . $search . '%')
-                ->orWhere('nama', 'like', '%' . $search . '%');
-        });
-    }
-
-    // Ambil data peserta dengan DataTables dan tambahkan kolom action
-    $result = DataTables()->of($data)
-        ->addColumn('maindealer', function ($row) {
-            return $row->maindealer ? $row->maindealer->nama_md : '-'; // Tampilkan nama maindealer jika ada
-        })
-        ->addColumn('action', function ($row) {
-            $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-            $edit = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
-            return $action . ' ' . $edit;
-        })
-        ->rawColumns(['action'])
-        ->toJson();
-
-    return $result;
-}
-
-    
 
     public function jurilist()
     {

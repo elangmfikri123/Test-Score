@@ -23,9 +23,8 @@
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" style="width: 50px;">No</th>
-                                                    <th class="text-center">Honda ID</th>
-                                                    <th class="text-center">Nama</th>
                                                     <th class="text-center">Main Dealer</th>
+                                                    <th class="text-center">Created Time</th>
                                                     <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -38,23 +37,21 @@
                                         $('#myTable').DataTable({
                                           processing: true,
                                           serverSide: true,
-                                          ajax: '{{ url("/get-peserta/data") }}',
+                                          ajax: '{{ url("/datasubmission/json") }}',
                                           searching: true, 
                                           lengthChange: true,
                                           columns: [
-                                          { data: 'id', name: 'id' },
-                                          { data: 'honda_id', name: 'honda_id' },
-                                          { data: 'nama', name: 'nama' },
-                                          { data: 'maindealer', name: 'maindealer', orderable: true, searchable: true },
-                                          { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
-                                         ],
+                                            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+                                            { data: 'maindealer', name: 'maindealer', orderable: true, searchable: true },
+                                            { data: 'createdtime', name: 'createdtime', className: 'text-center' },
+                                            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+                                            ],
                                           });
                                         });
                                       </script>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Deferred rendering for speed table end -->
                         </div>
                     </div>
                 </div>

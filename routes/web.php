@@ -90,15 +90,18 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 // ADMIN MAIN DEALERS
 Route::middleware(['auth', 'role:AdminMD'])->group(function () {
     Route::get('/admin-maindealers/index', [AdminMDController::class, 'index']);
-    Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
-    Route::post('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
 
-    Route::get('/listpeserta', [AdminController::class, 'pesertalist']);
+    Route::get('/listpeserta', [AdminController::class, 'pesertalist'])->name('list.peserta');
     Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
 
-    Route::get('/submission/klhr', [AdminMDController::class, 'showSubmission']);
+    Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
+    Route::post('/store/registrasi', [AdminMDController::class, 'storeRegister'])->name('registrasi.store');
+
+    Route::get('/submission/klhr', [AdminMDController::class, 'showSubmission'])->name('submission.klhr');
+    Route::get('/datasubmission/json', [AdminMDController::class, 'submissionJson']);
+
     Route::get('/submissionklhr/create', [AdminMDController::class, 'registerSubmission']);
-    Route::post('/submission/createdata', [AdminMDController::class, 'createSubmission']);
+    Route::post('/submission/store', [AdminMDController::class, 'createSubmission'])->name('submission.store');
 
 });
 

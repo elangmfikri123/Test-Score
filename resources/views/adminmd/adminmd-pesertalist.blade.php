@@ -26,6 +26,8 @@
                                                     <th class="text-center">Honda ID</th>
                                                     <th class="text-center">Nama</th>
                                                     <th class="text-center">Main Dealer</th>
+                                                    <th class="text-center">Status</th>
+                                                    <th class="text-center">Created Time</th>
                                                     <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -42,10 +44,12 @@
                                           searching: true, 
                                           lengthChange: true,
                                           columns: [
-                                          { data: 'id', name: 'id' },
+                                          { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
                                           { data: 'honda_id', name: 'honda_id' },
                                           { data: 'nama', name: 'nama' },
                                           { data: 'maindealer', name: 'maindealer', orderable: true, searchable: true },
+                                          { data: 'status', name: 'status', className: 'text-center' },
+                                          { data: 'createdtime', name: 'createdtime', className: 'text-center' },
                                           { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                          ],
                                           });
