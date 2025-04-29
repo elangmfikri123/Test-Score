@@ -29,6 +29,10 @@ class MainDealerSeeder extends Seeder
                 'nama_md' => 'CDN-ACEH',
             ],
             [
+                'kodemd' => 'C10',
+                'nama_md' => 'MENARA AGUNG',
+            ],
+            [
                 'kodemd' => 'C3Z',
                 'nama_md' => 'HAYATI PRATAMA MANDIRI',
             ],
