@@ -1,20 +1,23 @@
 <h6 class="mb-3"><strong>Upload File Peserta</strong></h6>
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">Judul Project *</label>
-    <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Judul Project" name="judul_project">
+<div id="project_fields"> <!-- Tambahkan wrapper ini -->
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Judul Project *</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" placeholder="Masukkan Judul Project" name="judul_project">
+        </div>
     </div>
-</div>
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">Tahun Pembuatan *</label>
-    <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Tahun Pembuatan" name="tahun_pembuatan_project">
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Tahun Pembuatan *</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" placeholder="Masukkan Tahun Pembuatan"
+                name="tahun_pembuatan_project">
+        </div>
     </div>
-</div>
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 50 Mb *</label>
-    <div class="col-sm-9">
-        <input type="file" class="form-control" accept=".pdf,.ppt,.pptx" name="file_project">
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 50 Mb *</label>
+        <div class="col-sm-9">
+            <input type="file" class="form-control" accept=".pdf,.ppt,.pptx" name="file_project">
+        </div>
     </div>
 </div>
 <div class="form-group row">
@@ -32,7 +35,9 @@
 <div class="form-group row">
     <label class="col-sm-3 col-form-label"></label>
     <div class="col-sm-9">
-        <i class="feather icon-file" style="italic"></i><em><a href="">Download Template File Lampiran Peserta</a></em>
+        <i class="feather icon-file" style="italic"></i><em><a
+                href="https://docs.google.com/spreadsheets/d/1T0cHxD6YeWCRdDS1WdWEXyTz9w1QfRxc/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
+                target="_blank">Download Template File Lampiran Peserta</a></em>
     </div>
 </div>
 <div class="form-group row">

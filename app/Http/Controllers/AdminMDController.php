@@ -52,10 +52,10 @@ class AdminMDController extends Controller
     public function storeRegister(Request $request)
     {
         $request->validate([
-            'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:2048',
-            'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:5120',
-            'foto_profil' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'ktp' => 'required|file|mimes:pdf,jpeg,png,jpg|max:2048',
+            'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
+            'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
+            'foto_profil' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'ktp' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
         ]);
 
         DB::beginTransaction();

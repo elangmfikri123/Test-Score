@@ -3,7 +3,7 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Kategory *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="category_id" >
+                                            <select class="form-control select2-init" name="category_id" id="category_id">
                                                 <option value="" disabled selected>Pilih Kategori</option>
                                                 @foreach($categories as $category)
                                                     <option value="{{ $category->id }}">{{ $category->namacategory }}</option>
@@ -185,13 +185,13 @@
                                         <div class="form-group row riwayat-klhn">
                                             <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
                                             <div class="col-sm-9">
-                                                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[0][tahun_keikutsertaan]" required>
+                                                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[0][tahun_keikutsertaan]">
                                             </div>
                                         </div>
                                         <div class="form-group row riwayat-klhn">
                                             <label class="col-sm-3 col-form-label">Kategori</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control select2-init" name="riwayat_klhn[0][vcategory]" required>
+                                                <select class="form-control select2-init" name="riwayat_klhn[0][vcategory]">
                                                     <option value="" disabled selected>Pilih Kategori</option>
                                                     @foreach($categories as $category)
                                                         <option value="{{ $category->namacategory }}">{{ $category->namacategory }}</option>
@@ -202,7 +202,7 @@
                                         <div class="form-group row riwayat-klhn">
                                             <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control select2-init" name="riwayat_klhn[0][status_kepesertaan]" required>
+                                                <select class="form-control select2-init" name="riwayat_klhn[0][status_kepesertaan]">
                                                     <option value="" disabled selected>Pilih Status</option>
                                                     <option value="Peserta">Peserta</option>
                                                     <option value="Juara 1">Juara 1</option>
@@ -213,6 +213,6 @@
                                         </div>
                                     </div>
                                     
-                                    <button type="button" id="add-riwayat-klhn" class="btn btn-secondary">Tambah</button>
+                                    <button type="button" id="add-riwayat-klhn" class="btn btn-warning">Add History KLHN</button>
                             <!-- Data Social Media -->       
 
