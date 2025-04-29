@@ -13,23 +13,6 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        // Peserta
-        for ($i = 1; $i <= 2; $i++) {
-            $user = User::create([
-                'username' => 'peserta' . $i,
-                'password' => bcrypt('12345'),
-                'role' => 'Peserta',
-            ]);
-
-            Peserta::create([
-                'user_id' => $user->id,
-                'nama' => 'Peserta ' . $i,
-                'email' => 'peserta' . $i . '@example.com',
-                'honda_id' => 'HND' . rand(1000, 9999),
-                'maindealer_id' => 2,
-                'category_id' => 1,
-            ]);
-        }
 
         // Juri
         for ($i = 1; $i <= 2; $i++) {
@@ -52,7 +35,7 @@ class UsersTableSeeder extends Seeder
         for ($i = 1; $i <= 2; $i++) {
             // Admin
             $user = User::create([
-                'username' => 'admin' . $i,
+                'username' => 'admin.ahm' . $i,
                 'password' => bcrypt('12345'),
                 'role' => 'Admin',
             ]);
@@ -61,12 +44,12 @@ class UsersTableSeeder extends Seeder
                 'user_id' => $user->id,
                 'nama_lengkap' => 'Admin ' . $i,
                 'email' => 'admin' . $i . '@example.com',
-                'maindealer_id' => null,  // Admin tidak memiliki maindealer_id
+                'maindealer_id' => null,
             ]);
 
             // AdminMD
             $userMD = User::create([
-                'username' => 'adminmd' . $i,
+                'username' => 'adminmd.ahm' . $i,
                 'password' => bcrypt('12345'),
                 'role' => 'AdminMD',
             ]);
@@ -75,7 +58,7 @@ class UsersTableSeeder extends Seeder
                 'user_id' => $userMD->id,
                 'nama_lengkap' => 'Admin MD' . $i,
                 'email' => 'adminmd' . $i . '@example.com',
-                'maindealer_id' => 2,  // AdminMD memiliki kode maindealer
+                'maindealer_id' => 2,
             ]);
         }
     }

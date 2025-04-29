@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Peserta List - Admin')
+@section('title', 'Submission KLHR')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">

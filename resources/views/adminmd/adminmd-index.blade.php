@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'User List')
+@section('title', 'Dashboard Admin M')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">

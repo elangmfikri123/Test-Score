@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Peserta List - Admin')
+@section('title', 'Registrasi Peserta')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -71,7 +71,6 @@
                                 </form>
                                 </div>
                             </div>    
-                            <!-- Deferred rendering for speed table end -->
                         </div>
                     </div>
                 </div>
