@@ -107,13 +107,13 @@ document.getElementById('add-riwayat-klhn').addEventListener('click', function()
         <div class="form-group row riwayat-klhn">
             <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[${riwayatCount}][tahun_keikutsertaan]" required>
+                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[${riwayatCount}][tahun_keikutsertaan]">
             </div>
         </div>
         <div class="form-group row riwayat-klhn">
             <label class="col-sm-3 col-form-label">Kategori</label>
             <div class="col-sm-9">
-                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][vcategory]" required>
+                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][vcategory]">
                     <option value="" disabled selected>Pilih Kategori</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->namacategory }}">{{ $category->namacategory }}</option>
@@ -124,7 +124,7 @@ document.getElementById('add-riwayat-klhn').addEventListener('click', function()
         <div class="form-group row riwayat-klhn mb-3">
             <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
             <div class="col-sm-9">
-                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][status_kepesertaan]" required>
+                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][status_kepesertaan]">
                     <option value="" disabled selected>Pilih Status</option>
                     <option value="Peserta">Peserta</option>
                     <option value="Juara 1">Juara 1</option>
