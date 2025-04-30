@@ -178,6 +178,7 @@
     });
 </script>
 
+
 <script>
 
 let riwayatCount = 1;
@@ -300,7 +301,7 @@ document.getElementById('add-riwayat-klhn').addEventListener('click', function()
             return isValid;
         }
     });
-    </script>
+</script>
 
 <style>
     .step-form {

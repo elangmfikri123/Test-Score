@@ -48,7 +48,9 @@
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label"></label>
                                             <div class="col-sm-9">
-                                                <i class="feather icon-file" style="italic"></i><em><a href="{{ asset('templates/template_submission.xlsx') }}">Download Template File Submission</a></em>
+                                                <i class="feather icon-file" style="italic"></i><em><a
+                                                    href="https://docs.google.com/spreadsheets/d/19d5IDyn23V8-Jlk0JyNVrxXzuapCZdl5/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
+                                                    target="_blank">Download Template File Submission</a></em>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -66,7 +68,9 @@
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label"></label>
                                             <div class="col-sm-9">
-                                                <i class="feather icon-file" style="italic"></i><em><a href="{{ asset('templates/template_evidence.pdf') }}">Download Template File Submission Evidence</a></em>
+                                                <i class="feather icon-file" style="italic"></i><em><a
+                                                    href="https://docs.google.com/presentation/d/1iviSSpHTpEkjCIHSvp7RCzktj5Fjp7kC/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
+                                                    target="_blank">Download Template File Submission Evidence</a></em>
                                             </div>
                                         </div>
                                         <div class="form-group row">
