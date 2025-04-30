@@ -25,6 +25,7 @@
                                                     <th class="text-center" style="width: 50px;">No</th>
                                                     <th class="text-center">Honda ID</th>
                                                     <th class="text-center">Nama</th>
+                                                    <th class="text-center">Ketegori</th>
                                                     <th class="text-center">Main Dealer</th>
                                                     <th class="text-center">Status</th>
                                                     <th class="text-center">Created Time</th>
@@ -47,7 +48,8 @@
                                           { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
                                           { data: 'honda_id', name: 'honda_id' },
                                           { data: 'nama', name: 'nama' },
-                                          { data: 'maindealer', name: 'maindealer', orderable: true, searchable: true },
+                                          { data: 'category', name: 'category' },
+                                          { data: 'maindealer', name: 'maindealer', orderable: true, searchable: true, className: 'text-center' },
                                           { data: 'status', name: 'status', className: 'text-center' },
                                           { data: 'createdtime', name: 'createdtime', className: 'text-center' },
                                           { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },

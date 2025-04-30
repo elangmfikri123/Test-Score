@@ -168,7 +168,7 @@ class AdminController extends Controller
     public function getpesertatable(Request $request)
     {
         $admin = Admin::where('user_id', auth()->id())->first();
-        $data = Peserta::with('maindealer');
+        $data = Peserta::with(['maindealer', 'category']);
         if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
             $data->where('maindealer_id', $admin->maindealer_id);
         }
@@ -181,21 +181,27 @@ class AdminController extends Controller
             $data->where(function ($query) use ($search) {
                 $query->where('id', 'like', '%' . $search . '%')
                     ->orWhere('honda_id', 'like', '%' . $search . '%')
-                    ->orWhere('nama', 'like', '%' . $search . '%');
+                    ->orWhere('nama', 'like', '%' . $search . '%')
+                    ->orWhereHas('category', function ($q) use ($search) {
+                        $q->where('namacategory', 'like', '%' . $search . '%');
+                    });
             });
         }
         $result = DataTables()->of($data)
             ->addIndexColumn()
+            ->addColumn('category', function ($row) {
+                return $row->category ? $row->category->namacategory : '-';
+            })
             ->addColumn('maindealer', function ($row) {
-                return $row->maindealer ? $row->maindealer->nama_md : '-';
+                return $row->maindealer ? $row->maindealer->kodemd : '-';
             })
             ->addColumn('status', function ($row) {
                 if (auth()->user()->role === 'AdminMD') {
                     return match ($row->status_lolos) {
-                        'Verified'    => '<label class="label label-warning">Verified</label>',
+                        'Terkirim'    => '<label class="label label-info">Terkirim</label>',
                         'Lolos'       => '<label class="label label-success">Lolos</label>',
                         'Tidak Lolos' => '<label class="label label-danger">Tidak Lolos</label>',
-                        default       => '<label class="label label-default">Belum Diverifikasi</label>',
+                        default       => '<label class="label label-warning">Belum Diverifikasi</label>',
                     };
                 } else {
                     return $row->status_lolos ? $row->status_lolos : '-';
@@ -205,12 +211,16 @@ class AdminController extends Controller
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
             ->addColumn('action', function ($row) {
-                return '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                return '<a href="' . url('/detailregistrasi/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
 
         return $result;
+    }
+
+    public function detailPeserta (){
+        return view('adminmd.adminmd-detailprofile');
     }
 
 

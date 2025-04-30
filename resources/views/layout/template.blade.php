@@ -224,6 +224,9 @@
     <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap-multiselect\js\bootstrap-multiselect.js') }}"></script>
     <script type="text/javascript" src="{{ asset('files\bower_components\multiselect\js\jquery.multi-select.js') }}"></script>
     <script type="text/javascript" src="{{ asset('files\assets\js\jquery.quicksearch.js') }}"></script>
+
+    <!-- ck editor -->
+    <script src="{{ asset('files\assets\pages\ckeditor\ckeditor.js') }}"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>

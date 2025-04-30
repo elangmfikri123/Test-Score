@@ -14,6 +14,7 @@ use App\Models\SubmissionKlhr;
 use App\Models\IdentitasAtasan;
 use App\Models\IdentitasDealer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AdminMDController extends Controller
@@ -44,7 +45,11 @@ class AdminMDController extends Controller
     
     public function registrasiPeserta()
     {
-        $mainDealers = MainDealer::select('id', 'kodemd', 'nama_md')->get();
+        $user = Auth::user();
+        if ($user->role === 'AdminMD') {
+            $admin = Admin::where('user_id', $user->id)->first();
+            $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } 
         $categories = Category::select('id', 'namacategory')->get();
         return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
     }
@@ -86,8 +91,8 @@ class AdminMDController extends Controller
                 'link_facebook' => $request->link_facebook ?? null,
                 'link_instagram' => $request->link_instagram ?? null,
                 'link_tiktok' => $request->link_tiktok ?? null,
-                'status_lolos' => 'Verified',
-                'created_by' => auth()->user()->name ?? 'system',
+                'status_lolos' => 'Terkirim',
+                'created_by' => auth()->user()->username ?? 'system',
             ]);
 
             $user = User::create([
@@ -177,7 +182,6 @@ class AdminMDController extends Controller
             ], 500);
         }
     }
-
 
     public function showSubmission()
     {
