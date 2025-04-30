@@ -160,23 +160,23 @@
                                         </div>
                                     </div>
 
-                                    <h6 class="mb-3"><strong>Social Media Pribadi (Jika Ada)</strong></h6>
+                                    <h6 class="mb-3"><strong>Social Media Pribadi</strong></h6>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Facebook</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan URL Facebook" name="link_facebook">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_facebook">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Instagram</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan URL Instagram" name="link_instagram">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_instagram">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Tiktok</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan URL Tiktok" name="link_tiktok">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_tiktok">
                                         </div>
                                     </div>
 
