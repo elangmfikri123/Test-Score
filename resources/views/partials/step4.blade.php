@@ -19,14 +19,44 @@
             <input type="file" class="form-control" accept=".pdf,.ppt,.pptx" name="file_project">
         </div>
     </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label"></label>
-        <div class="col-sm-9">
-            <i class="feather icon-file" style="italic"></i><em><a
-                    href="https://docs.google.com/spreadsheets/d/1T0cHxD6YeWCRdDS1WdWEXyTz9w1QfRxc/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
-                    target="_blank">Download Template File Lampiran Peserta CRO</a></em>
-        </div>
+
+    {{-- Untuk CRO --}}
+<div class="form-group row template-download" id="template-cro" style="display: none;">
+    <label class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <i class="feather icon-file" style="italic"></i><em>
+            <a href="https://docs.google.com/spreadsheets/d/1T0cHxD6YeWCRdDS1WdWEXyTz9w1QfRxc/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
+                Download Template File Lampiran Peserta CRO
+            </a>
+        </em>
     </div>
+</div>
+
+{{-- Untuk Team Leader --}}
+<div class="form-group row template-download" id="template-tl" style="display: none;">
+    <label class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <i class="feather icon-file" style="italic"></i><em>
+            <a href="https://docs.google.com/spreadsheets/d/1uEeXNxn4XEZH9btziejpAQPZ_viBSIA1QapulppULr8/edit?usp=drive_link" target="_blank">
+                Download Template File Lampiran Peserta Team Leader
+            </a>
+        </em>
+    </div>
+</div>
+
+{{-- Untuk Pimpinan Jaringan --}}
+<div class="form-group row template-download" id="template-pj" style="display: none;">
+    <label class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+        <i class="feather icon-file" style="italic"></i><em>
+            <a href="https://docs.google.com/spreadsheets/d/1rN94awOtyMTB05umPkyB5Of6oqxFellf/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
+                Download Template File Lampiran Peserta Pimpinan Jaringan
+            </a>
+        </em>
+    </div>
+</div>
+
+
     <div class="form-group row">
         <label class="col-sm-3 col-form-label">File Lampiran Peserta (.xlsx) *</label>
         <div class="col-sm-9">
