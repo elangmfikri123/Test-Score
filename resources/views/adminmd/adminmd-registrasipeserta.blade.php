@@ -88,7 +88,6 @@
             minimumResultsForSearch: 1
         });
 
-        //Hide & Show Berdasarkan Category
         const hiddenCategoryNames = [
             'Frontline People Sales',
             'Frontline People Non Sales',
