@@ -98,6 +98,10 @@ Route::middleware(['auth', 'role:AdminMD'])->group(function () {
 
     Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
     Route::post('/store/registrasi', [AdminMDController::class, 'storeRegister'])->name('registrasi.store');
+    Route::post('/check-hondaid-email', [AdminMDController::class, 'checkHondaIdEmail'])->name('check.hondaid.email');
+    Route::get('/datapeserta/detail/{id}', [AdminMDController::class, 'detailPeserta']);
+    Route::get('/registrasidata/edit/{id}', [AdminMDController::class, 'editPeserta']);
+    Route::put('/updatepeserta/data/{id}', [AdminMDController::class, 'updatePeserta']);
 
     Route::get('/submission/klhr', [AdminMDController::class, 'showSubmission'])->name('submission.klhr');
     Route::get('/datasubmission/json', [AdminMDController::class, 'submissionJson']);

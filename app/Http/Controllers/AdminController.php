@@ -211,18 +211,15 @@ class AdminController extends Controller
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
             ->addColumn('action', function ($row) {
-                return '<a href="' . url('/detailregistrasi/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                return $detail . ' ' . $edit;
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
 
         return $result;
     }
-
-    public function detailPeserta (){
-        return view('adminmd.adminmd-detailprofile');
-    }
-
 
     public function jurilist()
     {

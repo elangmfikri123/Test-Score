@@ -74,8 +74,63 @@
     </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+function checkHondaIdEmail() {
+        const hondaId = $('input[name="honda_id"]').val();
+        const email = $('input[name="email"]').val();
+
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '{{ route("check.hondaid.email") }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    honda_id: hondaId,
+                    email: email
+                },
+                success: function (response) {
+                    if (response.honda_id_exists || response.email_exists) {
+                        if (response.honda_id_exists) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Honda ID sudah terdaftar',
+                                text: 'Silakan gunakan Honda ID lain.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+
+                        if (response.email_exists) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Email sudah terdaftar',
+                                text: 'Silakan gunakan email lain.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan',
+                        text: 'Gagal mengecek email dan Honda ID.',
+                        confirmButtonText: 'OK'
+                    });
+                    reject();
+                }
+            });
+        });
+    }
+        </script>
+        
     <script>
         $(document).ready(function() {
             $('.select2-init').select2({
@@ -103,6 +158,17 @@
                 if (hiddenCategoryNames.includes(selectedName)) {
                     projectFields.show();
                     inputs.addClass('requiredform');
+
+                            // Kondisi khusus: jika Team Leader, sembunyikan dan disable Tahun Pembuatan
+                        if (selectedName === 'Team Leader') {
+                            const tahunPembuatanInput = $('input[name="tahun_pembuatan_project"]');
+                            tahunPembuatanInput.closest('.form-group').hide();
+                            tahunPembuatanInput.removeClass('requiredform is-invalid');
+                            tahunPembuatanInput.siblings('.messages').text('');
+                            tahunPembuatanInput.val('');
+                        } else {
+                            $('input[name="tahun_pembuatan_project"]').closest('.form-group').show();
+                        }
                 } else {
                     projectFields.hide();
                     clearProjectFields();
@@ -129,6 +195,7 @@
                 $('input[name="judul_project"]').val('');
                 $('input[name="tahun_pembuatan_project"]').val('');
                 $('input[name="file_project"]').val('');
+                $('input[name="file_lampiranklhn"]').val('');
             }
             $('#category_id').on('change', function() {
                 toggleProjectFields();
@@ -217,10 +284,15 @@
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function () {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
+
+                    if (currentStep === 1) {
+        const isValidHonda = await checkHondaIdEmail();
+        if (!isValidHonda) return; // Hentikan proses next
+    }
 
                     if (validateForm(currentForm)) {
                         forms.forEach(form => form.classList.add('d-none'));

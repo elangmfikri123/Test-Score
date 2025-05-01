@@ -69,4 +69,17 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('success') && session('honda_id'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        html: 'Data dengan Honda ID <strong>{{ session("honda_id") }}</strong> berhasil disimpan.',
+        confirmButtonText: 'OK'
+    });
+</script>
+@endif
+
 @endsection

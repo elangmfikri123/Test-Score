@@ -4,9 +4,12 @@
                                         <label class="col-sm-3 col-form-label">Kategory *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control requiredform select2-init" name="category_id" id="category_id">
-                                                <option value="" disabled selected>Pilih Kategori</option>
+                                                <option value="" disabled {{ old('category_id', $peserta->category_id ?? '') == '' ? 'selected' : '' }}>Pilih Kategori</option>
                                                 @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->namacategory }}</option>
+                                                    <option value="{{ $category->id }}"
+                                                        {{ old('category_id', $peserta->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->namacategory }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             <span class="messages text-danger" style="font-size: 0.7rem;"></span>
@@ -16,9 +19,12 @@
                                         <label class="col-sm-3 col-form-label">Main Dealer *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control select2-init" name="maindealer_id" >
-                                                <option value="" disabled selected>Pilih Main Dealer</option>
+                                                <option value="" disabled {{ old('maindealer_id', $peserta->maindealer_id ?? '') == '' ? 'selected' : '' }}>Pilih Main Dealer</option>
                                                 @foreach($mainDealers as $row)
-                                                    <option value="{{ $row->id }}">{{ $row->kodemd }} - {{ $row->nama_md }}</option>
+                                                    <option value="{{ $row->id }}"
+                                                        {{ old('maindealer_id', $peserta->maindealer_id ?? '') == $row->id ? 'selected' : '' }}>
+                                                        {{ $row->kodemd }} - {{ $row->nama_md }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -26,138 +32,151 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="jabatan" >
-                                                <option value="" disabled selected>Pilih Jabatan</option>
-                                                <option value="Manager">Manager</option>
-                                                <option value="Supervisor">Supervisor</option>
-                                                <option value="Staff">Staff</option>
+                                            <select class="form-control select2-init" name="jabatan">
+                                                <option value="" disabled {{ old('jabatan', $peserta->jabatan) ? '' : 'selected' }}>Pilih Jabatan</option>
+                                                <option value="Manager" @selected(old('jabatan', $peserta->jabatan) === 'Manager')>Manager</option>
+                                                <option value="Supervisor" @selected(old('jabatan', $peserta->jabatan) === 'Supervisor')>Supervisor</option>
+                                                <option value="Staff" @selected(old('jabatan', $peserta->jabatan) === 'Staff')>Staff</option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID" name="honda_id">
+                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID"  value="{{ old('honda_id', $peserta->honda_id) }}" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Nama Lengkap *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Nama" name="nama">
+                                            <input type="text" class="form-control" placeholder="Masukkan Nama" name="nama" value="{{ old('honda_id', $peserta->nama) }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mendapat Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control " name="tanggal_hondaid">
+                                            <input type="date" class="form-control" name="tanggal_hondaid"
+                                                value="{{ old('tanggal_hondaid', optional($peserta)->tanggal_hondaid ? \Carbon\Carbon::parse($peserta->tanggal_hondaid)->format('Y-m-d') : '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mulai Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_awalbekerja">
+                                            <input type="date" class="form-control" name="tanggal_awalbekerja"
+                                            value="{{ old('tanggal_hondaid', optional($peserta)->tanggal_awalbekerja ? \Carbon\Carbon::parse($peserta->tanggal_awalbekerja)->format('Y-m-d') : '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Lama Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer">
+                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer"
+                                            value="{{ old('lamabekerja_dealer', $peserta->lamabekerja_dealer ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jenis Kelamin *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="jenis_kelamin" >
-                                                <option value="" disabled selected>Pilih Jenis Kelamin</option>
-                                                <option value="Laki-Laki">Laki-laki</option>
-                                                <option value="Perempuan">Perempuan</option>
+                                            <select class="form-control" name="jenis_kelamin">
+                                                <option value="" disabled {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == '' ? 'selected' : '' }}>Pilih Jenis Kelamin</option>
+                                                <option value="Laki-Laki" {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == 'Laki-Laki' ? 'selected' : '' }}>Laki-laki</option>
+                                                <option value="Perempuan" {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tempat Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir">
+                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir"
+                                            value="{{ old('tempat_lahir', $peserta->tempat_lahir ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_lahir"> 
+                                            <input type="date" class="form-control" name="tanggal_lahir"
+                                            value="{{ old('tanggal_lahir', $peserta->tanggal_lahir ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Agama *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control" name="agama">
-                                                <option value="" disabled selected>Pilih Agama</option>
-                                                <option value="Islam">Islam</option>
-                                                <option value="Kristen Protestan">Kristen Protestan</option>
-                                                <option value="Kristen Katolik">Kristen Katolik</option>
-                                                <option value="Hindu">Hindu</option>
-                                                <option value="Buddha">Buddha</option>
-                                                <option value="Konghucu">Konghucu</option>
+                                                <option value="" disabled {{ old('agama', $peserta->agama ?? '') == '' ? 'selected' : '' }}>Pilih Agama</option>
+                                                @php
+                                                    $agamaList = ['Islam', 'Kristen Protestan', 'Kristen Katolik', 'Hindu', 'Buddha', 'Konghucu'];
+                                                @endphp
+                                                @foreach($agamaList as $agama)
+                                                    <option value="{{ $agama }}" {{ old('agama', $peserta->agama ?? '') == $agama ? 'selected' : '' }}>{{ $agama }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone/WhatsApp *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp">
+                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp"
+                                            value="{{ old('no_hp', $peserta->no_hp ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone (AstraPay) *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay">
+                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay"
+                                            value="{{ old('no_hp_astrapay', $peserta->no_hp_astrapay ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Pendidikan Terakhir *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control" name="pendidikan_terakhir">
-                                                <option value="" disabled selected>Pilih Pendidikan</option>
-                                                <option value="SMA/SMK Sederajat">SMA/SMK Sederajat</option>
-                                                <option value="Diploma">Diploma</option>
-                                                <option value="S1">S1</option>
-                                                <option value="S2">S2</option>
-                                                <option value="S3">S3</option>
+                                                <option value="" disabled {{ old('pendidikan_terakhir', $peserta->pendidikan_terakhir ?? '') == '' ? 'selected' : '' }}>Pilih Pendidikan</option>
+                                                @php
+                                                    $pendidikanList = ['SMA/SMK Sederajat', 'Diploma', 'S1', 'S2', 'S3'];
+                                                @endphp
+                                                @foreach($pendidikanList as $pendidikan)
+                                                    <option value="{{ $pendidikan }}" {{ old('pendidikan_terakhir', $peserta->pendidikan_terakhir ?? '') == $pendidikan ? 'selected' : '' }}>
+                                                        {{ $pendidikan }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Email *</label>
                                         <div class="col-sm-9">
-                                            <input type="email" class="form-control" placeholder="Masukkan email" name="email">
+                                            <input type="email" class="form-control" placeholder="Masukkan email" 
+                                            value="{{ old('email', $peserta->email ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Ukuran Baju Peserta *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control" name="ukuran_baju">
-                                                <option value="" disabled selected>Pilih Ukuran Baju</option>
-                                                <option value="S">S</option>
-                                                <option value="M">M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                                <option value="2XL">2XL</option>
-                                                <option value="3XL">3XL</option>
-                                                <option value="4XL">4XL</option>
-                                                <option value="5XL">5XL</option>
+                                                <option value="" disabled {{ old('ukuran_baju', $peserta->ukuran_baju ?? '') == '' ? 'selected' : '' }}>Pilih Ukuran Baju</option>
+                                                @php
+                                                    $ukuranList = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+                                                @endphp
+                                                @foreach($ukuranList as $ukuran)
+                                                    <option value="{{ $ukuran }}" {{ old('ukuran_baju', $peserta->ukuran_baju ?? '') == $ukuran ? 'selected' : '' }}>
+                                                        {{ $ukuran }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Pantangan Makanan</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Pantangan Makanan" name="pantangan_makanan">
+                                            <input type="text" class="form-control" placeholder="Masukkan Pantangan Makanan" name="pantangan_makanan"
+                                            value="{{ old('pantangan_makanan', $peserta->pantangan_makanan ?? '') }}">
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Riwayat Penyakit</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Riwayat Penyakit" name="riwayat_penyakit">
+                                            <input type="text" class="form-control" placeholder="Masukkan Riwayat Penyakit" name="riwayat_penyakit"
+                                            value="{{ old('riwayat_penyakit', $peserta->riwayat_penyakit ?? '') }}">
                                         </div>
                                     </div>
 
@@ -165,55 +184,77 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Facebook</label>
                                         <div class="col-sm-9">
-                                            <input type="url" class="form-control" placeholder="https://" name="link_facebook">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_facebook" 
+                                                   value="{{ old('link_facebook', $peserta->link_facebook ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Instagram</label>
                                         <div class="col-sm-9">
-                                            <input type="url" class="form-control" placeholder="https://" name="link_instagram">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_instagram" 
+                                                   value="{{ old('link_instagram', $peserta->link_instagram ?? '') }}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Link URL Profile Tiktok</label>
                                         <div class="col-sm-9">
-                                            <input type="url" class="form-control" placeholder="https://" name="link_tiktok">
+                                            <input type="url" class="form-control" placeholder="https://" name="link_tiktok" 
+                                                   value="{{ old('link_tiktok', $peserta->link_tiktok ?? '') }}">
                                         </div>
-                                    </div>
+                                    </div>                                    
 
                                     <h6 class="mb-3"><strong>History Keikutsertaan KLHN</strong></h6>
                                     <div id="riwayat-klhn-container">
-                                        <div class="form-group row riwayat-klhn">
-                                            <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
-                                            <div class="col-sm-9">
-                                                <input type="number" class="form-control" placeholder="Masukkan Tahun" name="riwayat_klhn[0][tahun_keikutsertaan]">
+                                        @php
+                                            $maxRiwayat = 3;
+                                            $formRiwayat = old('riwayat_klhn', $riwayat_klhn ?? []);
+                                            $initialRiwayatCount = count($formRiwayat);
+                                        @endphp
+                                    
+                                        @foreach ($formRiwayat as $i => $riwayat)
+                                            <div class="form-group row riwayat-klhn">
+                                                <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
+                                                <div class="col-sm-9">
+                                                    <input type="number" class="form-control" placeholder="Masukkan Tahun"
+                                                           name="riwayat_klhn[{{ $i }}][tahun_keikutsertaan]"
+                                                           value="{{ old("riwayat_klhn.$i.tahun_keikutsertaan", $riwayat['tahun_keikutsertaan'] ?? '') }}">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group row riwayat-klhn">
-                                            <label class="col-sm-3 col-form-label">Kategori</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control select2-init" name="riwayat_klhn[0][vcategory]">
-                                                    <option value="" disabled selected>Pilih Kategori</option>
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category->namacategory }}">{{ $category->namacategory }}</option>
-                                                    @endforeach
-                                                </select>
+                                    
+                                            <div class="form-group row riwayat-klhn">
+                                                <label class="col-sm-3 col-form-label">Kategori</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control select2-init" name="riwayat_klhn[{{ $i }}][vcategory]">
+                                                        <option value="" disabled {{ !isset($riwayat['vcategory']) ? 'selected' : '' }}>Pilih Kategori</option>
+                                                        @foreach($categories as $category)
+                                                            <option value="{{ $category->namacategory }}"
+                                                                {{ old("riwayat_klhn.$i.vcategory", $riwayat['vcategory'] ?? '') == $category->namacategory ? 'selected' : '' }}>
+                                                                {{ $category->namacategory }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group row riwayat-klhn">
-                                            <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" name="riwayat_klhn[0][status_kepesertaan]">
-                                                    <option value="" disabled selected>Pilih Status</option>
-                                                    <option value="Peserta">Peserta</option>
-                                                    <option value="Juara 1">Juara 1</option>
-                                                    <option value="Juara 2">Juara 2</option>
-                                                    <option value="Juara 3">Juara 3</option>
-                                                </select>
+                                    
+                                            <div class="form-group row riwayat-klhn mb-3">
+                                                <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control" name="riwayat_klhn[{{ $i }}][status_kepesertaan]">
+                                                        <option value="" disabled {{ !isset($riwayat['status_kepesertaan']) ? 'selected' : '' }}>Pilih Status</option>
+                                                        @foreach(['Peserta', 'Juara 1', 'Juara 2', 'Juara 3'] as $status)
+                                                            <option value="{{ $status }}"
+                                                                {{ old("riwayat_klhn.$i.status_kepesertaan", $riwayat['status_kepesertaan'] ?? '') == $status ? 'selected' : '' }}>
+                                                                {{ $status }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endforeach
                                     </div>
                                     
-                                    <button type="button" id="add-riwayat-klhn" class="btn btn-warning">Add History KLHN</button>
+                                    @if ($initialRiwayatCount < $maxRiwayat)
+                                        <button type="button" id="add-riwayat-klhn" class="btn btn-warning">Add History KLHN</button>
+                                    @endif
                             <!-- Data Social Media -->       
 

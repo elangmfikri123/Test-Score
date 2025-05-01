@@ -31,25 +31,25 @@ class AdminMDController extends Controller
             ->groupBy('category_id')
             ->with('category')
             ->get();
-    
+
         foreach ($categories as $category) {
             $latestPeserta = Peserta::where('category_id', $category->category_id)
                 ->orderBy('created_at', 'desc')
                 ->first();
-            
+
             $category->latest_created_at = $latestPeserta ? $latestPeserta->created_at->format('H:i:s') : 'Tidak ada data';
         }
-    
+
         return view('adminmd.adminmd-index', compact('categories'));
     }
-    
+
     public function registrasiPeserta()
     {
         $user = Auth::user();
         if ($user->role === 'AdminMD') {
             $admin = Admin::where('user_id', $user->id)->first();
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
-        } 
+        }
         $categories = Category::select('id', 'namacategory')->get();
         return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
     }
@@ -61,6 +61,8 @@ class AdminMDController extends Controller
             'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
             'foto_profil' => 'required|image|mimes:jpeg,png,jpg|max:5120',
             'ktp' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'honda_id' => 'required|unique:peserta,honda_id',
+            'email' => 'required|email|unique:peserta,email',
         ]);
 
         DB::beginTransaction();
@@ -122,7 +124,7 @@ class AdminMDController extends Controller
                 'no_hpalternatif' => $request->no_hpalternatif_atasan ?? null,
                 'email' => $request->email_atasan ?? null,
             ]);
-            
+
             IdentitasDealer::create([
                 'peserta_id' => $peserta->id,
                 'kode_dealer' => $request->kode_dealer,
@@ -164,7 +166,9 @@ class AdminMDController extends Controller
 
             DB::commit();
 
-            return redirect()->route('list.peserta')->with('success', 'Data berhasil disimpan.');
+            return redirect()->route('list.peserta')
+            ->with('success', 'Data berhasil disimpan.')
+            ->with('honda_id', $request->honda_id);
         } catch (\Exception $e) {
             DB::rollBack();
             if (isset($filesData)) {
@@ -182,6 +186,64 @@ class AdminMDController extends Controller
             ], 500);
         }
     }
+
+    public function checkHondaIdEmail(Request $request)
+    {
+        $peserta = Peserta::select('honda_id', 'email')
+            ->where('honda_id', $request->honda_id)
+            ->orWhere('email', $request->email)
+            ->first();
+
+        return response()->json([
+            'honda_id_exists' => $peserta && $peserta->honda_id === $request->honda_id,
+            'email_exists' => $peserta && $peserta->email === $request->email,
+        ]);
+    }
+
+    public function detailPeserta (){
+        return view('adminmd.adminmd-detailprofile');
+    }
+
+    public function editPeserta($id)
+    {
+        $peserta = Peserta::with([
+            'user',
+            'identitasAtasan',
+            'identitasDealer',
+            'filesPeserta',
+            'category',
+            'maindealer',
+            'riwayatKlhn'
+        ])->findOrFail($id);
+    
+        if (auth()->user()->role === 'AdminMD') {
+            $admin = Admin::where('user_id', auth()->id())->first();
+            if (!$admin || $admin->maindealer_id !== $peserta->maindealer_id) {
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses ke data ini.');
+            }
+            $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } else {
+            $mainDealers = MainDealer::all();
+        }
+    
+        $categories = Category::select('id', 'namacategory')->get();
+        $riwayat_klhn = $peserta->riwayatKlhn->map(function($item) {
+            return [
+                'tahun_keikutsertaan' => $item->tahun_keikutsertaan,
+                'vcategory' => $item->vcategory,
+                'status_kepesertaan' => $item->status_kepesertaan,
+            ];
+        })->toArray();
+        return view('adminmd.adminmd-editregistrasi', compact(
+            'peserta',
+            'categories',
+            'mainDealers',
+            'riwayat_klhn'
+        ));
+    }
+    
+    
+       
 
     public function showSubmission()
     {

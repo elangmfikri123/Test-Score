@@ -5,14 +5,13 @@
         <div class="pcoded-inner-content">
             <div class="main-body">
                 <div class="page-wrapper">
-
                     <div class="page-body">
                         <div class="row">
                             <div class="col-sm-12">
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card w-100">
                                     <div class="card-header text-center">
-                                        <h3><strong>Update Registrasi KLHN 2025</strong></h3>
+                                        <h3><strong>Update Peserta KLHN 2025</strong></h3>
                                     </div>
                                     <div class="card-block">
                                         <!-- Progress Bar -->
@@ -20,29 +19,22 @@
                                             <div class="progress-bar bg-success" role="progressbar" style="width: 16.66%"
                                                 aria-valuenow="16.66" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
-
                                         <!-- Step Indicator -->
                                         <div class="d-flex justify-content-between mb-4">
                                             <span class="text-primary font-weight-bold">Step 1 of 4</span>
                                         </div>
-                                        <form method="POST" enctype="multipart/form-data"
-                                            action="{{ route('registrasi.store') }}">
+                                        <form id="step4Form" action="{{ url('/updatepeserta/data/' . $peserta->id) }}" method="POST" enctype="multipart/form-data">
                                             @csrf
-                                            <!-- Form Step 1 -->
+                                            @method('PUT')
                                             <div id="registrationForm" class="step-form" data-step="1">
                                                 @include('partials.editstep1')
-
-                                                <!-- Tambahkan field lainnya sesuai kebutuhan -->
-
                                                 <div class="text-right mt-4">
                                                     <button type="button" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
 
-                                            <!-- Form Step 2 (akan ditampilkan melalui JavaScript) -->
                                             <div id="step2Form" class="step-form d-none" data-step="2">
                                                 @include('partials.editstep2')
-                                                <!-- Konten step 2 -->
                                                 <div class="text-right mt-4">
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
@@ -50,11 +42,8 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Form Step 3 (akan ditampilkan melalui JavaScript) -->
                                             <div id="step3Form" class="step-form d-none" data-step="3">
                                                 @include('partials.editstep3')
-
-                                                <!-- Konten step 3 -->
                                                 <div class="text-right mt-4">
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
@@ -63,8 +52,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Form Step 4 (akan ditampilkan melalui JavaScript) -->
-                                            <div id="step4Form" class="step-form d-none" data-step="4">
+                                            <div id="step4Container" class="step-form d-none" data-step="4">
                                                 @include('partials.editstep4')
 
                                                 <!-- Konten step 4 -->
@@ -86,8 +74,63 @@
     </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+function checkHondaIdEmail() {
+        const hondaId = $('input[name="honda_id"]').val();
+        const email = $('input[name="email"]').val();
+
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '{{ route("check.hondaid.email") }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    honda_id: hondaId,
+                    email: email
+                },
+                success: function (response) {
+                    if (response.honda_id_exists || response.email_exists) {
+                        if (response.honda_id_exists) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Honda ID sudah terdaftar',
+                                text: 'Silakan gunakan Honda ID lain.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+
+                        if (response.email_exists) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Email sudah terdaftar',
+                                text: 'Silakan gunakan email lain.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan',
+                        text: 'Gagal mengecek email dan Honda ID.',
+                        confirmButtonText: 'OK'
+                    });
+                    reject();
+                }
+            });
+        });
+    }
+        </script>
+        
     <script>
         $(document).ready(function() {
             $('.select2-init').select2({
@@ -105,25 +148,32 @@
                 @endforeach
             };
 
+            //Simpelkan
             function toggleProjectFields() {
                 const selectedId = $('#category_id').val();
                 const selectedName = categoryMapping[selectedId];
+                const projectFields = $('#project_fields');
+                const inputs = projectFields.find('input, select, textarea');
+
                 if (hiddenCategoryNames.includes(selectedName)) {
-                    $('#project_fields').show();
-                    $('#project_fields')
-                        .find('input, select, textarea')
-                        .each(function () {
-                        $(this).addClass('requiredform');
-                    });
+                    projectFields.show();
+                    inputs.addClass('requiredform');
+
+                            // Kondisi khusus: jika Team Leader, sembunyikan dan disable Tahun Pembuatan
+                        if (selectedName === 'Team Leader') {
+                            const tahunPembuatanInput = $('input[name="tahun_pembuatan_project"]');
+                            tahunPembuatanInput.closest('.form-group').hide();
+                            tahunPembuatanInput.removeClass('requiredform is-invalid');
+                            tahunPembuatanInput.siblings('.messages').text('');
+                            tahunPembuatanInput.val('');
+                        } else {
+                            $('input[name="tahun_pembuatan_project"]').closest('.form-group').show();
+                        }
                 } else {
-                    $('#project_fields').hide();
+                    projectFields.hide();
                     clearProjectFields();
-                    $('#project_fields')
-                        .find('input, select, textarea')
-                        .each(function () {
-                        $(this).removeClass('requiredform').removeClass('is-invalid');
-                        $(this).parent().find('.messages').text('');
-                    });
+                    inputs.removeClass('requiredform is-invalid');
+                    inputs.siblings('.messages').text('');
                 }
             }
 
@@ -145,6 +195,7 @@
                 $('input[name="judul_project"]').val('');
                 $('input[name="tahun_pembuatan_project"]').val('');
                 $('input[name="file_project"]').val('');
+                $('input[name="file_lampiranklhn"]').val('');
             }
             $('#category_id').on('change', function() {
                 toggleProjectFields();
@@ -161,72 +212,37 @@
 
         //Alert Maksimum File
         $(document).ready(function() {
-            function validateFileSize(fileInput, maxSizeInMB) {
-                const file = fileInput.files[0];
-                if (file) {
-                    const fileSizeInMB = file.size / (1024 * 1024);
-                    if (fileSizeInMB > maxSizeInMB) {
-                        return false;
+            function setupFileSizeValidator(selector, maxSizeMB, message) {
+                $(selector).on('change', function() {
+                    const file = this.files[0];
+                    if (file && file.size / (1024 * 1024) > maxSizeMB) {
+                        alert(message);
+                        this.value = '';
                     }
-                }
-                return true;
+                });
             }
-
-            $('input[name="file_project"]').on('change', function() {
-                const maxSize = 50;
-                const isValid = validateFileSize(this, maxSize);
-
-                if (!isValid) {
-                    alert('Ukuran File project terlalu besar. Maksimum 50 MB.');
-                    this.value = '';
-                }
-            });
-
-            $('input[name="foto_profil"]').on('change', function() {
-                const maxSize = 5;
-                const isValid = validateFileSize(this, maxSize);
-
-                if (!isValid) {
-                    alert('Ukuran File foto profil terlalu besar. Maksimum 5 MB.');
-                    this.value = '';
-                }
-            });
-
-            $('input[name="ktp"]').on('change', function() {
-                const maxSize = 5;
-                const isValid = validateFileSize(this, maxSize);
-
-                if (!isValid) {
-                    alert('Ukuran File KTP terlalu besar. Maksimum 5 MB.');
-                    this.value = '';
-                }
-            });
-
-            $('input[name="file_lampiranklhn"]').on('change', function() {
-                const maxSize = 50;
-                const isValid = validateFileSize(this, maxSize);
-
-                if (!isValid) {
-                    alert('Ukuran File lampiran peserta terlalu besar. Maksimum 50 MB.');
-                    this.value = '';
-                }
-            });
+            setupFileSizeValidator('input[name="file_project"]', 50,
+                'Ukuran file project terlalu besar. Maksimum 50 MB.');
+            setupFileSizeValidator('input[name="foto_profil"]', 5,
+                'Ukuran file foto profil terlalu besar. Maksimum 5 MB.');
+            setupFileSizeValidator('input[name="ktp"]', 5, 'Ukuran file KTP terlalu besar. Maksimum 5 MB.');
+            setupFileSizeValidator('input[name="file_lampiranklhn"]', 50,
+                'Ukuran file lampiran terlalu besar. Maksimum 50 MB.');
         });
     </script>
 
-
     <script>
-        let riwayatCount = 1;
-        const maxRiwayat = 3;
+let riwayatCount = document.querySelectorAll('#riwayat-klhn-container .riwayat-klhn').length / 3;
+const maxRiwayat = 3;
 
-        document.getElementById('add-riwayat-klhn').addEventListener('click', function() {
-            if (riwayatCount >= maxRiwayat) {
-                alert('Maksimal hanya 3 riwayat yang dapat ditambahkan.');
-                return;
-            }
+    document.getElementById('add-riwayat-klhn')?.addEventListener('click', function () {
+        if (riwayatCount >= maxRiwayat) {
+            alert('Maksimal hanya 3 riwayat yang dapat ditambahkan.');
+            return;
+        }
 
-            const riwayatContainer = document.getElementById('riwayat-klhn-container');
-            const newRiwayat = `
+        const riwayatContainer = document.getElementById('riwayat-klhn-container');
+        const newRiwayat = `
         <div class="form-group row riwayat-klhn">
             <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
             <div class="col-sm-9">
@@ -247,7 +263,7 @@
         <div class="form-group row riwayat-klhn mb-3">
             <label class="col-sm-3 col-form-label">Status Kepesertaan</label>
             <div class="col-sm-9">
-                <select class="form-control select2-init" name="riwayat_klhn[${riwayatCount}][status_kepesertaan]">
+                <select class="form-control" name="riwayat_klhn[${riwayatCount}][status_kepesertaan]">
                     <option value="" disabled selected>Pilih Status</option>
                     <option value="Peserta">Peserta</option>
                     <option value="Juara 1">Juara 1</option>
@@ -256,10 +272,16 @@
                 </select>
             </div>
         </div>
-    `;
-            riwayatContainer.insertAdjacentHTML('beforeend', newRiwayat);
-            riwayatCount++;
-        });
+        `;
+        riwayatContainer.insertAdjacentHTML('beforeend', newRiwayat);
+        riwayatCount++;
+
+        if (riwayatCount >= maxRiwayat) {
+            document.getElementById('add-riwayat-klhn').style.display = 'none';
+        }
+    });
+
+    
 
         document.addEventListener('DOMContentLoaded', function() {
             const forms = document.querySelectorAll('.step-form');
@@ -269,15 +291,21 @@
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function () {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
 
+                    if (currentStep === 1) {
+        const isValidHonda = await checkHondaIdEmail();
+        if (!isValidHonda) return; // Hentikan proses next
+    }
+
                     if (validateForm(currentForm)) {
                         forms.forEach(form => form.classList.add('d-none'));
 
-                        const nextForm = document.getElementById(`step${nextStep}Form`);
+                        const nextForm = document.querySelector(
+                            `.step-form[data-step="${nextStep}"]`);
                         if (nextForm) {
                             nextForm.classList.remove('d-none');
 
@@ -325,41 +353,59 @@
 
             function validateForm(form) {
                 let isValid = true;
-                const requiredInputs = form.querySelectorAll('.requiredform');
                 let firstInvalidInput = null;
 
-                requiredInputs.forEach(input => {
-                    const message = input.parentElement.querySelector('.messages');
-                    if (!input.value.trim()) {
-                        message.textContent = "Perlu diisi / Tidak boleh kosong.";
+                form.querySelectorAll('.requiredform').forEach(input => {
+                    const value = input.value.trim();
+                    const messageEl = input.parentElement.querySelector('.messages');
+
+                    if (!value) {
                         input.classList.add('is-invalid');
+                        if (messageEl) messageEl.textContent = 'Perlu diisi / Tidak boleh kosong.';
+                        if (!firstInvalidInput) firstInvalidInput = input;
                         isValid = false;
-                        if (!firstInvalidInput) {
-                            firstInvalidInput = input;
-                        }
                     } else {
-                        message.textContent = "";
                         input.classList.remove('is-invalid');
+                        if (messageEl) messageEl.textContent = '';
                     }
                 });
-
-                            if (firstInvalidInput) {
-                    firstInvalidInput.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                if (!isValid && firstInvalidInput) {
                     firstInvalidInput.focus();
+                    window.scrollTo({
+                        top: firstInvalidInput.getBoundingClientRect().top + window.scrollY - 100,
+                        behavior: 'smooth'
+                    });
                 }
                 return isValid;
             }
-            document.querySelector('#step4Form button[type="submit"]').addEventListener('click', function(event) {
-    const step4Form = document.getElementById('step4Form');
 
-    if (!validateForm(step4Form)) {
-        event.preventDefault(); // Ini penting
-        event.stopPropagation();
-    }
-});
+            document.getElementById('step4Form').addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredFields = this.querySelectorAll('.requiredform');
+
+                requiredFields.forEach(function(field) {
+                    const value = field.value.trim();
+                    const messageSpan = field.closest('.col-sm-9').querySelector('.messages');
+
+                    if (!value) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                        if (messageSpan) {
+                            messageSpan.textContent = 'Wajib diisi.';
+                        }
+                    } else {
+                        field.classList.remove('is-invalid');
+                        if (messageSpan) {
+                            messageSpan.textContent = '';
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault(); 
+                }
+            });
+
         });
     </script>
 

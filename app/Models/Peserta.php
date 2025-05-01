@@ -55,7 +55,7 @@ class Peserta extends Model
     }
 
     // One-to-Many dengan RiwayatKlhn (maksimal 3)
-    public function riwayatKlhns()
+    public function riwayatKlhn()
     {
         return $this->hasMany(RiwayatKlhn::class);
     }

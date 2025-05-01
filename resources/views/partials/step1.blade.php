@@ -37,7 +37,8 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID" name="honda_id">
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Honda ID" name="honda_id">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
