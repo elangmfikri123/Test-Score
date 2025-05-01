@@ -18,7 +18,7 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Main Dealer *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="maindealer_id" >
+                                            <select class="form-control requiredform select2-init" name="maindealer_id">
                                                 <option value="" disabled {{ old('maindealer_id', $peserta->maindealer_id ?? '') == '' ? 'selected' : '' }}>Pilih Main Dealer</option>
                                                 @foreach($mainDealers as $row)
                                                     <option value="{{ $row->id }}"
@@ -32,51 +32,58 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="jabatan">
+                                            <select class="form-control requiredform select2-init" name="jabatan">
                                                 <option value="" disabled {{ old('jabatan', $peserta->jabatan) ? '' : 'selected' }}>Pilih Jabatan</option>
                                                 <option value="Manager" @selected(old('jabatan', $peserta->jabatan) === 'Manager')>Manager</option>
                                                 <option value="Supervisor" @selected(old('jabatan', $peserta->jabatan) === 'Supervisor')>Supervisor</option>
                                                 <option value="Staff" @selected(old('jabatan', $peserta->jabatan) === 'Staff')>Staff</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Honda ID"  value="{{ old('honda_id', $peserta->honda_id) }}" readonly>
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Honda ID" name="honda_id"  value="{{ old('honda_id', $peserta->honda_id) }}" readonly>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Nama Lengkap *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Nama" name="nama" value="{{ old('honda_id', $peserta->nama) }}">
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Nama" name="nama" value="{{ old('honda_id', $peserta->nama) }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mendapat Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_hondaid"
+                                            <input type="date" class="form-control requiredform" name="tanggal_hondaid"
                                                 value="{{ old('tanggal_hondaid', optional($peserta)->tanggal_hondaid ? \Carbon\Carbon::parse($peserta->tanggal_hondaid)->format('Y-m-d') : '') }}">
+                                                <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
+                                    <input type="hidden" name="peserta_id" value="{{ $peserta->id }}">
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mulai Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_awalbekerja"
+                                            <input type="date" class="form-control requiredform" name="tanggal_awalbekerja"
                                             value="{{ old('tanggal_hondaid', optional($peserta)->tanggal_awalbekerja ? \Carbon\Carbon::parse($peserta->tanggal_awalbekerja)->format('Y-m-d') : '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Lama Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer"
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer"
                                             value="{{ old('lamabekerja_dealer', $peserta->lamabekerja_dealer ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jenis Kelamin *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="jenis_kelamin">
+                                            <select class="form-control requiredform" name="jenis_kelamin">
                                                 <option value="" disabled {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == '' ? 'selected' : '' }}>Pilih Jenis Kelamin</option>
                                                 <option value="Laki-Laki" {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == 'Laki-Laki' ? 'selected' : '' }}>Laki-laki</option>
                                                 <option value="Perempuan" {{ old('jenis_kelamin', $peserta->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -86,21 +93,23 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tempat Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir"
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir"
                                             value="{{ old('tempat_lahir', $peserta->tempat_lahir ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_lahir"
+                                            <input type="date" class="form-control requiredform" name="tanggal_lahir"
                                             value="{{ old('tanggal_lahir', $peserta->tanggal_lahir ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Agama *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="agama">
+                                            <select class="form-control requiredform" name="agama">
                                                 <option value="" disabled {{ old('agama', $peserta->agama ?? '') == '' ? 'selected' : '' }}>Pilih Agama</option>
                                                 @php
                                                     $agamaList = ['Islam', 'Kristen Protestan', 'Kristen Katolik', 'Hindu', 'Buddha', 'Konghucu'];
@@ -109,26 +118,29 @@
                                                     <option value="{{ $agama }}" {{ old('agama', $peserta->agama ?? '') == $agama ? 'selected' : '' }}>{{ $agama }}</option>
                                                 @endforeach
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone/WhatsApp *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp"
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp"
                                             value="{{ old('no_hp', $peserta->no_hp ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone (AstraPay) *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay"
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay"
                                             value="{{ old('no_hp_astrapay', $peserta->no_hp_astrapay ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Pendidikan Terakhir *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="pendidikan_terakhir">
+                                            <select class="form-control requiredform" name="pendidikan_terakhir">
                                                 <option value="" disabled {{ old('pendidikan_terakhir', $peserta->pendidikan_terakhir ?? '') == '' ? 'selected' : '' }}>Pilih Pendidikan</option>
                                                 @php
                                                     $pendidikanList = ['SMA/SMK Sederajat', 'Diploma', 'S1', 'S2', 'S3'];
@@ -139,19 +151,21 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Email *</label>
                                         <div class="col-sm-9">
-                                            <input type="email" class="form-control" placeholder="Masukkan email" 
+                                            <input type="email" class="form-control requiredform" placeholder="Masukkan email" name="email"
                                             value="{{ old('email', $peserta->email ?? '') }}">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Ukuran Baju Peserta *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="ukuran_baju">
+                                            <select class="form-control requiredform" name="ukuran_baju">
                                                 <option value="" disabled {{ old('ukuran_baju', $peserta->ukuran_baju ?? '') == '' ? 'selected' : '' }}>Pilih Ukuran Baju</option>
                                                 @php
                                                     $ukuranList = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
@@ -162,6 +176,7 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>                                    
                                     <div class="form-group row">

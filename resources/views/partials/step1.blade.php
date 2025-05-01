@@ -15,23 +15,25 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Main Dealer *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="maindealer_id" >
+                                            <select class="form-control requiredform select2-init" name="maindealer_id" >
                                                 <option value="" disabled selected>Pilih Main Dealer</option>
                                                 @foreach($mainDealers as $row)
                                                     <option value="{{ $row->id }}">{{ $row->kodemd }} - {{ $row->nama_md }}</option>
                                                 @endforeach
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>  
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control select2-init" name="jabatan" >
+                                            <select class="form-control requiredform select2-init" name="jabatan" >
                                                 <option value="" disabled selected>Pilih Jabatan</option>
                                                 <option value="Manager">Manager</option>
                                                 <option value="Supervisor">Supervisor</option>
                                                 <option value="Staff">Staff</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -44,53 +46,60 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Nama Lengkap *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Nama" name="nama">
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Nama" name="nama">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mendapat Honda ID *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control " name="tanggal_hondaid">
+                                            <input type="date" class="form-control requiredform" name="tanggal_hondaid">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Mulai Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_awalbekerja">
+                                            <input type="date" class="form-control requiredform" name="tanggal_awalbekerja">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Lama Bekerja di Dealer Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer">
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan Dalam Bulan" name="lamabekerja_dealer">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jenis Kelamin *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="jenis_kelamin" >
+                                            <select class="form-control requiredform" name="jenis_kelamin" >
                                                 <option value="" disabled selected>Pilih Jenis Kelamin</option>
                                                 <option value="Laki-Laki">Laki-laki</option>
                                                 <option value="Perempuan">Perempuan</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tempat Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir">
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Kab/Kota Lahir" name="tempat_lahir">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Tanggal Lahir *</label>
                                         <div class="col-sm-9">
-                                            <input type="date" class="form-control" name="tanggal_lahir"> 
+                                            <input type="date" class="form-control requiredform" name="tanggal_lahir"> 
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Agama *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="agama">
+                                            <select class="form-control requiredform" name="agama">
                                                 <option value="" disabled selected>Pilih Agama</option>
                                                 <option value="Islam">Islam</option>
                                                 <option value="Kristen Protestan">Kristen Protestan</option>
@@ -99,24 +108,27 @@
                                                 <option value="Buddha">Buddha</option>
                                                 <option value="Konghucu">Konghucu</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone/WhatsApp *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp">
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan No. Handphone/WhatsApp" name="no_hp">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">No. Handphone (AstraPay) *</label>
                                         <div class="col-sm-9">
-                                            <input type="number" class="form-control" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay">
+                                            <input type="number" class="form-control requiredform" placeholder="Masukkan No. Handphone (AstraPay)" name="no_hp_astrapay">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Pendidikan Terakhir *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="pendidikan_terakhir">
+                                            <select class="form-control requiredform" name="pendidikan_terakhir">
                                                 <option value="" disabled selected>Pilih Pendidikan</option>
                                                 <option value="SMA/SMK Sederajat">SMA/SMK Sederajat</option>
                                                 <option value="Diploma">Diploma</option>
@@ -124,18 +136,20 @@
                                                 <option value="S2">S2</option>
                                                 <option value="S3">S3</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Email *</label>
                                         <div class="col-sm-9">
-                                            <input type="email" class="form-control" placeholder="Masukkan email" name="email">
+                                            <input type="email" class="form-control requiredform" placeholder="Masukkan email" name="email">
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Ukuran Baju Peserta *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control" name="ukuran_baju">
+                                            <select class="form-control requiredform" name="ukuran_baju">
                                                 <option value="" disabled selected>Pilih Ukuran Baju</option>
                                                 <option value="S">S</option>
                                                 <option value="M">M</option>
@@ -146,6 +160,7 @@
                                                 <option value="4XL">4XL</option>
                                                 <option value="5XL">5XL</option>
                                             </select>
+                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
                                     <div class="form-group row">

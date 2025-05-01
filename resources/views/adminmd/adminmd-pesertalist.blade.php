@@ -73,13 +73,17 @@
 
 @if(session('success') && session('honda_id'))
 <script>
+    const hondaId = '{{ session('honda_id') }}';
+    const actionType = '{{ session('action_type') }}';
+
     Swal.fire({
         icon: 'success',
         title: 'Berhasil',
-        html: 'Data dengan Honda ID <strong>{{ session("honda_id") }}</strong> berhasil disimpan.',
+        html: actionType === 'create' 
+            ? `Data dengan Honda ID <strong>${hondaId}</strong> berhasil <strong>disimpan</strong>.` 
+            : `Data dengan Honda ID <strong>${hondaId}</strong> berhasil <strong>diperbarui</strong>.`,
         confirmButtonText: 'OK'
     });
 </script>
 @endif
-
 @endsection

@@ -168,7 +168,8 @@ class AdminMDController extends Controller
 
             return redirect()->route('list.peserta')
             ->with('success', 'Data berhasil disimpan.')
-            ->with('honda_id', $request->honda_id);
+            ->with('honda_id', $request->honda_id)
+            ->with('action_type', 'create');        
         } catch (\Exception $e) {
             DB::rollBack();
             if (isset($filesData)) {
@@ -189,18 +190,45 @@ class AdminMDController extends Controller
 
     public function checkHondaIdEmail(Request $request)
     {
-        $peserta = Peserta::select('honda_id', 'email')
-            ->where('honda_id', $request->honda_id)
-            ->orWhere('email', $request->email)
-            ->first();
+        $query = Peserta::query();
+
+        if ($request->honda_id) {
+            $query->orWhere(function ($q) use ($request) {
+                $q->where('honda_id', $request->honda_id);
+            });
+        }
+
+        if ($request->email) {
+            $query->orWhere(function ($q) use ($request) {
+                $q->where('email', $request->email);
+            });
+        }
+
+        $peserta = $query->get();
+
+        $hondaIdExists = false;
+        $emailExists = false;
+
+        foreach ($peserta as $item) {
+            if ($item->id != $request->peserta_id) {
+                if ($item->honda_id == $request->honda_id) {
+                    $hondaIdExists = true;
+                }
+                if ($item->email == $request->email) {
+                    $emailExists = true;
+                }
+            }
+        }
 
         return response()->json([
-            'honda_id_exists' => $peserta && $peserta->honda_id === $request->honda_id,
-            'email_exists' => $peserta && $peserta->email === $request->email,
+            'honda_id_exists' => $hondaIdExists,
+            'email_exists' => $emailExists,
         ]);
     }
 
-    public function detailPeserta (){
+
+    public function detailPeserta()
+    {
         return view('adminmd.adminmd-detailprofile');
     }
 
@@ -215,7 +243,7 @@ class AdminMDController extends Controller
             'maindealer',
             'riwayatKlhn'
         ])->findOrFail($id);
-    
+
         if (auth()->user()->role === 'AdminMD') {
             $admin = Admin::where('user_id', auth()->id())->first();
             if (!$admin || $admin->maindealer_id !== $peserta->maindealer_id) {
@@ -225,9 +253,9 @@ class AdminMDController extends Controller
         } else {
             $mainDealers = MainDealer::all();
         }
-    
+
         $categories = Category::select('id', 'namacategory')->get();
-        $riwayat_klhn = $peserta->riwayatKlhn->map(function($item) {
+        $riwayat_klhn = $peserta->riwayatKlhn->map(function ($item) {
             return [
                 'tahun_keikutsertaan' => $item->tahun_keikutsertaan,
                 'vcategory' => $item->vcategory,
@@ -241,9 +269,136 @@ class AdminMDController extends Controller
             'riwayat_klhn'
         ));
     }
-    
-    
-       
+
+
+    public function updatePeserta(Request $request, $id)
+    {
+        $peserta = Peserta::findOrFail($id);
+
+        $request->validate([
+            'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
+            'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'ktp' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'honda_id' => 'required|unique:peserta,honda_id,' . $peserta->id,
+            'email' => 'required|email|unique:peserta,email,' . $peserta->id,
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $peserta->update([
+                'category_id' => $request->category_id ?? null,
+                'maindealer_id' => $request->maindealer_id,
+                'jabatan' => $request->jabatan,
+                'honda_id' => $request->honda_id,
+                'nama' => $request->nama,
+                'tanggal_hondaid' => $request->tanggal_hondaid,
+                'tanggal_awalbekerja' => $request->tanggal_awalbekerja,
+                'lamabekerja_honda' => $request->lamabekerja_honda,
+                'lamabekerja_dealer' => $request->lamabekerja_dealer,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'agama' => $request->agama,
+                'no_hp' => $request->no_hp,
+                'no_hp_astrapay' => $request->no_hp_astrapay ?? null,
+                'pendidikan_terakhir' => $request->pendidikan_terakhir,
+                'email' => $request->email,
+                'ukuran_baju' => $request->ukuran_baju,
+                'pantangan_makanan' => $request->pantangan_makanan ?? null,
+                'riwayat_penyakit' => $request->riwayat_penyakit ?? null,
+                'link_facebook' => $request->link_facebook ?? null,
+                'link_instagram' => $request->link_instagram ?? null,
+                'link_tiktok' => $request->link_tiktok ?? null,
+            ]);
+
+            if ($peserta->user) {
+                $peserta->user->update([
+                    'username' => $request->honda_id,
+                    'role' => 'Peserta',
+                ]);
+            }
+            IdentitasAtasan::updateOrCreate(
+                ['peserta_id' => $peserta->id],
+                [
+                    'nama_lengkap_atasan' => $request->nama_lengkap_atasan,
+                    'jabatan' => $request->jabatan_atasan,
+                    'no_hp' => $request->no_hp_atasan,
+                    'no_hpalternatif' => $request->no_hpalternatif_atasan ?? null,
+                    'email' => $request->email_atasan ?? null,
+                ]
+            );
+
+            IdentitasDealer::updateOrCreate(
+                ['peserta_id' => $peserta->id],
+                [
+                    'kode_dealer' => $request->kode_dealer,
+                    'nama_dealer' => $request->nama_dealer,
+                    'link_google_business' => $request->link_google_business ?? null,
+                    'kota' => $request->kota,
+                    'provinsi' => $request->provinsi,
+                    'tahun_menang_klhn' => $request->tahun_menang_klhn ?? null,
+                    'keikutsertaan_klhn_sebelumnya' => $request->keikutsertaan_klhn_sebelumnya ?? null,
+                    'no_telp_dealer' => $request->no_telp_dealer,
+                    'link_facebook' => $request->link_facebook_dealer ?? null,
+                    'link_instagram' => $request->link_instagram_dealer ?? null,
+                    'link_tiktok' => $request->link_tiktok_dealer ?? null,
+                ]
+            );
+
+            // Update riwayat KLHN: hapus dulu, lalu insert ulang
+            RiwayatKlhn::where('peserta_id', $peserta->id)->delete();
+            if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
+                foreach ($request->riwayat_klhn as $riwayat) {
+                    RiwayatKlhn::create([
+                        'peserta_id' => $peserta->id,
+                        'vcategory' => $riwayat['vcategory'] ?? null,
+                        'tahun_keikutsertaan' => $riwayat['tahun_keikutsertaan'] ?? null,
+                        'status_kepesertaan' => $riwayat['status_kepesertaan'] ?? null,
+                    ]);
+                }
+            }
+
+            $files = FilesPeserta::firstOrNew(['peserta_id' => $peserta->id]);
+            $files->judul_project = $request->judul_project ?? null;
+            $files->tahun_pembuatan_project = $request->tahun_pembuatan_project ?? null;
+
+            if ($request->hasFile('file_lampiranklhn')) {
+                Storage::disk('public')->delete($files->file_lampiranklhn);
+                $files->file_lampiranklhn = $request->file('file_lampiranklhn')->store('files/lampiran_klhn', 'public');
+            }
+
+            if ($request->hasFile('file_project')) {
+                Storage::disk('public')->delete($files->file_project);
+                $files->file_project = $request->file('file_project')->store('files/project', 'public');
+            }
+
+            if ($request->hasFile('foto_profil')) {
+                Storage::disk('public')->delete($files->foto_profil);
+                $files->foto_profil = $request->file('foto_profil')->store('files/foto_profil', 'public');
+            }
+
+            if ($request->hasFile('ktp')) {
+                Storage::disk('public')->delete($files->ktp);
+                $files->ktp = $request->file('ktp')->store('files/ktp', 'public');
+            }
+
+            $files->save();
+
+            DB::commit();
+
+            return redirect()->route('list.peserta')
+            ->with('success', 'Data peserta berhasil diperbarui.')
+            ->with('honda_id', $request->honda_id)
+            ->with('action_type', 'update');
+        
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui data peserta: ' . $e->getMessage());
+        }
+    }
+
 
     public function showSubmission()
     {

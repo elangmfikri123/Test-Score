@@ -2,39 +2,45 @@
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Kode Dealer (AHM) *</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Kode Dealer" name="kode_dealer">
+        <input type="text" class="form-control requiredform" placeholder="Masukkan Kode Dealer" name="kode_dealer">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Nama Resmi Dealer/AHASS *</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Nama Dealer" name="nama_dealer">
+        <input type="text" class="form-control requiredform" placeholder="Masukkan Nama Dealer" name="nama_dealer">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Link Google Business Profil Dealer *</label>
     <div class="col-sm-9">
-        <input type="url" class="form-control" placeholder="https://" name="link_google_business">
+        <input type="url" class="form-control requiredform" placeholder="https://" name="link_google_business">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Kota/Kabupatean Dealer *</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Kota/Kabupaten" name="kota">
+        <input type="text" class="form-control requiredform" placeholder="Masukkan Kota/Kabupaten" name="kota">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Provinsi Dealer *</label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" placeholder="Masukkan Provinsi Dealer" name="provinsi">
+        <input type="text" class="form-control requiredform" placeholder="Masukkan Provinsi Dealer" name="provinsi">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">No. Telp Dealer *</label>
     <div class="col-sm-9">
-        <input type="number" class="form-control" placeholder="Masukkan No Telp Dealer" name="no_telp_dealer">
+        <input type="number" class="form-control requiredform" placeholder="Masukkan No Telp Dealer" name="no_telp_dealer">
+        <span class="messages text-danger" style="font-size: 0.7rem;"></span>
     </div>
 </div>
 <div class="form-group row">
@@ -54,18 +60,18 @@
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Link URL Profile Facebook</label>
     <div class="col-sm-9">
-        <input type="url" class="form-control" placeholder="https://" name="link_facebook">
+        <input type="url" class="form-control" placeholder="https://" name="link_facebook_dealer">
     </div>
 </div>
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Link URL Profile Instagram</label>
     <div class="col-sm-9">
-        <input type="url" class="form-control" placeholder="https://" name="link_instagram">
+        <input type="url" class="form-control" placeholder="https://" name="link_instagram_dealer">
     </div>
 </div>
 <div class="form-group row">
     <label class="col-sm-3 col-form-label">Link URL Profile Tiktok</label>
     <div class="col-sm-9">
-        <input type="url" class="form-control" placeholder="https://" name="link_tiktok">
+        <input type="url" class="form-control" placeholder="https://" name="link_tiktok_dealer">
     </div>
 </div>

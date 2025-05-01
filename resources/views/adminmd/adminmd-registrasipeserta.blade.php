@@ -384,7 +384,7 @@ function checkHondaIdEmail() {
                         isValid = false;
                         field.classList.add('is-invalid');
                         if (messageSpan) {
-                            messageSpan.textContent = 'Wajib diisi.';
+                            messageSpan.textContent = 'Perlu diisi / Tidak boleh kosong.';
                         }
                     } else {
                         field.classList.remove('is-invalid');

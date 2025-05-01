@@ -23,7 +23,8 @@
                                         <div class="d-flex justify-content-between mb-4">
                                             <span class="text-primary font-weight-bold">Step 1 of 4</span>
                                         </div>
-                                        <form id="step4Form" action="{{ url('/updatepeserta/data/' . $peserta->id) }}" method="POST" enctype="multipart/form-data">
+                                        <form id="step4Form" action="{{ url('/updatepeserta/data/' . $peserta->id) }}"
+                                            method="POST" enctype="multipart/form-data">
                                             @csrf
                                             @method('PUT')
                                             <div id="registrationForm" class="step-form" data-step="1">
@@ -80,57 +81,59 @@
 
     <script>
 function checkHondaIdEmail() {
-        const hondaId = $('input[name="honda_id"]').val();
-        const email = $('input[name="email"]').val();
+    const hondaId = $('input[name="honda_id"]').val();
+    const email = $('input[name="email"]').val();
+    const pesertaId = $('input[name="peserta_id"]').val() || null; // Tambahkan field ini di form edit saja
 
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: '{{ route("check.hondaid.email") }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    honda_id: hondaId,
-                    email: email
-                },
-                success: function (response) {
-                    if (response.honda_id_exists || response.email_exists) {
-                        if (response.honda_id_exists) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Honda ID sudah terdaftar',
-                                text: 'Silakan gunakan Honda ID lain.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-
-                        if (response.email_exists) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Email sudah terdaftar',
-                                text: 'Silakan gunakan email lain.',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-
-                        resolve(false);
-                    } else {
-                        resolve(true);
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '{{ route('check.hondaid.email') }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                honda_id: hondaId,
+                email: email,
+                peserta_id: pesertaId
+            },
+            success: function(response) {
+                if (response.honda_id_exists || response.email_exists) {
+                    if (response.honda_id_exists) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Honda ID sudah terdaftar',
+                            text: 'Silakan gunakan Honda ID lain.',
+                            confirmButtonText: 'OK'
+                        });
                     }
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Terjadi kesalahan',
-                        text: 'Gagal mengecek email dan Honda ID.',
-                        confirmButtonText: 'OK'
-                    });
-                    reject();
+
+                    if (response.email_exists) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Email sudah terdaftar',
+                            text: 'Silakan gunakan email lain.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+
+                    resolve(false);
+                } else {
+                    resolve(true);
                 }
-            });
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan',
+                    text: 'Gagal mengecek email dan Honda ID.',
+                    confirmButtonText: 'OK'
+                });
+                reject();
+            }
         });
-    }
-        </script>
-        
+    });
+}
+    </script>
+
     <script>
         $(document).ready(function() {
             $('.select2-init').select2({
@@ -153,22 +156,24 @@ function checkHondaIdEmail() {
                 const selectedId = $('#category_id').val();
                 const selectedName = categoryMapping[selectedId];
                 const projectFields = $('#project_fields');
-                const inputs = projectFields.find('input, select, textarea');
+                const inputs = projectFields.find('input:not([type="file"]), select, textarea');
 
                 if (hiddenCategoryNames.includes(selectedName)) {
                     projectFields.show();
-                    inputs.addClass('requiredform');
+                    inputs.each(function() {
+                        $(this).addClass('requiredform');
+                    });
 
-                            // Kondisi khusus: jika Team Leader, sembunyikan dan disable Tahun Pembuatan
-                        if (selectedName === 'Team Leader') {
-                            const tahunPembuatanInput = $('input[name="tahun_pembuatan_project"]');
-                            tahunPembuatanInput.closest('.form-group').hide();
-                            tahunPembuatanInput.removeClass('requiredform is-invalid');
-                            tahunPembuatanInput.siblings('.messages').text('');
-                            tahunPembuatanInput.val('');
-                        } else {
-                            $('input[name="tahun_pembuatan_project"]').closest('.form-group').show();
-                        }
+                    // Kondisi khusus: jika Team Leader, sembunyikan dan disable Tahun Pembuatan
+                    if (selectedName === 'Team Leader') {
+                        const tahunPembuatanInput = $('input[name="tahun_pembuatan_project"]');
+                        tahunPembuatanInput.closest('.form-group').hide();
+                        tahunPembuatanInput.removeClass('requiredform is-invalid');
+                        tahunPembuatanInput.siblings('.messages').text('');
+                        tahunPembuatanInput.val('');
+                    } else {
+                        $('input[name="tahun_pembuatan_project"]').closest('.form-group').show();
+                    }
                 } else {
                     projectFields.hide();
                     clearProjectFields();
@@ -232,17 +237,17 @@ function checkHondaIdEmail() {
     </script>
 
     <script>
-let riwayatCount = document.querySelectorAll('#riwayat-klhn-container .riwayat-klhn').length / 3;
-const maxRiwayat = 3;
+        let riwayatCount = document.querySelectorAll('#riwayat-klhn-container .riwayat-klhn').length / 3;
+        const maxRiwayat = 3;
 
-    document.getElementById('add-riwayat-klhn')?.addEventListener('click', function () {
-        if (riwayatCount >= maxRiwayat) {
-            alert('Maksimal hanya 3 riwayat yang dapat ditambahkan.');
-            return;
-        }
+        document.getElementById('add-riwayat-klhn')?.addEventListener('click', function() {
+            if (riwayatCount >= maxRiwayat) {
+                alert('Maksimal hanya 3 riwayat yang dapat ditambahkan.');
+                return;
+            }
 
-        const riwayatContainer = document.getElementById('riwayat-klhn-container');
-        const newRiwayat = `
+            const riwayatContainer = document.getElementById('riwayat-klhn-container');
+            const newRiwayat = `
         <div class="form-group row riwayat-klhn">
             <label class="col-sm-3 col-form-label">Tahun Keikutsertaan KLHN Periode Sebelumnya</label>
             <div class="col-sm-9">
@@ -273,15 +278,15 @@ const maxRiwayat = 3;
             </div>
         </div>
         `;
-        riwayatContainer.insertAdjacentHTML('beforeend', newRiwayat);
-        riwayatCount++;
+            riwayatContainer.insertAdjacentHTML('beforeend', newRiwayat);
+            riwayatCount++;
 
-        if (riwayatCount >= maxRiwayat) {
-            document.getElementById('add-riwayat-klhn').style.display = 'none';
-        }
-    });
+            if (riwayatCount >= maxRiwayat) {
+                document.getElementById('add-riwayat-klhn').style.display = 'none';
+            }
+        });
 
-    
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const forms = document.querySelectorAll('.step-form');
@@ -291,15 +296,15 @@ const maxRiwayat = 3;
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', async function () {
+                button.addEventListener('click', async function() {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
 
                     if (currentStep === 1) {
-        const isValidHonda = await checkHondaIdEmail();
-        if (!isValidHonda) return; // Hentikan proses next
-    }
+                        const isValidHonda = await checkHondaIdEmail();
+                        if (!isValidHonda) return; // Hentikan proses next
+                    }
 
                     if (validateForm(currentForm)) {
                         forms.forEach(form => form.classList.add('d-none'));
@@ -391,7 +396,7 @@ const maxRiwayat = 3;
                         isValid = false;
                         field.classList.add('is-invalid');
                         if (messageSpan) {
-                            messageSpan.textContent = 'Wajib diisi.';
+                            messageSpan.textContent = 'Perlu diisi / Tidak boleh kosong.';
                         }
                     } else {
                         field.classList.remove('is-invalid');
@@ -402,7 +407,7 @@ const maxRiwayat = 3;
                 });
 
                 if (!isValid) {
-                    e.preventDefault(); 
+                    e.preventDefault();
                 }
             });
 
