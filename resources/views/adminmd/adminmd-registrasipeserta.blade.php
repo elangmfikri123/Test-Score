@@ -221,13 +221,13 @@ function checkHondaIdEmail() {
                     }
                 });
             }
-            setupFileSizeValidator('input[name="file_project"]', 50,
-                'Ukuran file project terlalu besar. Maksimum 50 MB.');
+            setupFileSizeValidator('input[name="file_project"]', 20,
+                'Ukuran file project terlalu besar. Maksimum 20 MB.');
             setupFileSizeValidator('input[name="foto_profil"]', 5,
                 'Ukuran file foto profil terlalu besar. Maksimum 5 MB.');
             setupFileSizeValidator('input[name="ktp"]', 5, 'Ukuran file KTP terlalu besar. Maksimum 5 MB.');
-            setupFileSizeValidator('input[name="file_lampiranklhn"]', 50,
-                'Ukuran file lampiran terlalu besar. Maksimum 50 MB.');
+            setupFileSizeValidator('input[name="file_lampiranklhn"]', 20,
+                'Ukuran file lampiran terlalu besar. Maksimum 20 MB.');
         });
     </script>
 
