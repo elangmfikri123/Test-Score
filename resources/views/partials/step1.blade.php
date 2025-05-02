@@ -27,11 +27,15 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control requiredform select2-init" name="jabatan" >
+                                            <select class="form-control requiredform select2-init" name="jabatan">
                                                 <option value="" disabled selected>Pilih Jabatan</option>
-                                                <option value="Manager">Manager</option>
-                                                <option value="Supervisor">Supervisor</option>
-                                                <option value="Staff">Staff</option>
+                                                @php
+                                                    $jabatanList = ['Delivery Man', 'Salesman', 'Admin STNK/BPKB', 'PIC Parts', 'Kasir', 'Kepala Bengkel', 'Koordinator Salesman',
+                                                'Sales Counter', 'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM', 'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant'];
+                                                @endphp
+                                                @foreach($jabatanList as $jabatan)
+                                                    <option value="{{ $jabatan }}">{{ $jabatan }}</option>
+                                                @endforeach
                                             </select>
                                             <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>

@@ -33,14 +33,24 @@
                                         <label class="col-sm-3 col-form-label">Jabatan Saat Ini *</label>
                                         <div class="col-sm-9">
                                             <select class="form-control requiredform select2-init" name="jabatan">
-                                                <option value="" disabled {{ old('jabatan', $peserta->jabatan) ? '' : 'selected' }}>Pilih Jabatan</option>
-                                                <option value="Manager" @selected(old('jabatan', $peserta->jabatan) === 'Manager')>Manager</option>
-                                                <option value="Supervisor" @selected(old('jabatan', $peserta->jabatan) === 'Supervisor')>Supervisor</option>
-                                                <option value="Staff" @selected(old('jabatan', $peserta->jabatan) === 'Staff')>Staff</option>
+                                                <option value="" disabled {{ old('jabatan', $peserta->jabatan ?? '') == '' ? 'selected' : '' }}>Pilih Jabatan</option>
+                                                @php
+                                                    $jabatanList = [
+                                                        'Delivery Man', 'Salesman', 'Admin STNK/BPKB', 'PIC Parts', 'Kasir',
+                                                        'Kepala Bengkel', 'Koordinator Salesman', 'Sales Counter',
+                                                        'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM',
+                                                        'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant'
+                                                    ];
+                                                @endphp
+                                                @foreach($jabatanList as $jabatan)
+                                                    <option value="{{ $jabatan }}" {{ old('jabatan', $peserta->jabatan ?? '') == $jabatan ? 'selected' : '' }}>
+                                                        {{ $jabatan }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                             <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
-                                    </div>                                    
+                                    </div>                                                                        
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Honda ID *</label>
                                         <div class="col-sm-9">
