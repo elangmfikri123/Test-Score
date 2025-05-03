@@ -55,6 +55,9 @@
                             <div class="card-block">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        <div class="text-center mb-3">
+                                            <img class="img-fluid" src="{{ asset('files/assets/images/Logo-100.png') }}" alt="Theme-Logo" style="max-height: 120px; width: auto;">
+                                        </div>
                                         <h3 class="text-center txt-primary">Selamat Datang !</h3>
                                         <p class="text-muted text-center p-b-5">Silakan masukan username, password
                                             untuk masuk ke halaman.</p>

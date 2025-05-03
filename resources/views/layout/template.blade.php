@@ -59,17 +59,23 @@
             <nav class="navbar header-navbar pcoded-header">
                 <div class="navbar-wrapper">
 
-                    <div class="navbar-logo">
+                    {{-- <div class="navbar-logo">
                         <a class="mobile-menu" id="mobile-collapse" href="#!">
                             <i class="feather icon-menu"></i>
                         </a>
-                        <!-- <a href="index-1.htm">
-                            <img class="img-fluid" src="" alt="Theme-Logo" width = "75%"> Untuk Logo KLHN
-                        </a> -->
-
-                        <a class="mobile-options">
-                            <i class="feather icon-more-horizontal"></i>
+                        <a href="index-1.htm">
+                            <img class="img-fluid" src="{{ asset('files\assets\images\Logo-100.png') }}" alt="Theme-Logo" width = "75%">
                         </a>
+                    </div> --}}
+
+                    <div class="navbar-logo d-flex align-items-center">
+                        <a class="mobile-menu me-auto" id="mobile-collapse" href="#!">
+                            <i class="feather icon-menu"></i>
+                        </a>
+                        <a href="index-1.htm" class="mx-auto">
+                            <img class="img-fluid" src="{{ asset('files/assets/images/Logo-100.png') }}" alt="Theme-Logo" style="max-height: 40px; width: auto;">
+                        </a>
+                        <div class="ms-auto" style="width: 40px;"></div> <!-- Balance untuk menu icon -->
                     </div>
 
                     <div class="navbar-container container-fluid">
