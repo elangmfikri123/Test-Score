@@ -35,8 +35,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/check-session', [AuthController::class, 'checkSession'])->name('check.session');
 Route::get('/registrasi', [RegistrasiController::class, 'registrasi']);
 
-Route::get('/detailpeserta/data', [AdminController::class, 'detailPeserta']);
-
 //ADMINISTRATOR
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
