@@ -289,12 +289,11 @@ function checkHondaIdEmail() {
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
 
-                    if (currentStep === 1) {
-        const isValidHonda = await checkHondaIdEmail();
-        if (!isValidHonda) return; // Hentikan proses next
-    }
-
                     if (validateForm(currentForm)) {
+                        if (currentStep === 1) {
+                            const isValidHonda = await checkHondaIdEmail();
+                            if (!isValidHonda) return;
+                        }
                         forms.forEach(form => form.classList.add('d-none'));
 
                         const nextForm = document.querySelector(
