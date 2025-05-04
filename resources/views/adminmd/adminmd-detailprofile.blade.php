@@ -303,7 +303,6 @@
                                                                             </table>
                                                                         </div>
                                                                     </div>
-                                                                    <!-- end of table col-lg-6 -->
                                                                     <div class="col-xl-6">
                                                                         <div class="table-responsive">
                                                                             <table class="table">
@@ -360,32 +359,10 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <th scope="row">File Project</th>
-                                                                                    {{-- <td>
-                                                                                        @if (!empty($peserta->filesPeserta->file_project))
-                                                                                            <div class="d-flex align-items-center gap-2">
-                                                                                                <a href="{{ asset('storage/' . $peserta->filesPeserta->file_project) }}" 
-                                                                                                   target="_blank"
-                                                                                                   class="btn btn-sm btn-primary">
-                                                                                                   <i class="ion-ios-eye"></i> Lihat File
-                                                                                                </a>
-                                                                                                <div class="mx-1"></div>
-                                                                                                <a href="{{ asset('storage/' . $peserta->filesPeserta->file_project) }}" 
-                                                                                                   download
-                                                                                                   class="btn btn-sm btn-success">
-                                                                                                   <i class="ion-archive"></i> Download
-                                                                                                </a>
-                                                                                            </div>
-                                                                                            <small class="text-muted ms-2">
-                                                                                                {{ basename($peserta->filesPeserta->file_project) }}
-                                                                                            </small>
-                                                                                        @else
-                                                                                            <span class="text-muted">Tidak ada file project</span>
-                                                                                        @endif
-                                                                                    </td> --}}
                                                                                     <td>
                                                                                         @if (!empty($peserta->filesPeserta->file_project))
                                                                                             <div class="d-flex align-items-center gap-2">
-                                                                                                <!-- Tombol Lihat File dengan onclick -->
+                                        
                                                                                                 <button onclick="togglePdfViewer('{{ asset('storage/' . $peserta->filesPeserta->file_project) }}')" 
                                                                                                         class="btn btn-sm btn-primary">
                                                                                                     <i class="ion-ios-eye"></i> Lihat File
@@ -403,13 +380,8 @@
                                                                                             <small class="text-muted ms-2">
                                                                                                 {{ basename($peserta->filesPeserta->file_project) }}
                                                                                             </small>
-                                                                                            
-                                                                                            <!-- Div untuk menampung iframe PDF (awalnya hidden) -->
                                                                                             <div id="pdfViewerContainer" class="mt-3" style="display: none;">
                                                                                                 <iframe id="pdfViewer" src="" width="100%" height="500px" style="border: 1px solid #ddd;"></iframe>
-                                                                                                <button onclick="closePdfViewer()" class="btn btn-sm btn-danger mt-2">
-                                                                                                    <i class="ion-close"></i> Tutup Preview
-                                                                                                </button>
                                                                                             </div>
                                                                                         @else
                                                                                             <span class="text-muted">Tidak ada file project</span>
@@ -505,10 +477,6 @@
                 // Jika bukan PDF, buka di tab baru
                 window.open(pdfUrl, '_blank');
             }
-        }
-        
-        function closePdfViewer() {
-            document.getElementById('pdfViewerContainer').style.display = 'none';
         }
     </script>
 @endsection

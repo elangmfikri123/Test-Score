@@ -36,7 +36,7 @@ class AdminController extends Controller
                 'users.id',
                 'users.username',
                 'users.role',
-                'users.is_online',
+                'users.login_token',
                 'peserta.nama as peserta_nama',
                 'peserta.email as peserta_email',
                 'juri.namajuri as juri_nama',
@@ -61,7 +61,7 @@ class AdminController extends Controller
                     ->orWhere('admin.email', 'like', '%' . $search . '%')
                     ->orWhere('md_admin.kodemd', 'like', '%' . $search . '%')
                     ->orWhere('md_peserta.kodemd', 'like', '%' . $search . '%')
-                    ->orWhere('users.is_online', 'like', '%' . $search . '%');
+                    ->orWhere('users.login_token', 'like', '%' . $search . '%');
             });
         }
 
@@ -89,7 +89,7 @@ class AdminController extends Controller
                 }
             })
             ->addColumn('status', function ($row) {
-                $status = $row->is_online ? '<span class="badge bg-success" style="cursor:pointer" onclick="handleStatusClick(' . $row->id . ', this)">Online</span>'
+                $status = $row->login_token ? '<span class="badge bg-success" style="cursor:pointer" onclick="handleStatusClick(' . $row->id . ', this)">Online</span>'
                     : '<span class="badge bg-secondary">Offline</span>';
                 return $status;
             })
@@ -124,7 +124,7 @@ class AdminController extends Controller
                 'username' => $validated['username'],
                 'password' => Hash::make($validated['password']),
                 'role' => $validated['role'],
-                'is_online' => false
+                'login_token' => null,
             ]);
             if (in_array($validated['role'], ['Admin', 'AdminMD'])) {
                 Admin::create([
@@ -157,7 +157,7 @@ class AdminController extends Controller
     public function pesertalist()
     {
         if (auth()->user()->role === 'Admin') {
-            return view('admin.adminpesertalist');
+            return view('adminmd.adminmd-pesertalist');
         } elseif (auth()->user()->role === 'AdminMD') {
             return view('adminmd.adminmd-pesertalist');
         }
@@ -169,12 +169,9 @@ class AdminController extends Controller
     {
         $admin = Admin::where('user_id', auth()->id())->first();
         $data = Peserta::with(['maindealer', 'category']);
+        
         if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
             $data->where('maindealer_id', $admin->maindealer_id);
-        }
-
-        if (auth()->user()->role === 'Admin') {
-            $data = Peserta::with('maindealer');
         }
         if ($request->has('search') && !empty($request->search['value'])) {
             $search = $request->search['value'];
@@ -184,9 +181,13 @@ class AdminController extends Controller
                     ->orWhere('nama', 'like', '%' . $search . '%')
                     ->orWhereHas('category', function ($q) use ($search) {
                         $q->where('namacategory', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('maindealer', function ($q) use ($search) {
+                        $q->where('kodemd', 'like', '%' . $search . '%');
                     });
             });
         }
+    
         $result = DataTables()->of($data)
             ->addIndexColumn()
             ->addColumn('category', function ($row) {
@@ -196,7 +197,7 @@ class AdminController extends Controller
                 return $row->maindealer ? $row->maindealer->kodemd : '-';
             })
             ->addColumn('status', function ($row) {
-                if (auth()->user()->role === 'AdminMD') {
+                if (in_array(auth()->user()->role, ['Admin', 'AdminMD'])) {
                     return match ($row->status_lolos) {
                         'Terkirim'    => '<label class="label label-info">Terkirim</label>',
                         'Lolos'       => '<label class="label label-success">Lolos</label>',
@@ -217,7 +218,7 @@ class AdminController extends Controller
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
-
+    
         return $result;
     }
 

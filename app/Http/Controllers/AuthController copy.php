@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -15,7 +14,6 @@ class AuthController extends Controller
     {
         return view('login');
     }
-
     public function authenticate(Request $request)
     {
         $credentials = $request->only('username', 'password');
@@ -31,12 +29,8 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $token = Str::uuid(); // Token unik
-
-            User::where('id', Auth::id())->update(['login_token' => $token]);
+            User::where('id', Auth::id())->update(['login_token' => true]);
             Session::put('user_id', Auth::id());
-            Session::put('login_token', $token);
-
             $user = Auth::user();
 
             return match ($user->role) {
@@ -56,7 +50,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         if (Auth::check()) {
-            User::where('id', Auth::id())->update(['login_token' => null]);
+            User::where('id', Auth::id())->update(['login_token' => false]);
         }
 
         Auth::logout();
@@ -69,31 +63,28 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
-
     public function checkSession(Request $request)
     {
         if (auth()->check()) {
             return response()->json(['status' => 'active']);
         } else {
             if ($request->hasHeader('X-User-ID')) {
-                User::where('id', $request->header('X-User-ID'))->update(['login_token' => null]);
+                User::where('id', $request->header('X-User-ID'))->update(['login_token' => false]);
             }
             return response()->json(['status' => 'expired']);
         }
     }
-
     public function forceLogout($id)
     {
         $user = User::find($id);
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User tidak ditemukan'], 404);
         }
-
-        $user->login_token = null;
+    
+        $user->login_token = false;
         $user->save();
-
         DB::table('sessions')->where('user_id', $user->id)->delete();
-
+    
         return response()->json(['success' => true, 'message' => 'User berhasil di-logout']);
     }
 }

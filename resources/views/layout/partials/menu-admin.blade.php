@@ -18,13 +18,26 @@
                                             </a>
                                         </li>
                                         <li class="">
-                                            <a href="{{ url('/listpeserta/admin') }}">
+                                            <a href="{{ url('/listjuri') }}">
+                                                <span class="pcoded-mtext">Data Juri</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="pcoded-hasmenu ">
+                                    <a href="javascript:void(0)">
+                                        <span class="pcoded-micon"><i class="ion-ios-people"></i></span>
+                                        <span class="pcoded-mtext">Data Registrasi</span>
+                                    </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class="">
+                                            <a href="{{ url('/listpeserta') }}">
                                                 <span class="pcoded-mtext">Data Peserta</span>
                                             </a>
                                         </li>
-                                        <li class="">
-                                            <a href="{{ url('/listjuri') }}">
-                                                <span class="pcoded-mtext">Data Juri</span>
+                                        <li class=" ">
+                                            <a href="{{ url('/submission/klhr') }}">
+                                                <span class="pcoded-mtext">Submission KLHR</span>
                                             </a>
                                         </li>
                                     </ul>

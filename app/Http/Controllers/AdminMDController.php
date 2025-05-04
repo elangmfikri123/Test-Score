@@ -46,9 +46,12 @@ class AdminMDController extends Controller
     public function registrasiPeserta()
     {
         $user = Auth::user();
+        
         if ($user->role === 'AdminMD') {
             $admin = Admin::where('user_id', $user->id)->first();
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } else {
+            $mainDealers = MainDealer::all();
         }
         $categories = Category::select('id', 'namacategory')->get();
         return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
@@ -101,7 +104,7 @@ class AdminMDController extends Controller
                 'username' => $request->honda_id,
                 'password' => bcrypt($request->honda_id . 'klhn2025'),
                 'role' => 'Peserta',
-                'is_online' => false,
+                'login_token' => false,
             ]);
 
             if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
@@ -486,6 +489,8 @@ class AdminMDController extends Controller
         if ($user->role === 'AdminMD') {
             $admin = Admin::where('user_id', $user->id)->first();
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } else {
+            $mainDealers = MainDealer::all();
         }
         return view('adminmd.adminmd-registrasiklhr', compact('mainDealers'));
     }
