@@ -99,7 +99,7 @@
                                                                                     class="d-flex align-items-center gap-2">
                                                                                     <button
                                                                                         onclick="showPdfViewer('{{ asset('storage/' . $submissiondetail->file_ttdkanwil) }}', 'ttdkanwil')"
-                                                                                        class="btn btn-sm btn-primary">
+                                                                                        class="btn btn-sm btn-info">
                                                                                         <i class="ion-ios-eye"></i> Lihat
                                                                                     </button>
                                                                                     <div class="mx-1"></div>
@@ -126,7 +126,7 @@
                                                                                     class="d-flex align-items-center gap-2">
                                                                                     <button
                                                                                         onclick="showPdfViewer('{{ asset('storage/' . $submissiondetail->file_dokumpelaksanaan) }}', 'evidence')"
-                                                                                        class="btn btn-sm btn-primary">
+                                                                                        class="btn btn-sm btn-info">
                                                                                         <i class="ion-ios-eye"></i> Lihat
                                                                                     </button>
                                                                                     <div class="mx-1"></div>

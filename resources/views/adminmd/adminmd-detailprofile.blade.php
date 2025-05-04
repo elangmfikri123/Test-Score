@@ -364,7 +364,7 @@
                                                                                             <div class="d-flex align-items-center gap-2">
                                         
                                                                                                 <button onclick="togglePdfViewer('{{ asset('storage/' . $peserta->filesPeserta->file_project) }}')" 
-                                                                                                        class="btn btn-sm btn-primary">
+                                                                                                        class="btn btn-sm btn-info">
                                                                                                     <i class="ion-ios-eye"></i> Lihat File
                                                                                                 </button>
                                                                                                 
