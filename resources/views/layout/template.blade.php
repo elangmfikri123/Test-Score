@@ -187,20 +187,6 @@
             });
         }, 60000);
     </script>   
-<script>
-    window.addEventListener("beforeunload", function (e) {
-        fetch('/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ is_ajax: true }),
-            keepalive: true
-        });
-    });
-</script>
-    
 
     <!-- Warning Section Ends -->
     <!-- Required Jquery -->
