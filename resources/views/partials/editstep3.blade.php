@@ -50,14 +50,14 @@
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-sm-3 col-form-label">Tahun Dealer Meraih Juara di KLHN Sebelumnya</label>
+    <label class="col-sm-3 col-form-label">Tahun terakhir dealer meraih gelar juara di KLHN</label>
     <div class="col-sm-9">
         <input type="text" class="form-control" placeholder="Masukkan Tahun" name="tahun_menang_klhn"
         value="{{ old('tahun_menang_klhn', $peserta->identitasDealer->tahun_menang_klhn ?? '') }}">
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-sm-3 col-form-label">Kategori Juara Yang Pernah Dimenangkan Dealer Sebelumnya</label>
+    <label class="col-sm-3 col-form-label">Kategori juara yang terakhir diraih oleh dealer di KLHN</label>
     <div class="col-sm-9">
         <input type="text" class="form-control" placeholder="Masukkan Periode" name="keikutsertaan_klhn_sebelumnya"
         value="{{ old('keikutsertaan_klhn_sebelumnya', $peserta->identitasDealer->keikutsertaan_klhn_sebelumnya ?? '') }}">

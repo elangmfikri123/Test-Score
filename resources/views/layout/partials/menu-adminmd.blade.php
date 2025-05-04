@@ -27,7 +27,7 @@
     <li class="pcoded-hasmenu">
         <a href="javascript:void(0)">
             <span class="pcoded-micon"><i class="feather icon-edit"></i></span>
-            <span class="pcoded-mtext">Lampiran & Tutorial</span>
+            <span class="pcoded-mtext">Lampiran & Panduan</span>
         </a>
         <ul class="pcoded-submenu">
             <li class=" ">

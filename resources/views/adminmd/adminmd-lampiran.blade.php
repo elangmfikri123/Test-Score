@@ -5,48 +5,60 @@
     <div class="pcoded-inner-content">
         <div class="main-body">
             <div class="page-wrapper">
-                <div class="card borderless-card">
-                    <div class="card-block info-breadcrumb">
-                        <div class="breadcrumb-header">
+                <div class="page-body">
+                    <div class="card">
+                        <div class="card-header">
                             <h5>Lampiran</h5>
                         </div>
-                        <div class="page-header-breadcrumb">
-                        </div>
-                    </div>
-                </div>
-                <div class="page-body">
-                    <div class="row">
-                        @foreach($categories as $index => $cat)
-                        <div class="col-xl-3 col-md-6">
-                            <!-- Menentukan warna berdasarkan index -->
-                            <div class="card 
-                                @if($index % 4 == 0) bg-c-yellow
-                                @elseif($index % 4 == 1) bg-c-green
-                                @elseif($index % 4 == 2) bg-c-pink
-                                @else bg-c-lite-green
-                                @endif
-                                update-card">
-                                <div class="card-block">
-                                    <div class="row align-items-end">
-                                        <div class="col-7">
-                                            <h4 class="text-white">{{ $cat->total }}</h4>
-                                            <h6 class="text-white m-b-0">{{ $cat->category->namacategory ?? 'Kategori Tidak Diketahui' }}</h6>
-                                        </div>
-                                        <div class="col-4 text-right">
-                                            <canvas id="update-chart-{{ $loop->iteration }}" height="50"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <p class="text-white m-b-0">
-                                        <i class="feather icon-clock text-white f-14 m-r-10"></i>Update : {{ $cat->latest_created_at }}
-                                    </p>
-                                </div>
+                        <div class="card-block table-border-style">
+                            <div class="table-responsive">
+                                <table class="table table-styling">
+                                    <thead>
+                                        <tr class="table-primary">
+                                            <th class="text-center" style="width: 100px;">No</th>
+                                            <th class="text-center">Nama File</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                <th class="text-center" style="width: 100px;">1</th>
+                                                <td class="text-center">Lampiran Peserta</td>
+                                                <td class="text-center">
+                                                    <a href="https://drive.google.com/file/d/1VvKSFafYz0lXl2EQAD5XVQwaYgOO2jUV" 
+                                                        target="_blank" 
+                                                        class="btn btn-sm btn-info">
+                                                        <i class="feather icon-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center" style="width: 100px;">2</th>
+                                                <td class="text-center">Lampiran KLHR</td>
+                                                <td class="text-center">
+                                                    <a href="https://drive.google.com/file/d/1UTp1J-W_7AUzZZMXFria_AYCoANa9Gwx" 
+                                                        target="_blank" 
+                                                        class="btn btn-sm btn-info">
+                                                        <i class="feather icon-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center" style="width: 100px;">3</th>
+                                                <td class="text-center">Panduan Presentasi Team Leader</td>
+                                                <td class="text-center">
+                                                    <a href="https://drive.google.com/file/d/1bEE5-KU7jp_H5x3E2uMUpBX425-lcpTX/view?usp=drivesdk" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-info ">
+                                                       <i class="feather icon-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        @endforeach
-                    </div>
-                                      
+                    </div>                   
                 </div>
             </div>
             </div>
