@@ -24,4 +24,17 @@
             </li>
         </ul>
     </li>
+    <li class="pcoded-hasmenu">
+        <a href="javascript:void(0)">
+            <span class="pcoded-micon"><i class="feather icon-edit"></i></span>
+            <span class="pcoded-mtext">Lampiran & Tutorial</span>
+        </a>
+        <ul class="pcoded-submenu">
+            <li class=" ">
+                <a href="{{ url('/admin-maindealers/lampiran') }}">
+                    <span class="pcoded-mtext">File Lampiran</span>
+                </a>
+            </li>
+        </ul>
+    </li>
 </ul>

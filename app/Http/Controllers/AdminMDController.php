@@ -528,4 +528,9 @@ class AdminMDController extends Controller
 
         return redirect()->route('submission.klhr')->with('success', 'Data submission KLHR berhasil disimpan!');
     }
+
+    public function lampiranFile () {
+        return view('adminmd.adminmd-lampiran');
+    }
+    
 }

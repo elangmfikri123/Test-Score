@@ -86,6 +86,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
 // ADMIN MAIN DEALERS
 Route::get('/admin-maindealers/index', [AdminMDController::class, 'index'])->middleware(['auth', 'role:AdminMD']);
+Route::get('/admin-maindealers/lampiran', [AdminMDController::class, 'lampiranFile'])->middleware(['auth', 'role:AdminMD']);
 
 Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
     Route::get('/listpeserta', [AdminController::class, 'pesertalist'])->name('list.peserta');

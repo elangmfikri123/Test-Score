@@ -15,7 +15,6 @@ class AuthController extends Controller
     {
         return view('login');
     }
-
     public function authenticate(Request $request)
     {
         $credentials = $request->only('username', 'password');
@@ -27,16 +26,12 @@ class AuthController extends Controller
                 'username' => 'Akun sudah login di Browser lain.',
             ])->withInput();
         }
-
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            $token = Str::uuid(); // Token unik
-
+            $token = Str::uuid(); 
             User::where('id', Auth::id())->update(['login_token' => $token]);
             Session::put('user_id', Auth::id());
             Session::put('login_token', $token);
-
             $user = Auth::user();
 
             return match ($user->role) {
@@ -58,7 +53,6 @@ class AuthController extends Controller
         if (Auth::check()) {
             User::where('id', Auth::id())->update(['login_token' => null]);
         }
-
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -66,7 +60,6 @@ class AuthController extends Controller
         if ($request->ajax() || $request->isJson() || $request->input('is_ajax')) {
             return response()->json(['status' => 'success']);
         }
-
         return redirect()->route('login');
     }
 
@@ -81,7 +74,6 @@ class AuthController extends Controller
             return response()->json(['status' => 'expired']);
         }
     }
-
     public function forceLogout($id)
     {
         $user = User::find($id);
@@ -91,9 +83,7 @@ class AuthController extends Controller
 
         $user->login_token = null;
         $user->save();
-
         DB::table('sessions')->where('user_id', $user->id)->delete();
-
         return response()->json(['success' => true, 'message' => 'User berhasil di-logout']);
     }
 }
