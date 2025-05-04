@@ -384,7 +384,7 @@
                                                                                                 <iframe id="pdfViewer" src="" width="100%" height="500px" style="border: 1px solid #ddd;"></iframe>
                                                                                             </div>
                                                                                         @else
-                                                                                            <span class="text-muted">Tidak ada file project</span>
+                                                                                            <span class="text-muted">Tidak ada file</span>
                                                                                         @endif
                                                                                     </td>
                                                                                 </tr>
@@ -403,7 +403,7 @@
                                                                                             {{ basename($peserta->filesPeserta->file_lampiranklhn) }}
                                                                                         </small>
                                                                                     @else
-                                                                                        <span class="text-muted">Tidak ada file project</span>
+                                                                                        <span class="text-muted">Tidak ada file</span>
                                                                                     @endif
                                                                                     </td>
                                                                                 </tr>
