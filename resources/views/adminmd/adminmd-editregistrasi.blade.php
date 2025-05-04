@@ -60,7 +60,7 @@
                                                 <div class="text-right mt-4">
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
-                                                    <button type="submit" class="btn btn-success">Submit</button>
+                                                    <button type="submit" class="btn btn-success">Update</button>
                                                 </div>
                                             </div>
                                         </form>

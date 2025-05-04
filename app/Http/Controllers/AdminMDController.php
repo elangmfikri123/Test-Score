@@ -392,8 +392,6 @@ class AdminMDController extends Controller
                     'link_tiktok' => $request->link_tiktok_dealer ?? null,
                 ]
             );
-
-            // Update riwayat KLHN: hapus dulu, lalu insert ulang
             RiwayatKlhn::where('peserta_id', $peserta->id)->delete();
             if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
                 foreach ($request->riwayat_klhn as $riwayat) {
@@ -475,8 +473,9 @@ class AdminMDController extends Controller
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
             ->addColumn('action', function ($row) {
-                $url = url('/submissionklhr/data/' . $row->id);
-                return '<a href="' . $url . '" class="btn btn-sm btn-primary">Detail</a>';
+                $detail = '<a href="' . url('/submissionklhr/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                $edit = '<a href="' . url('/submissionklhr/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                return $detail.' '.$edit;
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -527,6 +526,69 @@ class AdminMDController extends Controller
         ]);
 
         return redirect()->route('submission.klhr')->with('success', 'Data submission KLHR berhasil disimpan!');
+    }
+
+    public function submissionDetail ($id) {
+        $submissiondetail = SubmissionKlhr::findOrFail($id);
+        $user = Auth::user();
+        if ($user->role === 'AdminMD') {
+            $admin = Admin::where('user_id', $user->id)->first();
+            $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } else {
+            $mainDealers = MainDealer::all();
+        }
+        return view('adminmd.adminmd-detailregistrasiklhr', compact('mainDealers', 'submissiondetail'));
+    }
+
+    public function submissionEdit($id)
+    {
+        $submission = SubmissionKlhr::findOrFail($id);
+        $user = Auth::user();
+        if ($user->role === 'AdminMD') {
+            $admin = Admin::where('user_id', $user->id)->first();
+            $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+        } else {
+            $mainDealers = MainDealer::all();
+        }
+        return view('adminmd.adminmd-editregistrasiklhr', compact('mainDealers', 'submission'));
+    }
+
+    public function submissionUpdate(Request $request, $id)
+    {
+        $submission = SubmissionKlhr::findOrFail($id);
+        $request->validate([
+            'maindealer_id' => 'required|exists:maindealer,id',
+            'link_klhr1' => 'required|url',
+            'link_klhr2' => 'nullable|url',
+            'link_klhr3' => 'nullable|url',
+            'file_submission' => 'nullable|file|mimes:xlsx,xls|max:15360',
+            'file_ttdkanwil' => 'nullable|file|mimes:pdf|max:15360',
+            'file_dokumpelaksanaan' => 'nullable|file|mimes:pdf|max:15360',
+        ]);
+    
+        $data = [
+            'maindealer_id' => $request->maindealer_id,
+            'link_klhr1' => $request->link_klhr1,
+            'link_klhr2' => $request->link_klhr2,
+            'link_klhr3' => $request->link_klhr3,
+        ];
+        if ($request->hasFile('file_submission')) {
+            $data['file_submission'] = $request->file('file_submission')->storeAs('submissions',
+                $request->file('file_submission')->getClientOriginalName(), 'public');
+        }
+    
+        if ($request->hasFile('file_ttdkanwil')) {
+            $data['file_ttdkanwil'] = $request->file('file_ttdkanwil')->storeAs('ttd',
+                $request->file('file_ttdkanwil')->getClientOriginalName(), 'public');
+        }
+    
+        if ($request->hasFile('file_dokumpelaksanaan')) {
+            $data['file_dokumpelaksanaan'] = $request->file('file_dokumpelaksanaan')->storeAs('evidence',
+                $request->file('file_dokumpelaksanaan')->getClientOriginalName(), 'public');
+        }
+    
+        $submission->update($data);
+        return redirect()->route('submission.klhr')->with('success', 'Data submission KLHR berhasil diperbarui!');
     }
 
     public function lampiranFile () {

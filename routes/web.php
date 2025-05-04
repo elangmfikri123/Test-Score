@@ -101,9 +101,11 @@ Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
 
     Route::get('/submission/klhr', [AdminMDController::class, 'showSubmission'])->name('submission.klhr');
     Route::get('/datasubmission/json', [AdminMDController::class, 'submissionJson']);
-
     Route::get('/submissionklhr/create', [AdminMDController::class, 'registerSubmission']);
     Route::post('/submission/store', [AdminMDController::class, 'createSubmission'])->name('submission.store');
+    Route::get('/submissionklhr/detail/{id}', [AdminMDController::class, 'submissionDetail']);
+    Route::get('/submissionklhr/edit/{id}', [AdminMDController::class, 'submissionEdit'])->name('submission.edit');
+    Route::put('/submissionklhr/update/{id}', [AdminMDController::class, 'submissionUpdate'])->name('submission.update');
 
 });
 
