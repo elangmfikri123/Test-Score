@@ -33,7 +33,6 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/check-session', [AuthController::class, 'checkSession'])->name('check.session');
-Route::get('/registrasi', [RegistrasiController::class, 'registrasi']);
 
 //ADMINISTRATOR
 Route::middleware(['auth', 'role:Admin'])->group(function () {

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('file_project')->nullable();
             $table->string('foto_profil')->nullable();
             $table->string('ktp')->nullable();
+            $table->string('validasi')->nullable();
             $table->timestamps();
         });
     }

@@ -147,6 +147,7 @@ class AdminMDController extends Controller
                 'peserta_id' => $peserta->id,
                 'judul_project' => $request->judul_project ?? null,
                 'tahun_pembuatan_project' => $request->tahun_pembuatan_project ?? null,
+                'validasi' => $request->validasi ?? null,
             ];
 
             if ($request->hasFile('file_lampiranklhn')) {
@@ -407,6 +408,7 @@ class AdminMDController extends Controller
             $files = FilesPeserta::firstOrNew(['peserta_id' => $peserta->id]);
             $files->judul_project = $request->judul_project ?? null;
             $files->tahun_pembuatan_project = $request->tahun_pembuatan_project ?? null;
+            $files->validasi = $request->validasi ?? null;
 
             if ($request->hasFile('file_lampiranklhn')) {
                 Storage::disk('public')->delete($files->file_lampiranklhn);

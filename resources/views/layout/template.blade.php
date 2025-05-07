@@ -187,6 +187,7 @@
             });
         }, 60000);
     </script>   
+    
 
     <!-- Warning Section Ends -->
     <!-- Required Jquery -->
