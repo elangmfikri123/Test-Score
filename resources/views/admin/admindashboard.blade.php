@@ -8,86 +8,37 @@
 
                 <div class="page-body">
                     <div class="row">
-                        <!-- task, page, download counter  start -->
-
+                        @foreach($categories as $index => $cat)
                         <div class="col-xl-3 col-md-6">
-                            <div class="card bg-c-yellow update-card">
+                            <!-- Menentukan warna berdasarkan index -->
+                            <div class="card 
+                                @if($index % 4 == 0) bg-c-yellow
+                                @elseif($index % 4 == 1) bg-c-green
+                                @elseif($index % 4 == 2) bg-c-pink
+                                @else bg-c-lite-green
+                                @endif
+                                update-card">
                                 <div class="card-block">
                                     <div class="row align-items-end">
-                                        <div class="col-8">
-                                            <h4 class="text-white">$30200</h4>
-                                            <h6 class="text-white m-b-0"></h6>
+                                        <div class="col-7">
+                                            <h4 class="text-white">{{ $cat->total }}</h4>
+                                            <h6 class="text-white m-b-0">{{ $cat->category->namacategory ?? 'Kategori Tidak Diketahui' }}</h6>
                                         </div>
                                         <div class="col-4 text-right">
-                                            <canvas id="update-chart-1" height="50"></canvas>
+                                            <canvas id="update-chart-{{ $loop->iteration }}" height="50"></canvas>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <p class="text-white m-b-0"><i class="feather icon-clock text-white f-14 m-r-10"></i>update : 2:15 am</p>
+                                    <p class="text-white m-b-0">
+                                        <i class="feather icon-clock text-white f-14 m-r-10"></i>Update : {{ $cat->latest_created_at }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-c-green update-card">
-                                <div class="card-block">
-                                    <div class="row align-items-end">
-                                        <div class="col-8">
-                                            <h4 class="text-white">290+</h4>
-                                            <h6 class="text-white m-b-0">Page Views</h6>
-                                        </div>
-                                        <div class="col-4 text-right">
-                                            <canvas id="update-chart-2" height="50"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <p class="text-white m-b-0"><i class="feather icon-clock text-white f-14 m-r-10"></i>update : 2:15 am</p>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-c-pink update-card">
-                                <div class="card-block">
-                                    <div class="row align-items-end">
-                                        <div class="col-8">
-                                            <h4 class="text-white">145</h4>
-                                            <h6 class="text-white m-b-0">Task Completed</h6>
-                                        </div>
-                                        <div class="col-4 text-right">
-                                            <canvas id="update-chart-3" height="50"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <p class="text-white m-b-0"><i class="feather icon-clock text-white f-14 m-r-10"></i>update : 2:15 am</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-c-lite-green update-card">
-                                <div class="card-block">
-                                    <div class="row align-items-end">
-                                        <div class="col-8">
-                                            <h4 class="text-white">500</h4>
-                                            <h6 class="text-white m-b-0">Downloads</h6>
-                                        </div>
-                                        <div class="col-4 text-right">
-                                            <canvas id="update-chart-4" height="50"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <p class="text-white m-b-0"><i class="feather icon-clock text-white f-14 m-r-10"></i>update : 2:15 am</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- task, page, download counter  end -->
-
+                        @endforeach
                     </div>
+                                      
                 </div>
             </div>
 

@@ -16,8 +16,25 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $category = Category::with('category');
-        return view('admin.admindashboard', compact('category'));
+        $admin = Admin::where('user_id', auth()->id())->first();
+        $query = Peserta::query();
+        if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
+            $query->where('maindealer_id', $admin->maindealer_id);
+        }
+        $categories = $query->select('category_id')
+            ->selectRaw('count(*) as total')
+            ->groupBy('category_id')
+            ->with('category')
+            ->get();
+
+        foreach ($categories as $category) {
+            $latestPeserta = Peserta::where('category_id', $category->category_id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $category->latest_created_at = $latestPeserta ? $latestPeserta->created_at->format('H:i:s') : 'Tidak ada data';
+        }
+        return view('admin.admindashboard', compact('categories'));
     }
     public function userlist()
     {
