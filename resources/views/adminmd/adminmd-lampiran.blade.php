@@ -47,7 +47,7 @@
                                                 <th class="text-center" style="width: 100px;">3</th>
                                                 <td class="text-center">Template Lampiran Peserta Team Leader</td>
                                                 <td class="text-center">
-                                                    <a href="https://drive.google.com/file/d/10gnlLlOPSvhAqswRiP5sCEGZ7Tqi3Epy/view?usp=drive_link" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/1uEeXNxn4XEZH9btziejpAQPZ_viBSIA1QapulppULr8/edit?usp=drive_link" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
@@ -80,7 +80,7 @@
                                                 <th class="text-center" style="width: 100px;">6</th>
                                                 <td class="text-center">Panduan Presentasi Team Leader</td>
                                                 <td class="text-center">
-                                                    <a href="https://drive.google.com/file/d/1bEE5-KU7jp_H5x3E2uMUpBX425-lcpTX/view?usp=drivesdk" 
+                                                    <a href="https://drive.google.com/file/d/10gnlLlOPSvhAqswRiP5sCEGZ7Tqi3Epy/view?usp=drive_link" 
                                                        target="_blank" 
                                                        class="btn btn-sm btn-info ">
                                                        <i class="feather icon-download"></i> Download
