@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
 use App\Models\PesertaCourse;
 use Vinkla\Hashids\Facades\Hashids;
-use App\Models\Question;
 
 class PesertaCourseController extends Controller
 {
@@ -17,117 +16,85 @@ class PesertaCourseController extends Controller
 
         return view('courses.confirmation', compact('pesertaCourse', 'id'));
     }
-    public function showquiz($id, $questionNumber)
+    public function showQuiz($id)
+    {
+        $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
+
+        return view('courses.quiz', compact('pesertaCourse'));
+    }
+
+    public function loadQuestion($id, $numberQuestion)
     {
         $pesertaCourse = PesertaCourse::with('course.questions.answers')->findOrFail($id);
-        $questions = $pesertaCourse->course->questions->sortBy('id')->values();
-        $question = $questions[$questionNumber - 1];
-
-        // Cek jawaban peserta
-        $selectedAnswer = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
-            ->where('question_id', $question->id)
-            ->first();
-
-        // Jika request dari AJAX (AJAX = JSON), return response json
-        if (request()->ajax()) {
-            return response()->json([
-                'question_id' => $question->id,
-                'question_number' => $questionNumber,
-                'pertanyaan' => $question->pertanyaan,
-                'answers' => $question->answers,
-                'selected_answer_id' => $selectedAnswer->answer_id ?? null,
-                'total_questions' => $questions->count(),
-            ]);
-        }
-
-        // Jika bukan AJAX, render view blade quiz.blade.php
-        return view('courses.quiz', [
-            'questionNumber' => $questionNumber,
-            'question' => $question,
-            'questions' => $questions,
-            'totalQuestions' => $questions->count(),
-            'id' => $id,
-            'pesertaCourse' => $pesertaCourse,
-        ]);
-    }
-
-    public function getQuestionAjax($id, $questionNumber)
-    {
-        $peserta = auth()->user();
-        $pesertaCourse = PesertaCourse::with('course')->findOrFail($id);
-        $questions = Question::where('course_id', $pesertaCourse->course_id)->get();
-        $question = $questions[$questionNumber - 1] ?? null;
+        $questions = $pesertaCourse->course->questions()->with('answers')->get();
+        $question = $questions[$numberQuestion - 1] ?? null;
 
         if (!$question) {
-            return response()->json(['message' => 'Question not found'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
-
-        $answers = $question->answers->map(function ($answer) {
-            return [
-                'id' => $answer->id,
-                'question_id' => $answer->question_id,
-                'jawaban' => $answer->jawaban,
-                'created_at' => $answer->created_at,
-                'updated_at' => $answer->updated_at,
-            ];
-        });
-        $selectedAnswer = PesertaAnswer::where('peserta_id', $peserta->id)
+        $answer = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
             ->where('question_id', $question->id)
             ->first();
-
+        $allAnswers = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
+            ->get()
+            ->pluck('answer_id', 'question_id'); 
         return response()->json([
+            'status' => 'success',
+            'question_number' => $numberQuestion,
             'question_id' => $question->id,
-            'question_number' => $questionNumber,
             'pertanyaan' => $question->pertanyaan,
-            'answers' => $answers,
-            'selected_answer_id' => $selectedAnswer->answer_id ?? null,
-            'totalQuestions' => count($questions),
+            'answers' => $question->answers->map(function ($a, $index) {
+                return [
+                    'id' => $a->id,
+                    'text' => $a->jawaban,
+                    'label' => chr(65 + $index)
+                ];
+            }),
+            'answered_questions' => $allAnswers,
+            'selected_answer' => $answer ? $answer->answer_id : null,
+            'total_questions' => $pesertaCourse->course->questions()->count(),
         ]);
-    }
+    }  
 
-    public function getAnsweredStatus($pesertaId, $courseId)
+    public function storeAnswer(Request $request)
     {
-        // Ambil status soal yang sudah dijawab oleh peserta berdasarkan course_id
-        $answeredStatus = PesertaAnswer::where('peserta_id', $pesertaId)
-        ->whereHas('question', function ($query) use ($courseId) {
-            $query->where('course_id', $courseId);
-        })
-        ->get()
-        ->map(function ($answer) {
-            return [
-                'nomor' => $answer->question_id,
-                'is_answered' => true,
-            ];
-        });
-    
-    
-        // Mengembalikan status soal yang sudah dijawab
-        return response()->json($answeredStatus);
-    }
-    
-    public function submitAnswerAjax(Request $request)
-    {
-        $request->validate([
-            'peserta_id' => 'required',
-            'question_id' => 'required',
-            'answer_id' => 'required',
+        $validated = $request->validate([
+            'peserta_course_id' => 'required|integer',
+            'question_number' => 'required|integer',
+            'answer_id' => 'required|integer',
         ]);
 
-        $answer = Answer::find($request->answer_id);
+        $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
+        $question = $pesertaCourse->course->questions()->find($validated['question_number']);
+        if (!$question) {
+            return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
+        }
 
-        $isCorrect = $answer && $answer->is_correct;
-
-        PesertaAnswer::updateOrCreate(
+        $isCorrect = $this->checkIfAnswerIsCorrect($validated['question_number'], $validated['answer_id']);
+        $answer = PesertaAnswer::updateOrCreate(
             [
-                'peserta_id' => $request->peserta_id,
-                'question_id' => $request->question_id,
+                'peserta_id' => $pesertaCourse->peserta_id,
+                'question_id' => $question->id,
             ],
             [
-                'answer_id' => $request->answer_id,
-                'is_correct' => $isCorrect
+                'answer_id' => $validated['answer_id'],
+                'is_correct' => $isCorrect,
             ]
         );
 
-        return response()->json(['status' => 'success']);
+        if ($answer) {
+            return response()->json(['status' => 'success', 'message' => 'Jawaban disimpan']);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan jawaban']);
+        }
+    }
+
+    private function checkIfAnswerIsCorrect($questionId, $answerId)
+    {
+        $correctAnswer = Answer::where('question_id', $questionId)
+            ->where('is_correct', true)
+            ->first();
+
+        return $correctAnswer && $correctAnswer->id == $answerId;
     }
 }

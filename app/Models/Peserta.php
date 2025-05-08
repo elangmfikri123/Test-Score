@@ -36,25 +36,19 @@ class Peserta extends Model
     {
         return $this->belongsToMany(Juri::class, 'juripeserta');
     }
-    // One-to-One dengan IdentitasAtasan
     public function identitasAtasan()
     {
         return $this->hasOne(IdentitasAtasan::class);
     }
-
-    // One-to-One dengan IdentitasDealer
     public function identitasDealer()
     {
         return $this->hasOne(IdentitasDealer::class);
     }
-
-    // One-to-One dengan FilesPeserta
     public function filesPeserta()
     {
         return $this->hasOne(FilesPeserta::class);
     }
 
-    // One-to-Many dengan RiwayatKlhn (maksimal 3)
     public function riwayatKlhn()
     {
         return $this->hasMany(RiwayatKlhn::class);

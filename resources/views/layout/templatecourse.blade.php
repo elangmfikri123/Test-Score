@@ -12,7 +12,7 @@
     <meta name="author" content="#">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon icon -->
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="{{ asset('files\assets\images\Logo-100.png') }}" type="image/x-icon">
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
     <!-- Required Fremwork -->

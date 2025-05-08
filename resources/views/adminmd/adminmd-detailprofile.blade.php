@@ -446,6 +446,19 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {{-- <div class="form-group row">
+                                                    <div class="col-sm-9">
+                                                        <div class="form-check d-flex align-items-start" style="margin-left: 3px;">
+                                                            <input class="form-check-input mt-1 ml-1 requiredform" type="checkbox" name="validasi" value="Ya"
+                                                            {{ $peserta->filesPeserta->validasi ?? '' == 'Ya' ? 'checked' : '' }}>
+                                                            <label class="form-check-label ml-2 text-justify" for="setuju" style="font-size: 0.85rem; text-align: justify;">
+                                                                Dengan ini saya menyatakan bahwa data yang saya berikan adalah benar dan lengkap. 
+                                                                Saya memberikan izin kepada PT <strong>[Astra Honda Motor]</strong> untuk mengumpulkan, menyimpan, dan memproses data pribadi peserta KLHN 2025, 
+                                                                serta membagikannya kepada pihak ketiga yang bekerja sama dengan perusahaan sesuai kebutuhan, dengan tetap menjaga kerahasiaannya.
+                                                            </label>
+                                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
+                                                        </div>
+                                                    </div> --}}
                                             </div>
                                         </div>
                                     </div>

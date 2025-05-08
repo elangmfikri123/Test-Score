@@ -26,7 +26,7 @@
                                         </div>                                                                                
                                         <hr class="m-0">
                                         <div class="card-block">
-                                            <p>Apa ibu kota Indonesia?</p>
+                                            {!! $pesertaCourse->course->description ?? '-' !!}
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "/exam/{{ $pesertaCourse->id }}/1";
+                    window.location.href = "{{ route('exam.start', ['id' => $pesertaCourse->id]) }}";
                 }
             });
         });

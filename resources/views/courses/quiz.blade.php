@@ -11,77 +11,52 @@
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="card">
-                                        <div
-                                            class="card-header border-bottom d-flex justify-content-between align-items-center">
-                                            <h5 id="question-title">Soal Nomor. {{ $questionNumber }}</h5>
-                                            <label id="timer"
-                                                class="label label-inverse-warning fw-bold px-4 py-2 text-dark"
-                                                style="font-size: 1rem;"></label>
-                                        </div>
+                                        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                                            {{-- Nomor Soal --}}
+                                            <h5 id="question-number">Soal Nomor. </h5>
+                                            <label id="timer" class="label label-inverse-warning fw-bold px-4 py-2 text-dark" style="font-size: 1rem;">00:10:00</label>
+                                        </div>                                                                               
                                         <hr class="m-0">
-                                        <div class="card-block" id="question-content">
-                                            <p>{{ $question->pertanyaan }}</p>
-                                            <form>
-                                                @foreach ($question->answers as $key => $answer)
-                                                    <div class="form-check d-flex align-items-center mb-2">
-                                                        <button type="button"
-                                                            class="btn btn-outline-primary me-2 option-btn"
-                                                            data-answer-id="{{ $answer->id }}"
-                                                            data-question-id="{{ $question->id }}"
-                                                            style="width: 40px; height: 40px; font-size: 16px; padding: 0;">
-                                                            {{ chr(65 + $key) }}
-                                                        </button>
-                                                        <label class="form-check-label" style="cursor: pointer;">
-                                                            {{ $answer->jawaban }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
+                                        {{-- Konten Soal --}}
+                                        <div class="card-block">
+                                            <p id="question-text">Loading Data Server...</p>
+                                            <form id="quiz-form">
+                                                <div id="answer-options"></div>
                                             </form>
                                         </div>
                                         <hr class="m-0">
-                                        <div class="card-footer " id="nav-buttons">
-
+                                        <div class="card-footer d-flex justify-content-between">
+                                            <button id="btn-prev" class="btn btn-secondary"><i class="ion-chevron-left"></i> Sebelumnya</button>
+                                            <button id="btn-next" class="btn btn-primary">Selanjutnya <i class="ion-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-md-3">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Soal Yang Sudah Terjawab</h5>
+                                            <h5>Jumlah Soal</h5>
+                                            <div class="d-flex justify-content-between">
+                                                <p><strong>Total Soal:</strong> 100</p>
+                                                <p><strong>Sudah Dijawab:</strong> 3</p>
+                                            </div>
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-block">
+                                        <!-- Bagian Kanan: Tanda Nomer Soal Sudah dikerjakan dan Dapat Diklik Mengarah ke Nomor Soal -->
                                             <div class="container" style="max-height: 300px; overflow-y: auto;">
-                                                <div class="row row-cols-1 gx-1 gy-1">
-                                                    <!-- Ubah gx-1 gy-1 agar lebih rapi secara vertikal -->
-                                                    @foreach ($questions as $i => $q)
-                                                        @php
-                                                            $isAnswered = \App\Models\PesertaAnswer::where(
-                                                                'peserta_id',
-                                                                auth()->user()->id ?? null,
-                                                            )
-                                                                ->where('question_id', $q->id ?? 0)
-                                                                ->exists();
-                                                        @endphp
-                                                        <div class="col p-0 m-1">
-                                                            <button
-                                                                class="btn {{ $isAnswered ? 'btn-success' : 'btn-light' }} sidebar-soal-btn"
-                                                                data-nomor="{{ $i + 1 }}"
-                                                                style="width: 40px; height: 40px; font-size: 14px; padding: 0; margin: 2px;">
-                                                                {{ $i + 1 }}
-                                                            </button>
-                                                        </div>
-                                                    @endforeach
+                                                <div class="row row-cols-5 gx-1 gy-1" id="question-buttons">
+
                                                 </div>
                                             </div>
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary mt-3">Akhiri Ujian <i
-                                                    class="ion-archive"></i></button>
+                                            <button class="btn btn-primary mt-3">Akhiri Ujian <i class="ion-archive"></i></button>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -89,155 +64,106 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        let currentQuestion = {{ $questionNumber }};
-        const totalQuestions = {{ $totalQuestions }};
-        const pesertaCourseId = {{ $id }};
-        const pesertaId = {{ auth()->user()->id }};
-        const courseId = {{ $id }};
-        const localStorageKey = "timer_ujian_" + pesertaId + "_" + pesertaCourseId;
-        const durationMinutes = {{ $question->course->duration_minutes ?? 90 }};
-        const timerElement = document.getElementById('timer');
-
-        // Timer calculation functions
-        function getRemainingTime() {
-            const startTime = localStorage.getItem(localStorageKey);
-            const now = Math.floor(Date.now() / 1000);
-            if (startTime) {
-                const elapsed = now - parseInt(startTime);
-                const remaining = durationMinutes * 60 - elapsed;
-                return remaining > 0 ? remaining : 0;
-            } else {
-                localStorage.setItem(localStorageKey, now);
-                return durationMinutes * 60;
-            }
+        let currentQuestion = 1;
+        const pesertaCourseId = {{ $pesertaCourse->id }};
+        let answeredQuestions = {}; 
+        function submitAnswer(answerId, btnElement) {
+            $('#answer-options .btn').removeClass('btn-primary text-white').addClass('btn-outline-primary');
+            $(btnElement).removeClass('btn-outline-primary').addClass('btn-primary text-white');
+            answeredQuestions[currentQuestion] = answerId;
+            $.post(`/exam/answer`, {
+                _token: '{{ csrf_token() }}',
+                peserta_course_id: pesertaCourseId,
+                question_number: currentQuestion,
+                answer_id: answerId
+            }, function(response) {
+                if (response.status !== 'success') {
+                    alert(response.message);
+                }
+            });
+            $(`.question-btn[data-number="${currentQuestion}"]`)
+            .removeClass('btn-light')
+            .addClass('btn-success');
         }
+        
+        function loadQuestion(questionNumber) {
+            $.get(`/exam/${pesertaCourseId}/${questionNumber}`, function (response) {
+                if (response.status === 'success') {
+                    answeredQuestions = response.answered_questions || {};
+                    $('#question-number').text('Soal Nomor. ' + response.question_number);
+                    $('#question-text').html(response.pertanyaan);
 
-        let duration = getRemainingTime();
+                    let answersHtml = '';
+                    response.answers.forEach(answer => {
+                        const isAnswered = response.selected_answer === answer.id;
+                        answersHtml += `
+                            <div class="d-flex align-items-center mb-2" style="min-height: 40px;">
+                                <button type="button" class="btn ${isAnswered ? 'btn-primary text-white' : 'btn-outline-primary'} me-2" 
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" 
+                                    onclick="submitAnswer(${answer.id}, this)">
+                                    ${answer.label}
+                                </button>
+                                <label class="form-check-label" for="option${answer.id}" style="cursor:pointer;">${answer.text}</label>
+                                <input class="form-check-input d-none" type="radio" name="answer" id="option${answer.id}" value="${answer.id}">
+                            </div>`;
+                    });
 
-        function formatTime(seconds) {
-            const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
-            const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-            const secs = String(seconds % 60).padStart(2, '0');
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        const countdown = setInterval(() => {
-            duration--;
-            if (duration <= 0) {
-                clearInterval(countdown);
-                alert("Waktu habis!");
-                // redirect to submit
-            }
-            timerElement.textContent = formatTime(duration);
-        }, 1000);
-
-        // Load question dynamically with AJAX
-        function loadQuestion(nomor) {
-            $.get(`/exam/ajax/question/${pesertaCourseId}/${nomor}`, function(data) {
-                console.log(data); // Tambahkan ini untuk mengecek respons
-                currentQuestion = data.question_number;
-                $('#question-title').text(`Soal Nomor. ${data.question_number}`);
-                $('#question-content').html(generateSoalHTML(data));
-                updateNavigationButtons(data);
-                highlightSidebar(data.question_number);
-            }).fail(function() {
-                alert("Error loading question.");
+                    $('#answer-options').html(answersHtml);
+                    $('#btn-prev').prop('disabled', questionNumber === 1);
+                    $('#btn-next').prop('disabled', questionNumber === response.total_questions);
+                    renderQuestionButtons(response.total_questions);
+                } else {
+                    alert('Error: ' + response.message);
+                }
             });
         }
 
-        function updateNavigationButtons(data) {
-            const nomor = data.question_number;
-            let prevButton = '';
-            let nextButton = '';
+        function renderQuestionButtons(total) {
+            const container = $('#question-buttons');
+            container.empty();
 
-            if (nomor > 1) {
-                prevButton = `<button onclick="loadQuestion(${nomor - 1})" class="btn btn-secondary">
-            <i class="ion-chevron-left"></i> Sebelumnya</button>`;
-            } else {
-                prevButton = `<div></div>`; // Placeholder jika soal pertama
+            for (let i = 1; i <= total; i++) {
+                let btnClass = 'btn-light';
+                const questionId = i;
+                if (answeredQuestions[questionId]) {
+                    btnClass = 'btn-success';
+                }
+
+                container.append(`
+                    <div class="col p-0 m-1">
+                        <button 
+                            class="btn ${btnClass} d-flex align-items-center justify-content-center question-btn" 
+                            data-number="${i}"
+                            style="width: 40px; height: 40px; font-size: 14px; padding: 0; margin: 2px;">
+                            ${i}
+                        </button>
+                    </div>
+                `);
             }
-
-            if (nomor < totalQuestions) {
-                nextButton = `<button onclick="loadQuestion(${nomor + 1})" class="btn btn-primary">
-            Selanjutnya <i class="ion-chevron-right"></i></button>`;
-                console.log("Loading question number:", currentQuestion + 1);
-            } else {
-                nextButton = `<div></div>`; // Placeholder jika sudah mencapai soal terakhir
-            }
-
-            const navHtml = `
-        <div class="d-flex justify-content-between w-100">
-            <div>${prevButton}</div>
-            <div>${nextButton}</div>
-        </div>`;
-
-            $('#nav-buttons').html(navHtml);
         }
 
-
-        // Store the answer and reload the current question
-        $(document).on('click', '.option-btn', function() {
-            const answerId = $(this).data('answer-id');
-            const questionId = $(this).data('question-id');
-
-            $.post('/exam/ajax/answer', {
-                peserta_id: pesertaId,
-                question_id: questionId,
-                answer_id: answerId,
-                _token: '{{ csrf_token() }}'
-            }, function(res) {
-                console.log(res); // Log respons dari server untuk memastikan status jawaban
-                loadQuestion(currentQuestion); // Memuat soal yang baru
-                updateSidebarAnswers(); // Memperbarui status soal di sidebar setelah jawaban disimpan
-            });
+        $(document).on('click', '#btn-prev', function () {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                loadQuestion(currentQuestion);
+            }
         });
 
-        function generateSoalHTML(data) {
-            let html = `<p>${data.pertanyaan}</p><form>`;
-            data.answers.forEach((answer, index) => {
-                const isSelected = answer.id === data.selected_answer_id ? 'btn-primary' : 'btn-outline-primary';
-                html += `
-                <div class="form-check d-flex align-items-center mb-2">
-                    <button type="button" class="btn ${isSelected} me-2 option-btn" data-answer-id="${answer.id}" data-question-id="${data.question_id}"
-                        style="width: 40px; height: 40px; font-size: 16px; padding: 0;">
-                        ${String.fromCharCode(65 + index)}
-                    </button>
-                    <label class="form-check-label">${answer.jawaban}</label>
-                </div>`;
-            });
-            html += `</form>`;
-            return html;
-        }
-
-        // Sidebar question navigation
-        $(document).on('click', '.sidebar-soal-btn', function() {
-            const nomor = $(this).data('nomor');
-            loadQuestion(nomor);
+        $(document).on('click', '#btn-next', function () {
+            currentQuestion++;
+            loadQuestion(currentQuestion);
         });
 
-        // Fungsi untuk memperbarui status soal yang sudah dijawab di sidebar
-        function updateSidebarAnswers() {
-            $.get(`/exam/ajax/answered-status/${pesertaId}/${courseId}`, function(data) {
-                data.forEach(function(status) {
-                    const button = $(`.sidebar-soal-btn[data-nomor=${status.nomor}]`);
-                    if (status.is_answered) {
-                        button.removeClass('btn-light').addClass('btn-success');
-                    } else {
-                        button.removeClass('btn-success').addClass('btn-light');
-                    }
-                });
-            });
-        }
+        $(document).on('click', '.question-btn', function () {
+            const number = parseInt($(this).data('number'));
+            currentQuestion = number;
+            loadQuestion(number);
+        });
 
-
-        $(document).ready(function() {
-            updateNavigationButtons({
-                question_number: currentQuestion
-            });
-            updateSidebarAnswers(); // Memperbarui status soal yang sudah dijawab saat pertama kali halaman dimuat
+        $(document).ready(function () {
+            loadQuestion(currentQuestion);
         });
     </script>
 @endsection
