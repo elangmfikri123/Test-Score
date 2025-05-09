@@ -55,7 +55,7 @@
                                                             },
                                                             {
                                                                 data: 'participant',
-                                                                name: 'participant'
+                                                                name: 'participant', class: 'text-center'
                                                             },
                                                             {
                                                                 data: 'start_date',

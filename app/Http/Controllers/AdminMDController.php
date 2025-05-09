@@ -39,7 +39,6 @@ class AdminMDController extends Controller
 
             $category->latest_created_at = $latestPeserta ? $latestPeserta->created_at->format('H:i:s') : 'Tidak ada data';
         }
-
         return view('adminmd.adminmd-index', compact('categories'));
     }
 
@@ -153,30 +152,22 @@ class AdminMDController extends Controller
             if ($request->hasFile('file_lampiranklhn')) {
                 $filesData['file_lampiranklhn'] = $request->file('file_lampiranklhn')->storeAs(
                     'files/lampiran_klhn',
-                    $request->file('file_lampiranklhn')->getClientOriginalName(),
-                    'public'
-                );
+                    $request->file('file_lampiranklhn')->getClientOriginalName(), 'public');
             }
             if ($request->hasFile('file_project')) {
                 $filesData['file_project'] = $request->file('file_project')->storeAs(
                     'files/project',
-                    $request->file('file_project')->getClientOriginalName(),
-                    'public'
-                );
+                    $request->file('file_project')->getClientOriginalName(), 'public');
             }
             if ($request->hasFile('foto_profil')) {
                 $filesData['foto_profil'] = $request->file('foto_profil')->storeAs(
                     'files/foto_profil',
-                    $request->file('foto_profil')->getClientOriginalName(),
-                    'public'
-                );
+                    $request->file('foto_profil')->getClientOriginalName(), 'public');
             }
             if ($request->hasFile('ktp')) {
                 $filesData['ktp'] = $request->file('ktp')->storeAs(
                     'files/ktp',
-                    $request->file('ktp')->getClientOriginalName(),
-                    'public'
-                );
+                    $request->file('ktp')->getClientOriginalName(), 'public' );
             }
             FilesPeserta::create($filesData);
 

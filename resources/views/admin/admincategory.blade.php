@@ -27,7 +27,6 @@
                                                     </tr>
                                                 </thead>
                                             </table>
-
                                             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                                             <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
                                             <script>
@@ -55,7 +54,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">

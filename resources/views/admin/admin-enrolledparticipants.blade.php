@@ -26,7 +26,9 @@
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Honda ID</th>
                                                         <th class="text-center">Nama</th>
-                                                        <th class="text-center">
+                                                        <th class="text-center">Kategory</th>
+                                                        <th class="text-center">Main Dealer</th>
+                                                        <th class="text-center" style="width: 70px;">
                                                             <input type="checkbox" id="selectAll">
                                                         </th>
                                                     </tr>
@@ -45,9 +47,11 @@
                                             serverSide: true,
                                             ajax: '{{ url("/pesertaenrolle/data/json/" . $course->id) }}',
                                             columns: [
-                                                { data: 'id', name: 'id' },
-                                                { data: 'honda_id', name: 'honda_id' },
-                                                { data: 'nama', name: 'nama' },
+                                                { data: 'DT_RowIndex', name: 'DT_RowIndex', class: 'text-center', orderable: false, searchable: false },
+                                                { data: 'honda_id', name: 'honda_id', class:'text-center' },
+                                                { data: 'nama', name: 'nama', class:'text-center' },
+                                                { data: 'namacategory', name: 'category.namacategory', class:'text-center' },
+                                                { data: 'kodemd', name: 'maindealer.kodemd' , class:'text-center' },
                                                 {
                                                     data: 'id',
                                                     name: 'action',
@@ -60,11 +64,9 @@
                                                 }
                                             ]
                                         });
-
                                         $('#selectAll').on('change', function () {
                                             $('.rowCheckbox').prop('checked', this.checked);
                                         });
-
                                         $(document).on('change', '.rowCheckbox', function () {
                                             $('#selectAll').prop('checked', $('.rowCheckbox:checked').length === $('.rowCheckbox').length);
                                         });

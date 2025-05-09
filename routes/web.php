@@ -33,7 +33,6 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/check-session', [AuthController::class, 'checkSession'])->name('check.session');
-
 //ADMINISTRATOR
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
@@ -119,15 +118,17 @@ Route::middleware(['auth', 'role:Juri'])->group(function () {
 //PESERTA
 Route::middleware(['auth', 'role:Peserta'])->group(function () {
     Route::get('/peserta/index', [PesertaController::class, 'index']);
-    Route::get('/participants/quizlist', [PesertaController::class, 'showlistquiz']);
+    Route::get('/participants/quizlist', [PesertaController::class, 'showlistquiz'])->name('participants.quizlist');
     Route::get('/quizlist/Json', [PesertaController::class, 'listJson']);
 
     Route::get('/exam/confirmation/{id}', [PesertaCourseController::class, 'showConfirmation']);
+    Route::post('/exam/start/{id}', [PesertaCourseController::class, 'startExam'])->name('exam.ajaxstart');
     Route::get('/exam/{id}', [PesertaCourseController::class, 'showQuiz'])->name('exam.start');
     Route::get('/exam/{id}/{numberQuestion}', [PesertaCourseController::class, 'loadQuestion']);
     Route::get('/exam/{pesertaCourseId}/answered', [PesertaCourseController::class, 'getAnsweredQuestions']);
-
     Route::post('/exam/answer', [PesertaCourseController::class, 'storeAnswer']);
+    Route::post('/exam/finish/{id}', [PesertaCourseController::class, 'finishExam'])->name('exam.finish');
+    Route::get('/finished/exam/{id}', [PesertaCourseController::class, 'finished'])->name('exam.finished');
 
 });
 

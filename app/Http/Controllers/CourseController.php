@@ -125,7 +125,6 @@ class CourseController extends Controller
     }
     public function storequestion(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
             'deskripsi' => 'required|string',
             'jawaban' => 'required|array|min:1',
@@ -237,9 +236,16 @@ class CourseController extends Controller
     {
         $enrolledPesertaIds = PesertaCourse::where('course_id', $id)->pluck('peserta_id')->toArray();
 
-        $peserta = Peserta::whereNotIn('id', $enrolledPesertaIds)->get();
+        $peserta = Peserta::with(['category', 'maindealer'])
+        ->whereNotIn('id', $enrolledPesertaIds)
+        ->get();
 
         return datatables()->of($peserta)
+            ->addIndexColumn()
+            ->addColumn('namacategory', function($row) {
+                    return $row->category->namacategory ?? '-';})
+            ->addColumn('kodemd', function($row) {
+                    return $row->maindealer->kodemd ?? '-';})
             ->addColumn('action', fn($row) => '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">')
             ->rawColumns(['action'])
             ->make(true);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Answer;
 use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
@@ -16,6 +17,23 @@ class PesertaCourseController extends Controller
 
         return view('courses.confirmation', compact('pesertaCourse', 'id'));
     }
+
+    public function startExam(Request $request, $id)
+    {
+        $pesertaCourse = PesertaCourse::with('course')->findOrFail($id);
+
+        $pesertaCourse->update([
+            'status_pengerjaan' => 'sedang_dikerjakan',
+            'start_exam' => now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'duration_minutes' => $pesertaCourse->course->duration_minutes,
+            'start_time' => now()->timestamp, 
+        ]);
+    }
+
     public function showQuiz($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
@@ -37,7 +55,7 @@ class PesertaCourseController extends Controller
             ->first();
         $allAnswers = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
             ->get()
-            ->pluck('answer_id', 'question_id'); 
+            ->pluck('answer_id', 'question_id');
         return response()->json([
             'status' => 'success',
             'question_number' => $numberQuestion,
@@ -54,7 +72,7 @@ class PesertaCourseController extends Controller
             'selected_answer' => $answer ? $answer->answer_id : null,
             'total_questions' => $pesertaCourse->course->questions()->count(),
         ]);
-    }  
+    }
 
     public function storeAnswer(Request $request)
     {
@@ -96,5 +114,34 @@ class PesertaCourseController extends Controller
             ->first();
 
         return $correctAnswer && $correctAnswer->id == $answerId;
+    }
+
+    public function finished($id)
+    {
+        $pesertaCourse = PesertaCourse::with(['peserta', 'course', 'peserta.mainDealer'])
+                            ->findOrFail($id);
+    
+        return view('courses.examfinished', compact('pesertaCourse'));
+    }
+
+    public function finishExam(Request $request, $id)
+    {
+        $pesertaCourse = PesertaCourse::find($id);
+    
+        if (!$pesertaCourse) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.']);
+        }
+    
+        $pesertaCourse->update([
+            'sisa_waktu' => $request->sisa_waktu ?? 0,
+            'end_exam' => Carbon::now(),
+            'status_pengerjaan' => 'selesai',
+        ]);
+    
+        if ($request->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Ujian berhasil diakhiri.']);
+        }
+    
+        return redirect()->route('exam.finished');
     }
 }

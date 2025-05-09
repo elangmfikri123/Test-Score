@@ -9,10 +9,12 @@
                     <div class="page-wrapper">
                         <div class="page-header m-t-50"></div>
                         <div class="page-body">
-                            <div class="card borderless-card">
-                                <div class="card-block success-breadcrumb">
-                                    <div class="breadcrumb-header">
-                                        <h5>Selamat Datang Elang Muhammad Fikhri !</h5>
+                            <div class="row justify-content-center">
+                                <div class="col-md">
+                                    <div class="card borderless-card">
+                                        <div class="card-block success-breadcrumb text-center py-4">
+                                            <h5>Selamat Mengerjakan Ujian !</h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -54,7 +56,7 @@
                                                         <td>: {{ $pesertaCourse->peserta->maindealer->nama_md ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th>Category</th>
+                                                        <th>Kategori</th>
                                                         <td>: {{ $pesertaCourse->course->category->namacategory ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
@@ -86,21 +88,29 @@
     <script>
         document.getElementById('btnMulaiUjian').addEventListener('click', function (e) {
             e.preventDefault();
-    
             Swal.fire({
                 title: 'Yakin Untuk Memulai Ujian?',
                 text: "Waktu akan mulai dihitung setelah kamu klik 'Ya'",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, Mulai',
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "{{ route('exam.start', ['id' => $pesertaCourse->id]) }}";
+                    $.ajax({
+                        url: '/exam/start/{{ $pesertaCourse->id }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                window.location.href = "{{ route('exam.start', ['id' => $pesertaCourse->id]) }}";
+                            }
+                        }
+                    });
                 }
             });
         });
-    </script>
+    </script> 
 @endsection

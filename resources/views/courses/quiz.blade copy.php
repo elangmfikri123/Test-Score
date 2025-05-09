@@ -65,62 +65,14 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentQuestion = 1;
         const pesertaCourseId = {{ $pesertaCourse->id }};
-        const durationMinutes = {{ $pesertaCourse->course->duration_minutes }};
-        const timerKey = `quiz_end_time_${pesertaCourseId}`;
         let answeredQuestions = {}; 
-        let endTime;
-    
-        // TIMER START
-        if (localStorage.getItem(timerKey)) {
-            endTime = parseInt(localStorage.getItem(timerKey));
-        } else {
-            endTime = new Date().getTime() + durationMinutes * 60 * 1000;
-            localStorage.setItem(timerKey, endTime);
-        }
-    
-        function getRemainingTime() {
-            const now = new Date().getTime();
-            return Math.max(0, endTime - now);
-        }
-    
-        function formatTime(ms) {
-            const hours = Math.floor(ms / (1000 * 60 * 60));
-            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((ms % (1000 * 60)) / 1000);
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-    
-        function updateTimer() {
-            const remaining = getRemainingTime();
-            if (remaining <= 0) {
-                clearInterval(timerInterval);
-                $('#timer').text('00:00:00');
-                localStorage.removeItem(timerKey);
-                Swal.fire({
-                    title: 'Waktu Anda Habis',
-                    text: 'Ujian akan diakhiri otomatis.',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    finishExam();
-                });
-            } else {
-                $('#timer').text(formatTime(remaining));
-            }
-        }
-    
-        const timerInterval = setInterval(updateTimer, 1000);
-        updateTimer();
-
         function submitAnswer(answerId, btnElement) {
             $('#answer-options .btn').removeClass('btn-primary text-white').addClass('btn-outline-primary');
             $(btnElement).removeClass('btn-outline-primary').addClass('btn-primary text-white');
             answeredQuestions[currentQuestion] = answerId;
-    
             $.post(`/exam/answer`, {
                 _token: '{{ csrf_token() }}',
                 peserta_course_id: pesertaCourseId,
@@ -131,19 +83,18 @@
                     alert(response.message);
                 }
             });
-    
             $(`.question-btn[data-number="${currentQuestion}"]`)
-                .removeClass('btn-light')
-                .addClass('btn-success');
+            .removeClass('btn-light')
+            .addClass('btn-success');
         }
-    
+        
         function loadQuestion(questionNumber) {
             $.get(`/exam/${pesertaCourseId}/${questionNumber}`, function (response) {
                 if (response.status === 'success') {
                     answeredQuestions = response.answered_questions || {};
                     $('#question-number').text('Soal Nomor. ' + response.question_number);
                     $('#question-text').html(response.pertanyaan);
-    
+
                     let answersHtml = '';
                     response.answers.forEach(answer => {
                         const isAnswered = response.selected_answer === answer.id;
@@ -158,7 +109,7 @@
                                 <input class="form-check-input d-none" type="radio" name="answer" id="option${answer.id}" value="${answer.id}">
                             </div>`;
                     });
-    
+
                     $('#answer-options').html(answersHtml);
                     $('#btn-prev').prop('disabled', questionNumber === 1);
                     $('#btn-next').prop('disabled', questionNumber === response.total_questions);
@@ -168,14 +119,15 @@
                 }
             });
         }
-    
+
         function renderQuestionButtons(total) {
             const container = $('#question-buttons');
             container.empty();
-    
+
             for (let i = 1; i <= total; i++) {
                 let btnClass = 'btn-light';
-                if (answeredQuestions[i]) {
+                const questionId = i;
+                if (answeredQuestions[questionId]) {
                     btnClass = 'btn-success';
                 }
                 container.append(`
@@ -190,70 +142,75 @@
                 `);
             }
         }
-    
-        function finishExam() {
-            const remaining = getRemainingTime();
-            const remainingSeconds = Math.floor(remaining / 1000);
-    
-            $.ajax({
-                url: `/exam/finish/${pesertaCourseId}`,
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    sisa_waktu: remainingSeconds
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        localStorage.removeItem(timerKey);
-                        window.location.href = "/finished/exam/{{ $pesertaCourse->id }}";
-                    } else {
-                        Swal.fire('Gagal!', response.message, 'error');
-                    }
-                },
-                error: function () {
-                    Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ujian.', 'error');
-                }
-            });
-        }
-    
+
         $(document).on('click', '#btn-prev', function () {
             if (currentQuestion > 1) {
                 currentQuestion--;
                 loadQuestion(currentQuestion);
             }
         });
-    
+
         $(document).on('click', '#btn-next', function () {
             currentQuestion++;
             loadQuestion(currentQuestion);
         });
-    
+
         $(document).on('click', '.question-btn', function () {
             const number = parseInt($(this).data('number'));
             currentQuestion = number;
             loadQuestion(number);
         });
-    
+
         $(document).ready(function () {
             loadQuestion(currentQuestion);
-    
-            // Tombol Akhiri Ujian Manual
-            $('.btn-primary.mt-3').on('click', function () {
-                Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: 'Ujian akan segera diakhiri.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ya, akhiri ujian!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        finishExam();
-                    }
-                });
-            });
         });
     </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        const pesertaCourseId = {{ $pesertaCourse->id }};
+        const durationMinutes = {{ $pesertaCourse->course->duration_minutes }};
+        const timerKey = `quiz_end_time_${pesertaCourseId}`;
+        let endTime;
+
+        if (localStorage.getItem(timerKey)) {
+            endTime = parseInt(localStorage.getItem(timerKey));
+        } else {
+            endTime = new Date().getTime() + durationMinutes * 60 * 1000;
+            localStorage.setItem(timerKey, endTime);
+        }
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                $('#timer').text('00:00:00');
+                localStorage.removeItem(timerKey);
+                Swal.fire({
+                    title: 'Waktu Anda Habis',
+                    text: 'Ujian telah selesai secara otomatis',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = "/exam/finish/{{ $pesertaCourse->id }}";
+                });
+
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            $('#timer').text(
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+            );
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    });
+</script>
 @endsection

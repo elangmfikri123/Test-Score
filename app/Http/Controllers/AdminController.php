@@ -31,7 +31,6 @@ class AdminController extends Controller
             $latestPeserta = Peserta::where('category_id', $category->category_id)
                 ->orderBy('created_at', 'desc')
                 ->first();
-
             $category->latest_created_at = $latestPeserta ? $latestPeserta->created_at->format('H:i:s') : 'Tidak ada data';
         }
         return view('admin.admindashboard', compact('categories'));

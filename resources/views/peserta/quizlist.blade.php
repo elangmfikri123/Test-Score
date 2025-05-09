@@ -20,8 +20,8 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" style="width: 20px;">No</th>
-                                                        <th class="text-center">Name Quiz</th>
-                                                        <th class="text-center">Category</th>
+                                                        <th class="text-center">Nama Quiz</th>
+                                                        <th class="text-center">Kategori</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Action</th>
@@ -41,10 +41,10 @@
                                               lengthChange: true,
                                               columns: [
                                                     { data: 'DT_RowIndex', name: 'DT_RowIndex', className: 'text-center' },
-                                                    { data: 'nama', name: 'nama' },
-                                                    { data: 'categori', name: 'categori' },
-                                                    { data: 'start_date', name: 'start_date' },
-                                                    { data: 'end_date', name: 'end_date' },
+                                                    { data: 'nama', name: 'nama', className: 'text-center' },
+                                                    { data: 'categori', name: 'categori', className: 'text-center' },
+                                                    { data: 'start_date', name: 'start_date', className: 'text-center' },
+                                                    { data: 'end_date', name: 'end_date', className: 'text-center' },
                                                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                                 ],
                                               });
