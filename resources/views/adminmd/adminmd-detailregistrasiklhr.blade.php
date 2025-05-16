@@ -86,7 +86,6 @@
                                                             </table>
                                                         </div>
                                                     </div>
-
                                                     <div class="col-xl-6">
                                                         <div class="table-responsive">
                                                             <table class="table">
@@ -168,7 +167,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <iframe id="pdfViewerFrame" src="" width="100%" height="470px"
+                                    <iframe id="pdfViewerFrame" src="" width="100%" height="490px"
                                         style="border: none;"></iframe>
                                 </div>
                                 <div class="modal-footer">

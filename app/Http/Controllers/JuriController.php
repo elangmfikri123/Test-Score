@@ -14,4 +14,8 @@ class JuriController extends Controller
     {
         return view('juri.juri-listpeserta');
     }
+    public function showScoring ()
+    {
+        return view('juri.juri-scorecard');
+    }
 }

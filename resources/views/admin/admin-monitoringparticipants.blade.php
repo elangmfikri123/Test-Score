@@ -54,7 +54,7 @@
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Honda ID</th>
                                                         <th class="text-center">Nama</th>
-                                                        <th class="text-center">Category</th>
+                                                        <th class="text-center">Kategori</th>
                                                         <th class="text-center">Status</th>
                                                         <th class="text-center">Durasi</th>
                                                         <th class="text-center">Action</th>

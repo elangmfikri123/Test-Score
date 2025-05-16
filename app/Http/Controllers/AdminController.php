@@ -111,7 +111,7 @@ class AdminController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-                $edit = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                $edit = '<button class="btn btn-sm btn-warning" onclick="editUser(' . $row->id . ')">Edit</button>';
                 return $action . ' ' . $edit;
             })
             ->rawColumns(['status', 'action'])
@@ -119,7 +119,6 @@ class AdminController extends Controller
 
         return $result;
     }
-
 
     public function store(Request $request)
     {
@@ -170,6 +169,58 @@ class AdminController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $user = User::with(['peserta', 'admin', 'juri'])->findOrFail($id);
+
+        $response = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'role' => $user->role,
+            'email' => $user->peserta->email ?? $user->admin->email ?? $user->juri->email ?? '',
+            'nama' => $user->peserta->nama ?? $user->admin->nama_lengkap ?? $user->juri->namajuri ?? '',
+            'maindealer_id' => $user->admin->maindealer_id ?? $user->peserta->maindealer_id ?? null
+        ];
+
+        return response()->json($response);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string',
+            'email' => 'required|email',
+            'username' => 'required',
+            'role' => 'required'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->username = $request->username;
+        $user->role = $request->role;
+        $user->save();
+
+        if ($user->role == 'AdminMD') {
+            $user->admin()->updateOrCreate(['user_id' => $id], [
+                'nama_lengkap' => $request->nama,
+                'email' => $request->email,
+                'maindealer_id' => $request->maindealer_id,
+            ]);
+        } elseif ($user->role == 'Peserta') {
+            $user->peserta()->updateOrCreate(['user_id' => $id], [
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'maindealer_id' => $request->maindealer_id,
+            ]);
+        } elseif ($user->role == 'Juri') {
+            $user->juri()->updateOrCreate(['user_id' => $id], [
+                'namajuri' => $request->nama,
+                'email' => $request->email,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'User berhasil diperbarui.']);
+    }
+
     public function pesertalist()
     {
         if (auth()->user()->role === 'Admin') {
@@ -185,7 +236,7 @@ class AdminController extends Controller
     {
         $admin = Admin::where('user_id', auth()->id())->first();
         $data = Peserta::with(['maindealer', 'category']);
-        
+
         if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
             $data->where('maindealer_id', $admin->maindealer_id);
         }
@@ -203,7 +254,7 @@ class AdminController extends Controller
                     });
             });
         }
-    
+
         $result = DataTables()->of($data)
             ->addIndexColumn()
             ->addColumn('category', function ($row) {
@@ -230,11 +281,11 @@ class AdminController extends Controller
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
                 $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
-                return $detail.' '.$edit;
+                return $detail . ' ' . $edit;
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
-    
+
         return $result;
     }
 

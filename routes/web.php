@@ -33,10 +33,13 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/check-session', [AuthController::class, 'checkSession'])->name('check.session');
+
 //ADMINISTRATOR
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
     Route::get('/listuser', [AdminController::class, 'userlist'])->name('admin.userlist');
+    Route::get('/user/{id}', [AdminController::class, 'show']);
+    Route::put('/user/{id}', [AdminController::class, 'update'])->name('user.update');
     Route::get('/get-user/data', [AdminController::class, 'getusertable']);
     Route::post('/force-logout/{id}', [AuthController::class, 'forceLogout']);
     Route::post('/user/store', [AdminController::class, 'store'])->name('user.store');
@@ -112,6 +115,9 @@ Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
 Route::middleware(['auth', 'role:Juri'])->group(function () {
     Route::get('/juri/index', [JuriController::class, 'index']);
     Route::get('/peserta/list', [JuriController::class, 'pesertalist']);
+
+    Route::get('/scorecard/scoring', [JuriController::class, 'showScoring']);
+
 
 });
 

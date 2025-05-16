@@ -18,7 +18,7 @@
     </div>
 
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 50 Mb *</label>
+        <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 20 Mb *</label>
         <div class="col-sm-9">
             <input type="file" class="form-control" accept=".pdf,.ppt,.pptx" name="file_project">
             
