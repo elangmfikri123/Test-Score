@@ -93,8 +93,8 @@
                                                 <td class="text-center">
                                                     <a href="https://drive.google.com/drive/folders/1-PtNFx19Yr1SbX91PnyOuEoNAl_KhR2d" 
                                                        target="_blank" 
-                                                       class="btn btn-sm btn-info ">
-                                                       <i class="feather icon-download"></i> Download
+                                                       class="btn btn-sm btn-warning ">
+                                                       <i class="feather icon-upload"></i> Upload
                                                     </a>
                                                 </td>
                                             </tr>
