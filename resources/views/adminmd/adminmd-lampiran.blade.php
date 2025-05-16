@@ -87,6 +87,17 @@
                                                     </a>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <th class="text-center" style="width: 100px;">7</th>
+                                                <td class="text-center">File Video Pendukung Project</td>
+                                                <td class="text-center">
+                                                    <a href="https://drive.google.com/drive/folders/1-PtNFx19Yr1SbX91PnyOuEoNAl_KhR2d" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-info ">
+                                                       <i class="feather icon-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
                                     </tbody>
                                 </table>
                             </div>
