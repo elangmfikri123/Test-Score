@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Juri;
 use App\Models\User;
 use App\Models\Admin;
-use App\Models\Category;
 use App\Models\Peserta;
+use App\Models\Category;
 use App\Models\MainDealer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -278,11 +279,26 @@ class AdminController extends Controller
             ->addColumn('createdtime', function ($row) {
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
+            // ->addColumn('action', function ($row) {
+            //     $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+            //     $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+            //     return $detail . ' ' . $edit;
+            // })
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-                $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+            
+                $user = auth()->user();
+                $now = Carbon::now();
+                $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+            
+                if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
+                    $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';
+                } else {
+                    $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                }
+            
                 return $detail . ' ' . $edit;
-            })
+            })           
             ->rawColumns(['status', 'action'])
             ->toJson();
 

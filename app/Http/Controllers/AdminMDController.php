@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Peserta;
@@ -42,16 +43,36 @@ class AdminMDController extends Controller
         return view('adminmd.adminmd-index', compact('categories'));
     }
 
+    // public function registrasiPeserta()
+    // {
+    //     $user = Auth::user();
+
+    //     if ($user->role === 'AdminMD') {
+    //         $admin = Admin::where('user_id', $user->id)->first();
+    //         $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+    //     } else {
+    //         $mainDealers = MainDealer::all();
+    //     }
+    //     $categories = Category::select('id', 'namacategory')->get();
+    //     return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
+    // }
+
     public function registrasiPeserta()
     {
         $user = Auth::user();
-        
+
         if ($user->role === 'AdminMD') {
+            $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+            if (now()->greaterThanOrEqualTo($deadline)) {
+                return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
+            }
+
             $admin = Admin::where('user_id', $user->id)->first();
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
         } else {
             $mainDealers = MainDealer::all();
         }
+
         $categories = Category::select('id', 'namacategory')->get();
         return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
     }
@@ -152,22 +173,30 @@ class AdminMDController extends Controller
             if ($request->hasFile('file_lampiranklhn')) {
                 $filesData['file_lampiranklhn'] = $request->file('file_lampiranklhn')->storeAs(
                     'files/lampiran_klhn',
-                    $request->file('file_lampiranklhn')->getClientOriginalName(), 'public');
+                    $request->file('file_lampiranklhn')->getClientOriginalName(),
+                    'public'
+                );
             }
             if ($request->hasFile('file_project')) {
                 $filesData['file_project'] = $request->file('file_project')->storeAs(
                     'files/project',
-                    $request->file('file_project')->getClientOriginalName(), 'public');
+                    $request->file('file_project')->getClientOriginalName(),
+                    'public'
+                );
             }
             if ($request->hasFile('foto_profil')) {
                 $filesData['foto_profil'] = $request->file('foto_profil')->storeAs(
                     'files/foto_profil',
-                    $request->file('foto_profil')->getClientOriginalName(), 'public');
+                    $request->file('foto_profil')->getClientOriginalName(),
+                    'public'
+                );
             }
             if ($request->hasFile('ktp')) {
                 $filesData['ktp'] = $request->file('ktp')->storeAs(
                     'files/ktp',
-                    $request->file('ktp')->getClientOriginalName(), 'public' );
+                    $request->file('ktp')->getClientOriginalName(),
+                    'public'
+                );
             }
             FilesPeserta::create($filesData);
 
@@ -271,6 +300,44 @@ class AdminMDController extends Controller
         ));
     }
 
+    // public function editPeserta($id)
+    // {
+    //     $peserta = Peserta::with([
+    //         'user',
+    //         'identitasAtasan',
+    //         'identitasDealer',
+    //         'filesPeserta',
+    //         'category',
+    //         'maindealer',
+    //         'riwayatKlhn'
+    //     ])->findOrFail($id);
+
+    //     if (auth()->user()->role === 'AdminMD') {
+    //         $admin = Admin::where('user_id', auth()->id())->first();
+    //         if (!$admin || $admin->maindealer_id !== $peserta->maindealer_id) {
+    //             return redirect()->back()->with('error', 'Anda tidak memiliki akses ke data ini.');
+    //         }
+    //         $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
+    //     } else {
+    //         $mainDealers = MainDealer::all();
+    //     }
+
+    //     $categories = Category::select('id', 'namacategory')->get();
+    //     $riwayat_klhn = $peserta->riwayatKlhn->map(function ($item) {
+    //         return [
+    //             'tahun_keikutsertaan' => $item->tahun_keikutsertaan,
+    //             'vcategory' => $item->vcategory,
+    //             'status_kepesertaan' => $item->status_kepesertaan,
+    //         ];
+    //     })->toArray();
+    //     return view('adminmd.adminmd-editregistrasi', compact(
+    //         'peserta',
+    //         'categories',
+    //         'mainDealers',
+    //         'riwayat_klhn'
+    //     ));
+    // }
+
     public function editPeserta($id)
     {
         $peserta = Peserta::with([
@@ -283,11 +350,19 @@ class AdminMDController extends Controller
             'riwayatKlhn'
         ])->findOrFail($id);
 
+        $now = \Carbon\Carbon::now();
+        $deadline = \Carbon\Carbon::create(2025, 5, 19, 23, 59, 0);
+
         if (auth()->user()->role === 'AdminMD') {
+            if ($now->greaterThan($deadline)) {
+                return redirect()->back()->with('error', 'Akses edit ditutup setelah 19 Mei 2025 pukul 23:59.');
+            }
+
             $admin = Admin::where('user_id', auth()->id())->first();
             if (!$admin || $admin->maindealer_id !== $peserta->maindealer_id) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses ke data ini.');
             }
+
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
         } else {
             $mainDealers = MainDealer::all();
@@ -301,6 +376,7 @@ class AdminMDController extends Controller
                 'status_kepesertaan' => $item->status_kepesertaan,
             ];
         })->toArray();
+
         return view('adminmd.adminmd-editregistrasi', compact(
             'peserta',
             'categories',
@@ -468,7 +544,7 @@ class AdminMDController extends Controller
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/submissionklhr/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
                 $edit = '<a href="' . url('/submissionklhr/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
-                return $detail.' '.$edit;
+                return $detail . ' ' . $edit;
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -499,14 +575,20 @@ class AdminMDController extends Controller
             'file_dokumpelaksanaan' => 'required|file|mimes:pdf|max:15360',
         ]);
 
-        $fileSubmission = $request->file('file_submission')->storeAs('submissions',
-            $request->file('file_submission')->getClientOriginalName(),'public'
+        $fileSubmission = $request->file('file_submission')->storeAs(
+            'submissions',
+            $request->file('file_submission')->getClientOriginalName(),
+            'public'
         );
-        $fileTtd = $request->file('file_ttdkanwil')->storeAs('ttd',
-            $request->file('file_ttdkanwil')->getClientOriginalName(),'public'
+        $fileTtd = $request->file('file_ttdkanwil')->storeAs(
+            'ttd',
+            $request->file('file_ttdkanwil')->getClientOriginalName(),
+            'public'
         );
-        $fileEvidence = $request->file('file_dokumpelaksanaan')->storeAs('evidence',
-            $request->file('file_dokumpelaksanaan')->getClientOriginalName(),'public'
+        $fileEvidence = $request->file('file_dokumpelaksanaan')->storeAs(
+            'evidence',
+            $request->file('file_dokumpelaksanaan')->getClientOriginalName(),
+            'public'
         );
         SubmissionKlhr::create([
             'maindealer_id' => $request->maindealer_id,
@@ -521,7 +603,8 @@ class AdminMDController extends Controller
         return redirect()->route('submission.klhr')->with('success', 'Data submission KLHR berhasil disimpan!');
     }
 
-    public function submissionDetail ($id) {
+    public function submissionDetail($id)
+    {
         $submissiondetail = SubmissionKlhr::findOrFail($id);
         $user = Auth::user();
         if ($user->role === 'AdminMD') {
@@ -558,7 +641,7 @@ class AdminMDController extends Controller
             'file_ttdkanwil' => 'nullable|file|mimes:pdf|max:15360',
             'file_dokumpelaksanaan' => 'nullable|file|mimes:pdf|max:15360',
         ]);
-    
+
         $data = [
             'maindealer_id' => $request->maindealer_id,
             'link_klhr1' => $request->link_klhr1,
@@ -566,26 +649,35 @@ class AdminMDController extends Controller
             'link_klhr3' => $request->link_klhr3,
         ];
         if ($request->hasFile('file_submission')) {
-            $data['file_submission'] = $request->file('file_submission')->storeAs('submissions',
-                $request->file('file_submission')->getClientOriginalName(), 'public');
+            $data['file_submission'] = $request->file('file_submission')->storeAs(
+                'submissions',
+                $request->file('file_submission')->getClientOriginalName(),
+                'public'
+            );
         }
-    
+
         if ($request->hasFile('file_ttdkanwil')) {
-            $data['file_ttdkanwil'] = $request->file('file_ttdkanwil')->storeAs('ttd',
-                $request->file('file_ttdkanwil')->getClientOriginalName(), 'public');
+            $data['file_ttdkanwil'] = $request->file('file_ttdkanwil')->storeAs(
+                'ttd',
+                $request->file('file_ttdkanwil')->getClientOriginalName(),
+                'public'
+            );
         }
-    
+
         if ($request->hasFile('file_dokumpelaksanaan')) {
-            $data['file_dokumpelaksanaan'] = $request->file('file_dokumpelaksanaan')->storeAs('evidence',
-                $request->file('file_dokumpelaksanaan')->getClientOriginalName(), 'public');
+            $data['file_dokumpelaksanaan'] = $request->file('file_dokumpelaksanaan')->storeAs(
+                'evidence',
+                $request->file('file_dokumpelaksanaan')->getClientOriginalName(),
+                'public'
+            );
         }
-    
+
         $submission->update($data);
         return redirect()->route('submission.klhr')->with('success', 'Data submission KLHR berhasil diperbarui!');
     }
 
-    public function lampiranFile () {
+    public function lampiranFile()
+    {
         return view('adminmd.adminmd-lampiran');
     }
-    
 }

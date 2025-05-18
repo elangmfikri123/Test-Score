@@ -112,19 +112,11 @@
         automatic_uploads: true,
         file_picker_types: 'image',
         images_upload_handler: function (blobInfo, success, failure) {
-            // Format nama file yang lebih sederhana
             const fileName = 'img_' + Date.now() + '_' + Math.floor(Math.random() * 1000) + '.' + blobInfo.blob().type.split('/')[1];
-            
-            // Simpan gambar sebagai file (ini hanya simulasi di frontend)
-            // Di implementasi nyata, Anda perlu upload ke server
             const fileReader = new FileReader();
             
             fileReader.onload = function(e) {
-                // Di sini Anda bisa mengirim gambar ke server jika diperlukan
-                // Untuk contoh ini, kita akan menggunakan URL objek
                 const objectURL = URL.createObjectURL(blobInfo.blob());
-                
-                // Simpan referensi nama file sebagai alt text
                 success(objectURL, { alt: fileName });
             };
             
@@ -137,12 +129,10 @@
             input.click();
             input.onchange = function() {
                 var file = input.files[0];
-                // Format nama file yang rapi
                 const fileName = 'img_' + Date.now() + '_' + file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
                 
                 var reader = new FileReader();
                 reader.onload = function(e) {
-                    // Gunakan nama file sebagai alt text
                     callback(e.target.result, {
                         alt: fileName,
                         title: fileName
@@ -200,7 +190,6 @@
                                                     var file = input.files[0];
                                                     var reader = new FileReader();
                                                     reader.onload = function(e) {
-                                                        // Use the callback to insert the image
                                                         callback(e.target.result, {
                                                             alt: file.name
                                                         });
@@ -217,7 +206,7 @@
                                     
                                     function updateCheckboxBehavior() {
                                         document.querySelectorAll('.is_correct').forEach(checkbox => {
-                                            checkbox.removeEventListener('change', checkbox.changeHandler); // avoid duplicate
+                                            checkbox.removeEventListener('change', checkbox.changeHandler);
                                             checkbox.changeHandler = function() {
                                                 document.querySelectorAll('.is_correct').forEach(cb => {
                                                     cb.checked = false;

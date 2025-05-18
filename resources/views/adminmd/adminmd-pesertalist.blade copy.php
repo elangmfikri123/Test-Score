@@ -13,29 +13,9 @@
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h5>Data Peserta</h5>
-                                    @php
-                                    use Illuminate\Support\Facades\Auth;
-                                    use Carbon\Carbon;
-                                
-                                    $user = Auth::user();
-                                    $now = Carbon::now();
-                                    $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
-                                @endphp
-                                
-                                @if($user->role === 'AdminMD' && $now->lessThanOrEqualTo($deadline))
-                                <a href="{{ url('/registrasi/create') }}" class="btn btn-primary btn-sm">
-                                    <i class="ion-plus-round"></i> Tambah
-                                </a>
-                            @elseif($user->role === 'AdminMD')
-                                <button class="btn btn-primary btn-sm" onclick="alertDeadline()">
-                                    <i class="ion-plus-round"></i> Tambah
-                                </button>
-                            @elseif($user->role === 'Admin')
-                                <a href="{{ url('/registrasi/create') }}" class="btn btn-primary btn-sm">
-                                    <i class="ion-plus-round"></i> Tambah
-                                </a>
-                            @endif                            
-                                
+                                    <a href="{{ url('/registrasi/create') }}" class="btn btn-primary btn-sm">
+                                        <i class="ion-plus-round"></i> Tambah
+                                    </a>
                                 </div>
                                 <div class="card-block">
                                     <div class="table-responsive">
@@ -106,24 +86,4 @@
     });
 </script>
 @endif
-<script>
-    function alertDeadline() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Pendaftaran Ditutup',
-            text: 'Maaf, pendaftaran sudah ditutup pada 19 Mei 2025 pukul 23:59.',
-            confirmButtonText: 'OK'
-        });
-    }
-</script>
-<script>
-    function alertEditDeadline() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Edit Ditutup',
-            text: 'Maaf, fitur edit sudah ditutup pada 19 Mei 2025 pukul 23:59.',
-            confirmButtonText: 'OK'
-        });
-    }
-</script>
 @endsection

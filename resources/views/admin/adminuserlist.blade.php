@@ -180,7 +180,7 @@
                                     </div>
                                     <div class="form-group" id="maindealerField" style="display:none">
                                         <label>Main Dealer</label>
-                                        <select class="form-control select2-maindealer" name="maindealer_id">
+                                        <select class="form-control" name="maindealer_id">
                                             <option value="">Pilih Main Dealer</option>
                                             @foreach ($mainDealers as $md)
                                                 <option value="{{ $md->id }}">{{ $md->kodemd }} -
@@ -232,12 +232,18 @@
                                     <div class="form-group">
                                         <label>Username</label>
                                         <input type="text" name="username" id="edit_username" class="form-control"
-                                            required>
+                                            readonly>
                                     </div>
                                     <div class="form-group">
                                         <label>Password</label>
-                                        <input type="password" name="password" id="edit_password" class="form-control"
-                                            required>
+                                        <div class="input-group">
+                                            <input type="password" id="password" name="password" class="form-control" autocomplete="off" inputmode="text"
+                                                required placeholder="Password">
+                                            <span class="input-group-addon" onclick="togglePassword()"
+                                                style="cursor: pointer;">
+                                                <i class="ion-eye-disabled" id="eye-icon"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label>Role</label>
@@ -339,7 +345,36 @@
                         });
                     });
                 </script>
+        <style>
+            .icon-black {
+                color: #444 !important;
+                font-size: 16px;
+            }
 
+            #eye-icon {
+                font-size: 16px;
+                color: #444;
+            }
+            input::-ms-reveal {
+                display: none;
+            }
+        </style>
+        <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const eyeIcon = document.getElementById('eye-icon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.classList.remove('ion-eye-disabled');
+                    eyeIcon.classList.add('ion-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.classList.remove('ion-eye');
+                    eyeIcon.classList.add('ion-eye-disabled');
+                }
+            }
+        </script>
             </div>
         </div>
     </div>
