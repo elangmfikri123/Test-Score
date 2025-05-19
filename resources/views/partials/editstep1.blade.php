@@ -35,12 +35,8 @@
                                             <select class="form-control requiredform select2-init" name="jabatan">
                                                 <option value="" disabled {{ old('jabatan', $peserta->jabatan ?? '') == '' ? 'selected' : '' }}>Pilih Jabatan</option>
                                                 @php
-                                                    $jabatanList = [
-                                                        'Delivery Man', 'Salesman', 'Admin STNK/BPKB', 'PIC Parts', 'Kasir',
-                                                        'Kepala Bengkel', 'Koordinator Salesman', 'Sales Counter',
-                                                        'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM',
-                                                        'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant'
-                                                    ];
+                                                    $jabatanList = ['Delivery Man', 'Salesman', 'Admin STNK/BPKB', 'PIC Parts', 'Kasir', 'Kepala Bengkel', 'Koordinator Salesman',
+                                                    'Sales Counter', 'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM', 'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant', 'Big Bike Manager'];
                                                 @endphp
                                                 @foreach($jabatanList as $jabatan)
                                                     <option value="{{ $jabatan }}" {{ old('jabatan', $peserta->jabatan ?? '') == $jabatan ? 'selected' : '' }}>
@@ -153,7 +149,7 @@
                                             <select class="form-control requiredform" name="pendidikan_terakhir">
                                                 <option value="" disabled {{ old('pendidikan_terakhir', $peserta->pendidikan_terakhir ?? '') == '' ? 'selected' : '' }}>Pilih Pendidikan</option>
                                                 @php
-                                                    $pendidikanList = ['SMA/SMK Sederajat', 'Diploma', 'S1', 'S2', 'S3'];
+                                                    $pendidikanList = [ 'SD Sederajat', 'SMP Sederajat', 'SMA/SMK Sederajat', 'Diploma', 'S1', 'S2', 'S3'];
                                                 @endphp
                                                 @foreach($pendidikanList as $pendidikan)
                                                     <option value="{{ $pendidikan }}" {{ old('pendidikan_terakhir', $peserta->pendidikan_terakhir ?? '') == $pendidikan ? 'selected' : '' }}>

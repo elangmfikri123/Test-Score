@@ -439,26 +439,55 @@ class AdminMDController extends Controller
             $files->tahun_pembuatan_project = $request->tahun_pembuatan_project ?? null;
             $files->validasi = $request->validasi ?? null;
 
+            // if ($request->hasFile('file_lampiranklhn')) {
+            //     Storage::disk('public')->delete($files->file_lampiranklhn);
+            //     $originalName = $request->file('file_lampiranklhn')->getClientOriginalName();
+            //     $files->file_lampiranklhn = $request->file('file_lampiranklhn')->storeAs('files/lampiran_klhn', $originalName, 'public');
+            // }
+            // if ($request->hasFile('file_project')) {
+            //     Storage::disk('public')->delete($files->file_project);
+            //     $originalName = $request->file('file_project')->getClientOriginalName();
+            //     $files->file_project = $request->file('file_project')->storeAs('files/project', $originalName, 'public');
+            // }
+            // if ($request->hasFile('foto_profil')) {
+            //     Storage::disk('public')->delete($files->foto_profil);
+            //     $originalName = $request->file('foto_profil')->getClientOriginalName();
+            //     $files->foto_profil = $request->file('foto_profil')->storeAs('files/foto_profil', $originalName, 'public');
+            // }
+            // if ($request->hasFile('ktp')) {
+            //     Storage::disk('public')->delete($files->ktp);
+            //     $originalName = $request->file('ktp')->getClientOriginalName();
+            //     $files->ktp = $request->file('ktp')->storeAs('files/ktp', $originalName, 'public');
+            // }
+
             if ($request->hasFile('file_lampiranklhn')) {
                 Storage::disk('public')->delete($files->file_lampiranklhn);
                 $originalName = $request->file('file_lampiranklhn')->getClientOriginalName();
-                $files->file_lampiranklhn = $request->file('file_lampiranklhn')->storeAs('files/lampiran_klhn', $originalName, 'public');
+                $timestampedName = time() . '_' . $originalName;
+                $files->file_lampiranklhn = $request->file('file_lampiranklhn')->storeAs('files/lampiran_klhn', $timestampedName, 'public');
             }
+            
             if ($request->hasFile('file_project')) {
                 Storage::disk('public')->delete($files->file_project);
                 $originalName = $request->file('file_project')->getClientOriginalName();
-                $files->file_project = $request->file('file_project')->storeAs('files/project', $originalName, 'public');
+                $timestampedName = time() . '_' . $originalName;
+                $files->file_project = $request->file('file_project')->storeAs('files/project', $timestampedName, 'public');
             }
+            
             if ($request->hasFile('foto_profil')) {
                 Storage::disk('public')->delete($files->foto_profil);
                 $originalName = $request->file('foto_profil')->getClientOriginalName();
-                $files->foto_profil = $request->file('foto_profil')->storeAs('files/foto_profil', $originalName, 'public');
+                $timestampedName = time() . '_' . $originalName;
+                $files->foto_profil = $request->file('foto_profil')->storeAs('files/foto_profil', $timestampedName, 'public');
             }
+            
             if ($request->hasFile('ktp')) {
                 Storage::disk('public')->delete($files->ktp);
                 $originalName = $request->file('ktp')->getClientOriginalName();
-                $files->ktp = $request->file('ktp')->storeAs('files/ktp', $originalName, 'public');
+                $timestampedName = time() . '_' . $originalName;
+                $files->ktp = $request->file('ktp')->storeAs('files/ktp', $timestampedName, 'public');
             }
+            
             $files->save();
 
             DB::commit();

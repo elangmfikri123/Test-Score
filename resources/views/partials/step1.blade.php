@@ -31,7 +31,7 @@
                                                 <option value="" disabled selected>Pilih Jabatan</option>
                                                 @php
                                                     $jabatanList = ['Delivery Man', 'Salesman', 'Admin STNK/BPKB', 'PIC Parts', 'Kasir', 'Kepala Bengkel', 'Koordinator Salesman',
-                                                'Sales Counter', 'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM', 'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant'];
+                                                'Sales Counter', 'Koordinator Sales Counter', 'Kepala Cabang', 'PIC CRM', 'Pemilik In Charge (Owner)', 'Wing Sales People', 'Big Bike Consultant', 'Big Bike Manager'];
                                                 @endphp
                                                 @foreach($jabatanList as $jabatan)
                                                     <option value="{{ $jabatan }}">{{ $jabatan }}</option>
@@ -134,6 +134,8 @@
                                         <div class="col-sm-9">
                                             <select class="form-control requiredform" name="pendidikan_terakhir">
                                                 <option value="" disabled selected>Pilih Pendidikan</option>
+                                                <option value="SD Sederajat">SD Sederajat</option>
+                                                <option value="SMP Sederajat">SMP Sederajat</option>
                                                 <option value="SMA/SMK Sederajat">SMA/SMK Sederajat</option>
                                                 <option value="Diploma">Diploma</option>
                                                 <option value="S1">S1</option>
