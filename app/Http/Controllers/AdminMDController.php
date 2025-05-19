@@ -300,44 +300,6 @@ class AdminMDController extends Controller
         ));
     }
 
-    // public function editPeserta($id)
-    // {
-    //     $peserta = Peserta::with([
-    //         'user',
-    //         'identitasAtasan',
-    //         'identitasDealer',
-    //         'filesPeserta',
-    //         'category',
-    //         'maindealer',
-    //         'riwayatKlhn'
-    //     ])->findOrFail($id);
-
-    //     if (auth()->user()->role === 'AdminMD') {
-    //         $admin = Admin::where('user_id', auth()->id())->first();
-    //         if (!$admin || $admin->maindealer_id !== $peserta->maindealer_id) {
-    //             return redirect()->back()->with('error', 'Anda tidak memiliki akses ke data ini.');
-    //         }
-    //         $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
-    //     } else {
-    //         $mainDealers = MainDealer::all();
-    //     }
-
-    //     $categories = Category::select('id', 'namacategory')->get();
-    //     $riwayat_klhn = $peserta->riwayatKlhn->map(function ($item) {
-    //         return [
-    //             'tahun_keikutsertaan' => $item->tahun_keikutsertaan,
-    //             'vcategory' => $item->vcategory,
-    //             'status_kepesertaan' => $item->status_kepesertaan,
-    //         ];
-    //     })->toArray();
-    //     return view('adminmd.adminmd-editregistrasi', compact(
-    //         'peserta',
-    //         'categories',
-    //         'mainDealers',
-    //         'riwayat_klhn'
-    //     ));
-    // }
-
     public function editPeserta($id)
     {
         $peserta = Peserta::with([
@@ -350,8 +312,8 @@ class AdminMDController extends Controller
             'riwayatKlhn'
         ])->findOrFail($id);
 
-        $now = \Carbon\Carbon::now();
-        $deadline = \Carbon\Carbon::create(2025, 5, 19, 23, 59, 0);
+        $now = Carbon::now();
+        $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
 
         if (auth()->user()->role === 'AdminMD') {
             if ($now->greaterThan($deadline)) {

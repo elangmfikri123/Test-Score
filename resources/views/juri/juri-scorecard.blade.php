@@ -70,28 +70,29 @@
 
                                 {{-- Card Informasi --}}
                                 <div class="card mb-2">
-                                    <div class="card-header">
-                                        <h5>Information</h5>
-                                    </div>
                                     <div class="card-body">
+                                        <h6>Information</h6>
+                                        <div>
                                         <p><strong>Participant</strong><br> A ERWIN AGUSTIAWAN</p>
-                                        <p><strong>Main Dealer</strong><br> BANK CENTRAL ASIA</p>
-                                        <p><strong>Kategori</strong><br>Agent Inbound Large</p>
+                                        <p><strong>Main Dealer</strong><br> INDACO TRADING COY</p>
+                                        <p><strong>Kategori</strong><br>Team Leader</p>
+                                        </div>
                                     </div>
                                 </div>
                             
                                 {{-- Card Final Score --}}
                                 <div class="card mb-2">
                                     <div class="card-body d-flex align-items-center">
-                                        <div class="me-3">
-                                            <i class="bi bi-trophy-fill" style="font-size: 2rem; color: #0d6efd;"></i>
+                                        <div class="d-flex align-items-center justify-content-center" 
+                                             style="width: 50px; height: 50px; background-color: #cdcdcd; border-radius: 5px; margin-right: 1rem;">
+                                            <i class="icofont icofont-award" style="font-size: 1.5rem;"></i>
                                         </div>
                                         <div>
                                             <h5 class="mb-0">46.29%</h5>
-                                            <small>Total Score</small>
+                                            <span>Total Score</span>
                                         </div>
                                     </div>
-                                </div>
+                                </div>                                
                             </div>
                             
 

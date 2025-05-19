@@ -279,11 +279,6 @@ class AdminController extends Controller
             ->addColumn('createdtime', function ($row) {
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
-            // ->addColumn('action', function ($row) {
-            //     $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-            //     $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
-            //     return $detail . ' ' . $edit;
-            // })
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
             

@@ -61,7 +61,7 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Nama Lengkap *</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Nama" name="nama" value="{{ old('honda_id', $peserta->nama) }}">
+                                            <input type="text" class="form-control requiredform" placeholder="Masukkan Nama" name="nama" value="{{ old('nama', $peserta->nama) }}">
                                             <span class="messages text-danger" style="font-size: 0.7rem;"></span>
                                         </div>
                                     </div>
