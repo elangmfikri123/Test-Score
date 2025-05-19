@@ -305,7 +305,7 @@ class AdminController extends Controller
 
                 $user = auth()->user();
                 $now = Carbon::now();
-                $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+                $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
 
                 if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
                     $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';

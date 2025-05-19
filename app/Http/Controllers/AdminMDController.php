@@ -62,7 +62,7 @@ class AdminMDController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+            $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }
@@ -352,7 +352,7 @@ class AdminMDController extends Controller
         ])->findOrFail($id);
 
         $now = Carbon::now();
-        $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+        $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
 
         if (auth()->user()->role === 'AdminMD') {
             if ($now->greaterThan($deadline)) {
@@ -571,17 +571,12 @@ class AdminMDController extends Controller
             ->addColumn('createdtime', function ($row) {
                 return $row->created_at ? $row->created_at->format('d-F-Y H:i') : '-';
             })
-            // ->addColumn('action', function ($row) {
-            //     $detail = '<a href="' . url('/submissionklhr/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-            //     $edit = '<a href="' . url('/submissionklhr/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
-            //     return $detail . ' ' . $edit;
-            // })
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/submissionklhr/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
 
                 $user = auth()->user();
                 $now = Carbon::now();
-                $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+                $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
 
                 if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
                     $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';
@@ -600,11 +595,11 @@ class AdminMDController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
+            $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }
-            
+
             $admin = Admin::where('user_id', $user->id)->first();
             $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
         } else {
