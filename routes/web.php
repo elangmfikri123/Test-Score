@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AdminMDController;
 use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\CategoryController;
@@ -92,6 +93,9 @@ Route::get('/admin-maindealers/lampiran', [AdminMDController::class, 'lampiranFi
 Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
     Route::get('/listpeserta', [AdminController::class, 'pesertalist'])->name('list.peserta');
     Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
+    Route::get('/api/category', [AdminController::class, 'apiCategory']);
+    Route::get('/api/maindealer', [AdminController::class, 'apiMaindealer']);
+    Route::get('/get-peserta/download', [ExportController::class, 'downloadPeserta'])->name('peserta.download');
 
     Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
     Route::post('/store/registrasi', [AdminMDController::class, 'storeRegister'])->name('registrasi.store');

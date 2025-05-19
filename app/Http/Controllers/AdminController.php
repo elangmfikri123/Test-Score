@@ -233,6 +233,21 @@ class AdminController extends Controller
         abort(403, 'Unauthorized action.');
     }
 
+    public function apiCategory()
+    {
+        $data = Category::select('id', 'namacategory')->get();
+        return response()->json($data);
+    }
+    public function apiMaindealer()
+    {
+        $admin = Admin::where('user_id', auth()->id())->first();
+        $query = MainDealer::select('id', 'kodemd', 'nama_md');
+        if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
+            $query->where('id', $admin->maindealer_id);
+        }
+        return response()->json($query->get());
+    }
+    
     public function getpesertatable(Request $request)
     {
         $admin = Admin::where('user_id', auth()->id())->first();
@@ -255,7 +270,12 @@ class AdminController extends Controller
                     });
             });
         }
-
+        if ($request->filled('category_id')) {
+            $data->where('category_id', $request->category_id);
+        }
+        if ($request->filled('maindealer_id')) {
+            $data->where('maindealer_id', $request->maindealer_id);
+        }
         $result = DataTables()->of($data)
             ->addIndexColumn()
             ->addColumn('category', function ($row) {
@@ -268,7 +288,7 @@ class AdminController extends Controller
                 if (in_array(auth()->user()->role, ['Admin', 'AdminMD'])) {
                     return match ($row->status_lolos) {
                         'Terkirim'    => '<label class="label label-info">Terkirim</label>',
-                        'Verifikasi'  => '<label class="label label-warning">Verifikasi</label>',
+                        'Verified'  => '<label class="label label-warning">Verified</label>',
                         'Lolos'       => '<label class="label label-success">Lolos</label>',
                         'Tidak Lolos' => '<label class="label label-danger">Tidak Lolos</label>',
                         default       => '<label class="label label-warning">Belum Diverifikasi</label>',
@@ -282,19 +302,19 @@ class AdminController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $detail = '<a href="' . url('/datapeserta/detail/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
-            
+
                 $user = auth()->user();
                 $now = Carbon::now();
                 $deadline = Carbon::create(2025, 5, 19, 23, 59, 0);
-            
+
                 if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
                     $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';
                 } else {
                     $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
                 }
-            
+
                 return $detail . ' ' . $edit;
-            })           
+            })
             ->rawColumns(['status', 'action'])
             ->toJson();
 

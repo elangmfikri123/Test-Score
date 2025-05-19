@@ -8,7 +8,6 @@
 
                     <div class="page-body">
                         <div class="row">
-
                             <div class="col-md-8">
                                 <div class="card">
                                     <div class="card-block table-border-style">
@@ -56,6 +55,27 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card">
+                                    <div class="card-block table-border-style">
+                                        <div class="table-responsive">
+                                            <table class="table table-styling">
+                                                <thead>
+                                                    <tr class="table-primary">
+                                                        <th class="text-center" style="width: 50px;">Catatan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr>
+                                                            <td class="text-center" style="width: 50px;">
+                                                                <textarea rows="6" cols="6" class="form-control" placeholder=""
+                                                                         style="resize: none; min-height: auto; max-height: auto; overflow: auto;"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-md-4">
@@ -70,12 +90,12 @@
 
                                 {{-- Card Informasi --}}
                                 <div class="card mb-2">
-                                    <div class="card-body">
-                                        <h6>Information</h6>
+                                    <div class="card-body p-3">
+                                        <h6 class="mb-3">Information</h6>
                                         <div>
-                                        <p><strong>Participant</strong><br><span>Elang Muhamamd Fikhri</span></p>
-                                        <p><strong>Main Dealer</strong><br><span>INDAKO TRADING COY</span></p>
-                                        <p><strong>Kategori</strong><br><span>Team Leader</span></p>
+                                            <p class="mb-2"><strong>Participant</strong><br>Elang Muhammad Fikhri</p>
+                                            <p class="mb-2"><strong>Main Dealer</strong><br>INDAKO TRADING COY</p>
+                                            <p class="mb-0"><strong>Kategori</strong><br>Team Leader</p>
                                         </div>
                                     </div>
                                 </div>

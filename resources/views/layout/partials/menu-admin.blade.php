@@ -40,6 +40,11 @@
                                                 <span class="pcoded-mtext">Submission KLHR</span>
                                             </a>
                                         </li>
+                                        {{-- <li class="">
+                                            <a href="{{ url('/reportregistrasi') }}">
+                                                <span class="pcoded-mtext">Data Peserta</span>
+                                            </a>
+                                        </li> --}}
                                     </ul>
                                 </li>
                                 <li class="pcoded-hasmenu">
