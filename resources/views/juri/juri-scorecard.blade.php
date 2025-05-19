@@ -73,9 +73,9 @@
                                     <div class="card-body">
                                         <h6>Information</h6>
                                         <div>
-                                        <p><strong>Participant</strong><br> A ERWIN AGUSTIAWAN</p>
-                                        <p><strong>Main Dealer</strong><br> INDACO TRADING COY</p>
-                                        <p><strong>Kategori</strong><br>Team Leader</p>
+                                        <p><strong>Participant</strong><br><span>Elang Muhamamd Fikhri</span></p>
+                                        <p><strong>Main Dealer</strong><br><span>INDAKO TRADING COY</span></p>
+                                        <p><strong>Kategori</strong><br><span>Team Leader</span></p>
                                         </div>
                                     </div>
                                 </div>

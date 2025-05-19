@@ -170,34 +170,73 @@ class AdminMDController extends Controller
                 'validasi' => $request->validasi ?? null,
             ];
 
+            // if ($request->hasFile('file_lampiranklhn')) {
+            //     $filesData['file_lampiranklhn'] = $request->file('file_lampiranklhn')->storeAs(
+            //         'files/lampiran_klhn',
+            //         $request->file('file_lampiranklhn')->getClientOriginalName(),
+            //         'public'
+            //     );
+            // }
+            // if ($request->hasFile('file_project')) {
+            //     $filesData['file_project'] = $request->file('file_project')->storeAs(
+            //         'files/project',
+            //         $request->file('file_project')->getClientOriginalName(),
+            //         'public'
+            //     );
+            // }
+            // if ($request->hasFile('foto_profil')) {
+            //     $filesData['foto_profil'] = $request->file('foto_profil')->storeAs(
+            //         'files/foto_profil',
+            //         $request->file('foto_profil')->getClientOriginalName(),
+            //         'public'
+            //     );
+            // }
+            // if ($request->hasFile('ktp')) {
+            //     $filesData['ktp'] = $request->file('ktp')->storeAs(
+            //         'files/ktp',
+            //         $request->file('ktp')->getClientOriginalName(),
+            //         'public'
+            //     );
+            // }
+
+            $timestamp = now()->format('Ymd_His');
+
             if ($request->hasFile('file_lampiranklhn')) {
-                $filesData['file_lampiranklhn'] = $request->file('file_lampiranklhn')->storeAs(
-                    'files/lampiran_klhn',
-                    $request->file('file_lampiranklhn')->getClientOriginalName(),
-                    'public'
-                );
+                $file = $request->file('file_lampiranklhn');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+
+                $filesData['file_lampiranklhn'] = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
             }
+
             if ($request->hasFile('file_project')) {
-                $filesData['file_project'] = $request->file('file_project')->storeAs(
-                    'files/project',
-                    $request->file('file_project')->getClientOriginalName(),
-                    'public'
-                );
+                $file = $request->file('file_project');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+
+                $filesData['file_project'] = $file->storeAs('files/project', $newFileName, 'public');
             }
+
             if ($request->hasFile('foto_profil')) {
-                $filesData['foto_profil'] = $request->file('foto_profil')->storeAs(
-                    'files/foto_profil',
-                    $request->file('foto_profil')->getClientOriginalName(),
-                    'public'
-                );
+                $file = $request->file('foto_profil');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+
+                $filesData['foto_profil'] = $file->storeAs('files/foto_profil', $newFileName, 'public');
             }
+
             if ($request->hasFile('ktp')) {
-                $filesData['ktp'] = $request->file('ktp')->storeAs(
-                    'files/ktp',
-                    $request->file('ktp')->getClientOriginalName(),
-                    'public'
-                );
+                $file = $request->file('ktp');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+
+                $filesData['ktp'] = $file->storeAs('files/ktp', $newFileName, 'public');
             }
+
             FilesPeserta::create($filesData);
 
             DB::commit();
@@ -466,28 +505,28 @@ class AdminMDController extends Controller
                 $timestampedName = time() . '_' . $originalName;
                 $files->file_lampiranklhn = $request->file('file_lampiranklhn')->storeAs('files/lampiran_klhn', $timestampedName, 'public');
             }
-            
+
             if ($request->hasFile('file_project')) {
                 Storage::disk('public')->delete($files->file_project);
                 $originalName = $request->file('file_project')->getClientOriginalName();
                 $timestampedName = time() . '_' . $originalName;
                 $files->file_project = $request->file('file_project')->storeAs('files/project', $timestampedName, 'public');
             }
-            
+
             if ($request->hasFile('foto_profil')) {
                 Storage::disk('public')->delete($files->foto_profil);
                 $originalName = $request->file('foto_profil')->getClientOriginalName();
                 $timestampedName = time() . '_' . $originalName;
                 $files->foto_profil = $request->file('foto_profil')->storeAs('files/foto_profil', $timestampedName, 'public');
             }
-            
+
             if ($request->hasFile('ktp')) {
                 Storage::disk('public')->delete($files->ktp);
                 $originalName = $request->file('ktp')->getClientOriginalName();
                 $timestampedName = time() . '_' . $originalName;
                 $files->ktp = $request->file('ktp')->storeAs('files/ktp', $timestampedName, 'public');
             }
-            
+
             $files->save();
 
             DB::commit();
