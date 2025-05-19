@@ -268,7 +268,7 @@ class AdminController extends Controller
                 if (in_array(auth()->user()->role, ['Admin', 'AdminMD'])) {
                     return match ($row->status_lolos) {
                         'Terkirim'    => '<label class="label label-info">Terkirim</label>',
-                        'Verifikasi'       => '<label class="label label-success">Verifikasi</label>',
+                        'Verifikasi'  => '<label class="label label-warning">Verifikasi</label>',
                         'Lolos'       => '<label class="label label-success">Lolos</label>',
                         'Tidak Lolos' => '<label class="label label-danger">Tidak Lolos</label>',
                         default       => '<label class="label label-warning">Belum Diverifikasi</label>',
