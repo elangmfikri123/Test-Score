@@ -29,8 +29,8 @@ class MainDealerController extends Controller
                 $delete = '<form action="' . url('/maindealer/delete/' . $row->id) . '" method="POST" style="display:inline;">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
-                <button type="submit" class="btn btn-sm btn-danger delete-button">Hapus</button>
-            </form>';            
+                    <button type="submit" class="btn btn-sm btn-danger delete-button">Hapus</button>
+                </form>';            
                 return $edit . ' ' . $delete;
             })
             ->rawColumns(['action'])

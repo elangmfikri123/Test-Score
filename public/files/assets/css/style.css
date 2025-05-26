@@ -1547,13 +1547,23 @@
 
 .show>.btn-primary.dropdown-toggle,
 .wizard>.actions .show>a.dropdown-toggle,
-.sweet-alert .show>button.dropdown-toggle.confirm {
+.sweet-alert .show>button.dropdown-toggle.confirm,
+.swal2-styled.swal2-confirm
+/* {
     background-color: #016d6f !important;
     border-color: #016d6f;
     -webkit-box-shadow: none;
     box-shadow: none;
     color: #fff
-}
+}  */
+
+{
+    background-color: #01a9ac !important;
+    border-color: #016d6f;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    color: #fff
+} 
 
 #Note-list li:hover .Note-delete {
     opacity: 1;

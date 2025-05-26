@@ -103,10 +103,10 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="">
+                                {{-- <li class="">
                                     <a href="editable-table.htm">
                                         <span class="pcoded-micon"><i class="feather icon-edit"></i></span>
                                         <span class="pcoded-mtext">Editable Table</span>
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>

@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('formpenilaian', function (Blueprint $table) {
             $table->id();
-            $table->string('namaform');
-            $table->foreignId('category_id')->constrained('category')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('namaform')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('category')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('maxscore')->nullable();
             $table->timestamps();
         });
     }

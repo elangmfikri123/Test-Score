@@ -77,7 +77,7 @@
                                                     <th class="text-center" style="width: 50px;">No</th>
                                                     <th class="text-center">Honda ID</th>
                                                     <th class="text-center">Nama</th>
-                                                    <th class="text-center">Ketegori</th>
+                                                    <th class="text-center">Kategori</th>
                                                     <th class="text-center">Main Dealer</th>
                                                     <th class="text-center">Status</th>
                                                     <th class="text-center">Created Time</th>
@@ -86,7 +86,7 @@
                                             </thead>
                                         </table>
 
-                                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                        <script type="text/javascript" src="{{ asset('files\bower_components\jquery\js\jquery.min.js') }}"></script>
                                         <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
                                         <script>
                                             let dataTable;
@@ -175,8 +175,6 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 @if(session('success') && session('honda_id'))
 <script>
     const hondaId = '{{ session('honda_id') }}';

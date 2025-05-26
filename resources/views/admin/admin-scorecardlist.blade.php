@@ -12,7 +12,7 @@
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5>List Form Penilaian</h5>
-                                        <a href="{{ url('/admin/exams/create') }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ url('/admin/scorecard/create') }}" class="btn btn-primary btn-sm">
                                             <i class="ion-plus-round"></i> Tambah
                                         </a>
                                     </div>
@@ -22,10 +22,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
-                                                        <th class="text-center">Course</th>
+                                                        <th class="text-center">Nama Scorecard</th>
                                                         <th class="text-center">Category</th>
-                                                        <th class="text-center">Total Questions</th>
-                                                        <th class="text-center">Durations (Menit)</th>
+                                                        <th class="text-center">Total Parameter</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -42,10 +41,9 @@
                                               lengthChange: true,
                                               columns: [
                                               { data: 'id', name: 'id' },
-                                              { data: 'namacourse', name: 'namacourse' },
-                                              { data: 'categoryname', name: 'categoryname' },
-                                              { data: 'totalquestion', name: 'totalquestion', className: 'text-center' },
-                                              { data: 'duration_minutes', name: 'duration_minutes', className: 'text-center' },
+                                              { data: 'namaform', name: 'namaform' },
+                                              { data: 'category', name: 'category' },
+                                              { data: 'parameter', name: 'parameter', className: 'text-center' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });

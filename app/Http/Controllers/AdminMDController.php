@@ -43,20 +43,6 @@ class AdminMDController extends Controller
         return view('adminmd.adminmd-index', compact('categories'));
     }
 
-    // public function registrasiPeserta()
-    // {
-    //     $user = Auth::user();
-
-    //     if ($user->role === 'AdminMD') {
-    //         $admin = Admin::where('user_id', $user->id)->first();
-    //         $mainDealers = MainDealer::where('id', $admin->maindealer_id)->get();
-    //     } else {
-    //         $mainDealers = MainDealer::all();
-    //     }
-    //     $categories = Category::select('id', 'namacategory')->get();
-    //     return view('adminmd.adminmd-registrasipeserta', compact('mainDealers', 'categories'));
-    // }
-
     public function registrasiPeserta()
     {
         $user = Auth::user();
@@ -169,35 +155,6 @@ class AdminMDController extends Controller
                 'tahun_pembuatan_project' => $request->tahun_pembuatan_project ?? null,
                 'validasi' => $request->validasi ?? null,
             ];
-
-            // if ($request->hasFile('file_lampiranklhn')) {
-            //     $filesData['file_lampiranklhn'] = $request->file('file_lampiranklhn')->storeAs(
-            //         'files/lampiran_klhn',
-            //         $request->file('file_lampiranklhn')->getClientOriginalName(),
-            //         'public'
-            //     );
-            // }
-            // if ($request->hasFile('file_project')) {
-            //     $filesData['file_project'] = $request->file('file_project')->storeAs(
-            //         'files/project',
-            //         $request->file('file_project')->getClientOriginalName(),
-            //         'public'
-            //     );
-            // }
-            // if ($request->hasFile('foto_profil')) {
-            //     $filesData['foto_profil'] = $request->file('foto_profil')->storeAs(
-            //         'files/foto_profil',
-            //         $request->file('foto_profil')->getClientOriginalName(),
-            //         'public'
-            //     );
-            // }
-            // if ($request->hasFile('ktp')) {
-            //     $filesData['ktp'] = $request->file('ktp')->storeAs(
-            //         'files/ktp',
-            //         $request->file('ktp')->getClientOriginalName(),
-            //         'public'
-            //     );
-            // }
 
             $timestamp = now()->format('Ymd_His');
 

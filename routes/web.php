@@ -81,8 +81,15 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/pesertaenrolle/data/json/{id}', [CourseController::class, 'getNonEnrolledParticipantsJson']);
     Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 
+    //ScoreCard
+
     Route::get('/admin/scorecardlist', [FormPenilaianController::class, 'show']);
     Route::get('/scorecardlist/json', [FormPenilaianController::class, 'listScoreCardJson']);
+
+    Route::get('/admin/scorecard/create', [FormPenilaianController::class, 'createdScoring'])->name('scorecard.store');
+    Route::post('/scorecard/store', [FormPenilaianController::class, 'store']);
+
+    Route::post('/peserta/{id}/update-status', [AdminController::class, 'updateStatus'])->name('peserta.updateStatus');
 
 });
 

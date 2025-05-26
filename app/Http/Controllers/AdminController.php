@@ -247,7 +247,7 @@ class AdminController extends Controller
         }
         return response()->json($query->get());
     }
-    
+
     public function getpesertatable(Request $request)
     {
         $admin = Admin::where('user_id', auth()->id())->first();
@@ -289,6 +289,7 @@ class AdminController extends Controller
                     return match ($row->status_lolos) {
                         'Terkirim'    => '<label class="label label-info">Terkirim</label>',
                         'Verified'  => '<label class="label label-warning">Verified</label>',
+                        'Updated'  => '<label class="label label-warning">Updated</label>',
                         'Lolos'       => '<label class="label label-success">Lolos</label>',
                         'Tidak Lolos' => '<label class="label label-danger">Tidak Lolos</label>',
                         default       => '<label class="label label-warning">Belum Diverifikasi</label>',
@@ -343,5 +344,18 @@ class AdminController extends Controller
             ->toJson();
 
         return $result;
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status_lolos' => 'required|string',
+        ]);
+
+        $peserta = Peserta::findOrFail($id);
+        $peserta->status_lolos = $request->status_lolos;
+        $peserta->save();
+
+        return response()->json(['message' => 'Status berhasil diupdate.']);
     }
 }

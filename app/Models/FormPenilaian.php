@@ -19,6 +19,6 @@ class FormPenilaian extends Model
 
     public function parameters()
     {
-        return $this->hasMany(Parameter::class);
+        return $this->hasMany(Parameter::class, 'formpenilaian_id');
     }
 }

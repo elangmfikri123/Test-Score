@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('scoressummary', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('formpenilaian_id')->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('juri_id')->constrained('juri')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('peserta_id')->constrained('peserta')->onUpdate('cascade')->onDelete('cascade');
-            $table->text('noted');
+            $table->foreignId('formpenilaian_id')->nullable()->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('juri_id')->nullable()->constrained('juri')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('peserta_id')->nullable()->constrained('peserta')->onUpdate('cascade')->onDelete('cascade');
+            $table->text('noted')->nullable();
             $table->timestamps();
         });
     }

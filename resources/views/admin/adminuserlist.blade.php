@@ -96,8 +96,7 @@
                                                         text: "Apakah Anda yakin ingin memaksa logout user ini?",
                                                         icon: 'warning',
                                                         showCancelButton: true,
-                                                        confirmButtonColor: '#3085d6',
-                                                        cancelButtonColor: '#d33',
+                                                        confirmButtonColor: '#01a9ac',
                                                         confirmButtonText: 'Ya, Logout',
                                                         cancelButtonText: 'Cancel'
                                                     }).then((result) => {

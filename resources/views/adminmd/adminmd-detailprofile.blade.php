@@ -58,16 +58,27 @@
                                 </div>
 
                                 <div class="tab-content">
-                                    <!-- tab panel personal start -->
-                                    
+                                    <!-- tab panel personal start -->                           
                                     <div class="tab-pane active" id="bpeserta" role="tabpanel">
                                         <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="card-header-text">Identitas Peserta</h5>
-                                                <button id="edit-btn" type="button"
-                                                    class="btn btn-sm btn-warning waves-effect waves-light f-right">
-                                                    <i class="icofont icofont-edit"></i>
-                                                </button>
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h5 class="card-header-text m-0">Identitas Peserta</h5>
+
+                                                @auth
+                                                    @if (auth()->user()->role === 'Admin')
+                                                        <div class="dropdown dropdown-warning ms-auto">
+                                                            <button class="btn btn-sm btn-info dropdown-toggle waves-effect waves-light" type="button" id="dropdown-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Update Status
+                                                            </button>
+                                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-5">
+                                                                <a class="dropdown-item waves-effect update-status" data-value="Verified" href="#">Verified</a>
+                                                                <a class="dropdown-item waves-effect update-status" data-value="Lolos" href="#">Lolos</a>
+                                                                <a class="dropdown-item waves-effect update-status" data-value="Tidak Lolos" href="#">Tidak Lolos</a>
+                                                                <a class="dropdown-item waves-effect update-status" data-value="Updated" href="#">Updated</a>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endauth
                                             </div>
                                             <div class="card-block">
                                                 <div class="view-info">
@@ -446,19 +457,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {{-- <div class="form-group row">
-                                                    <div class="col-sm-9">
-                                                        <div class="form-check d-flex align-items-start" style="margin-left: 3px;">
-                                                            <input class="form-check-input mt-1 ml-1 requiredform" type="checkbox" name="validasi" value="Ya"
-                                                            {{ $peserta->filesPeserta->validasi ?? '' == 'Ya' ? 'checked' : '' }}>
-                                                            <label class="form-check-label ml-2 text-justify" for="setuju" style="font-size: 0.85rem; text-align: justify;">
-                                                                Dengan ini saya menyatakan bahwa data yang saya berikan adalah benar dan lengkap. 
-                                                                Saya memberikan izin kepada PT <strong>[Astra Honda Motor]</strong> untuk mengumpulkan, menyimpan, dan memproses data pribadi peserta KLHN 2025, 
-                                                                serta membagikannya kepada pihak ketiga yang bekerja sama dengan perusahaan sesuai kebutuhan, dengan tetap menjaga kerahasiaannya.
-                                                            </label>
-                                                            <span class="messages text-danger" style="font-size: 0.7rem;"></span>
-                                                        </div>
-                                                    </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -492,4 +490,46 @@
             }
         }
     </script>
+        <script type="text/javascript" src="{{ asset('files\bower_components\jquery\js\jquery.min.js') }}"></script>
+<script>
+$(document).on('click', '.update-status', function (e) {
+    e.preventDefault();
+    let status = $(this).data('value');
+    let pesertaId = '{{ $peserta->id }}';
+    Swal.fire({
+        title: 'Update Status Peserta',
+        html: `Apakah Anda yakin ingin mengubah status menjadi <strong>${status}</strong> untuk Honda ID <strong>{{ $peserta->honda_id }}</strong>?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Update!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: `/peserta/${pesertaId}/update-status`,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    status_lolos: status
+                },
+                success: function (response) {
+                    Swal.fire(
+                        'Berhasil!',
+                        response.message,
+                        'success'
+                    ).then(() => {
+                        window.location.href = '{{ route('list.peserta') }}';
+                    });
+                },
+                error: function () {
+                    Swal.fire(
+                        'Gagal!',
+                        'Terjadi kesalahan saat mengupdate status.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+});
+</script>
 @endsection

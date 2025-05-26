@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('parameters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('formpenilaian_id')->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('parameter');
-            $table->string('deskripsi');
-            $table->float('bobot');
+            $table->foreignId('formpenilaian_id')->nullable()->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('parameter')->nullable();
+            $table->string('deskripsi')->nullable();
+            $table->float('bobot')->nullable();
             $table->timestamps();
         });
     }

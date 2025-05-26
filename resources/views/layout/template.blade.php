@@ -151,7 +151,7 @@
         </div>
     </div>
     <!-- Tambahkan ini sebelum </body> -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="{{ asset('files\assets\js\sweetalert2@11.js') }}"></script>
     <script>
         setInterval(() => {
             fetch("{{ route('check.session') }}", {
@@ -227,10 +227,18 @@
     <script type="text/javascript" src="{{ asset('files\assets\js\script.min.js') }}"></script>
     <!-- Select 2 js -->
     <script type="text/javascript" src="{{ asset('files\bower_components\select2\js\select2.full.min.js') }}"></script>
+
+    {{-- <script type="text/javascript" src="..\files\bower_components\sweetalert\js\sweetalert.min.js"></script>
+    <script type="text/javascript" src="..\files\assets\js\modal.js"></script> --}}
     <!-- Multiselect js -->
     <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap-multiselect\js\bootstrap-multiselect.js') }}"></script>
     <script type="text/javascript" src="{{ asset('files\bower_components\multiselect\js\jquery.multi-select.js') }}"></script>
     <script type="text/javascript" src="{{ asset('files\assets\js\jquery.quicksearch.js') }}"></script>
+
+    <script src="{{ asset('files\assets\pages\form-masking\inputmask.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\form-masking\jquery.inputmask.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\form-masking\autoNumeric.js') }}"></script>
+    <script src="{{ asset('files\assets\pages\form-masking\form-mask.js') }}"></script>
 
     <!-- ck editor -->
     <script src="{{ asset('files\assets\pages\ckeditor\ckeditor.js') }}"></script>

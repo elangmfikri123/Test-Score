@@ -17,24 +17,18 @@ class AuthController extends Controller
     }
     public function authenticate(Request $request)
     {
-        if (auth()->check()) {
-            $userId = auth()->id();
-            User::where('id', $userId)->update(['login_token' => null]);
-            auth()->logout();
-            Session::flush();
-        }
-
         $credentials = $request->only('username', 'password');
+
         $user = User::where('username', $credentials['username'])->first();
+
         if ($user && $user->login_token) {
             return back()->withErrors([
                 'username' => 'Akun sudah login di Browser lain.',
             ])->withInput();
         }
-
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            $token = Str::uuid();
+            $token = Str::uuid(); 
             User::where('id', Auth::id())->update(['login_token' => $token]);
             Session::put('user_id', Auth::id());
             Session::put('login_token', $token);

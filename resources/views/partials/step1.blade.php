@@ -236,6 +236,6 @@
                                         </div>
                                     </div>
                                     
-                                    <button type="button" id="add-riwayat-klhn" class="btn btn-warning">Add History KLHN</button>
+                                    <button type="button" id="add-riwayat-klhn" class="btn btn-warning btn-sm">Add History KLHN</button>
                             <!-- Data Social Media -->       
 

@@ -6,10 +6,33 @@
             <div class="main-body">
                 <div class="page-wrapper">
 
-                    <div class="page-body">
+                    <div class="page-body" style="margin-top: -20px;">
+
+                        <div class="card mb-3">
+                            <div class="card-block">
+                                <form id="filterForm">
+                                    <div class="row align-items-end justify-content-between">   
+                                        <!-- Tombol kiri -->
+                                        <div class="col-md-9">
+
+                                        </div>
+                                        <div class="col-md-3 text-end">
+                                            <button type="button" id="draftBtn" class="btn btn-warning btn-sm px-3 mb-1">
+                                                <i class="icofont icofont-copy-black"></i> Draft
+                                            </button>
+                                            <button id="submitBtn" class="btn btn-success btn-sm px-3 mb-1">
+                                                <i class="ion-checkmark"></i> Submit
+                                            </button>
+                                        </div>
+                                    </div>                          
+                                </form>
+                            </div>
+                        </div>
+
+                        
                         <div class="row">
                             <div class="col-md-8">
-                                <div class="card">
+                                <div class="card mb-3">
                                     <div class="card-block table-border-style">
                                         <div class="table-responsive">
                                             <table class="table table-styling">
@@ -43,7 +66,7 @@
                                                                 <br>Selama berbicara peserta menggunakan bahasa dan pemilihan kata yang tepat dan mudah dimengerti.
                                                             </td>
                                                             <td class="text-center" style="width: 50px;">3.00%</td>
-                                                            <td class="text-center">                                    
+                                                            <td class="text-center" style="width: 85px;">                                    
                                                                 <select class="form-control form-select-sm">
                                                                     @for ($i = 1; $i <= 6; $i++)
                                                                         <option>{{ $i }}</option>
@@ -55,7 +78,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card">
+                                <div class="card mb-6">
                                     <div class="card-block table-border-style">
                                         <div class="table-responsive">
                                             <table class="table table-styling">
@@ -115,7 +138,6 @@
                                 </div>                                
                             </div>
                             
-
                         </div>
                     </div>
 
