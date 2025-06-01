@@ -112,7 +112,7 @@
                                     <div class="row m-t-30">
                                         <div class="col-md-12">
                                             <button type="submit"
-                                                class="btn btn-primary btn-block waves-effect text-center m-b-20">Login</button>
+                                                class="btn btn-grd-info btn-block waves-effect text-center m-b-20"><i class="feather icon-log-in"></i> Login</button>
                                         </div>
                                     </div>
                                 </form>

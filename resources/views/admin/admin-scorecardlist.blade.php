@@ -25,6 +25,7 @@
                                                         <th class="text-center">Nama Scorecard</th>
                                                         <th class="text-center">Category</th>
                                                         <th class="text-center">Total Parameter</th>
+                                                        <th class="text-center">Juri List</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -44,6 +45,7 @@
                                               { data: 'namaform', name: 'namaform' },
                                               { data: 'category', name: 'category' },
                                               { data: 'parameter', name: 'parameter', className: 'text-center' },
+                                              { data: 'jurilist', name: 'jurilist', orderable: false, searchable: false, className: 'text-center' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                              ],
                                               });

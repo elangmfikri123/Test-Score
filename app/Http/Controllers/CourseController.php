@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Peserta;
 use App\Models\Category;
 use App\Models\Question;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
 
@@ -147,6 +148,19 @@ class CourseController extends Controller
         return redirect()->back()->with('success', 'Soal berhasil ditambahkan.');
     }
 
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = 'img_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalName();
+            $path = $file->storeAs('uploadcourse', $filename, 'public');
+            $url = asset('storage/uploadcourse/' . $filename);
+            return response()->json(['location' => $url]);
+        }
+
+        return response()->json(['error' => 'Tidak ada file diunggah'], 400);
+    }
+
     public function showCourseParticipants()
     {
         return view('admin.admin-managecourseparticipants');
@@ -190,7 +204,7 @@ class CourseController extends Controller
         $pesertaCourses = PesertaCourse::with(['peserta', 'course'])
             ->where('course_id', $id)
             ->get();
-    
+
         return datatables()->of($pesertaCourses)
             ->addColumn('nama', fn($row) => $row->peserta->nama)
             ->addColumn('honda_id', fn($row) => $row->peserta->honda_id)
@@ -201,12 +215,12 @@ class CourseController extends Controller
                     $remaining = $endTime->diffInSeconds(now(), false);
                     return $remaining > 0 ? $remaining : 0;
                 }
-    
+
                 if ($row->status_pengerjaan === 'belum_mulai') {
                     return $row->course->duration_minutes * 60;
                 }
-    
-                return 0; 
+
+                return 0;
             })
             ->addColumn('status_pengerjaan', function ($row) {
                 $status = $row->status_pengerjaan ?? '-';
@@ -224,28 +238,30 @@ class CourseController extends Controller
             ->rawColumns(['status_pengerjaan', 'action'])
             ->make(true);
     }
-    
+
     public function deletePeserta($id)
     {
         $peserta = PesertaCourse::findOrFail($id);
         $peserta->delete();
         return response()->json(['status' => 'success']);
     }
-    
+
     public function getNonEnrolledParticipantsJson($id)
     {
         $enrolledPesertaIds = PesertaCourse::where('course_id', $id)->pluck('peserta_id')->toArray();
 
         $peserta = Peserta::with(['category', 'maindealer'])
-        ->whereNotIn('id', $enrolledPesertaIds)
-        ->get();
+            ->whereNotIn('id', $enrolledPesertaIds)
+            ->get();
 
         return datatables()->of($peserta)
             ->addIndexColumn()
-            ->addColumn('namacategory', function($row) {
-                    return $row->category->namacategory ?? '-';})
-            ->addColumn('kodemd', function($row) {
-                    return $row->maindealer->kodemd ?? '-';})
+            ->addColumn('namacategory', function ($row) {
+                return $row->category->namacategory ?? '-';
+            })
+            ->addColumn('kodemd', function ($row) {
+                return $row->maindealer->kodemd ?? '-';
+            })
             ->addColumn('action', fn($row) => '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">')
             ->rawColumns(['action'])
             ->make(true);
@@ -254,7 +270,7 @@ class CourseController extends Controller
     public function storeParticipants(Request $request, $id)
     {
         $request->validate([
-            'peserta_ids' => 'required|array',
+            'peserta_id' => 'required|array',
         ]);
 
         foreach ($request->peserta_ids as $pesertaId) {

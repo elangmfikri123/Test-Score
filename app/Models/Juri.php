@@ -25,4 +25,8 @@ class Juri extends Model
     {
         return $this->belongsToMany(Peserta::class, 'juripeserta');
     }
+    public function juripeserta()
+    {
+        return $this->hasMany(Juripeserta::class);
+    }
 }

@@ -3,7 +3,7 @@
     <li class="pcoded-hasmenu active pcoded-trigger">
         <a href="{{ url('/juri/index') }}">
             <span class="pcoded-micon"><i class="feather icon-home"></i></span>
-            <span class="pcoded-mtext">Dashboard</span>
+            <span class="pcoded-mtext">Home</span>
         </a>
     </li>
     <li class="pcoded-hasmenu">

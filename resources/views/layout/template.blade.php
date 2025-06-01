@@ -105,9 +105,21 @@
                             </li>-->
                             <li class="user-profile header-notification">
                                 <div class="dropdown-primary dropdown">
-                                    <div class="dropdown-toggle" data-toggle="dropdown">
-                                        <img src="{{ asset('files\assets\images\avatar-4.png') }}" class="img-radius" alt="User-Profile-Image">
-                                        <span>Hai, {{ Auth::user()->username }}</span>
+                                    <div class="dropdown-toggle" data-toggle="dropdown" style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="
+                                            width: 30px;
+                                            height: 30px;
+                                            border-radius: 6px;
+                                            background-color: #6c757d;
+                                            color: white;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-weight: bold;
+                                            font-size: 15px; ">
+                                            {{ Auth::user()->initials }}
+                                        </div>
+                                        <span>Hai, {{ Auth::user()->display_name }}</span>
                                         <i class="feather icon-chevron-down"></i>
                                     </div>
                                     <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
@@ -120,7 +132,6 @@
                                             </form>                            
                                         </li>
                                     </ul>
-
                                 </div>
                             </li>
                         </ul>

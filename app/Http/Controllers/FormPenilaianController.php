@@ -23,14 +23,19 @@ class FormPenilaianController extends Controller
                 return $row->category ? $row->category->namacategory : '-';
             })
             ->addColumn('parameter', function ($row) {
-                return $row->parameters->count(); // Hitung total parameter
+                return $row->parameters->count();
+            })
+            ->addColumn('jurilist', function ($row) {
+                return '
+                    <a href="' . url('/admin/scorecard/' . $row->id . '/jurilist') . '" class="btn btn-sm btn-primary"><i class="fa fa-user-plus"></i></a>';
             })
             ->addColumn('action', function ($row) {
-                $btn = '<a href="/admin/scorecard/edit/' . $row->id . '" class="btn btn-sm btn-warning">Edit</a>';
-                $btn .= ' <a href="/admin/scorecard/delete/' . $row->id . '" class="btn btn-sm btn-danger" onclick="return confirm(\'Yakin hapus?\')">Delete</a>';
-                return $btn;
+                return '
+                    <a href="' . url('/admin/scorecard/' . $row->id . '/edit') . '" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="' . url('/admin/scorecard/' . $row->id . '/delete'). '" class="btn btn-sm btn-danger">Hapus</a>
+                ';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['jurilist', 'action'])
             ->make(true);
 
         return $result;

@@ -15,7 +15,7 @@ class PesertaCourseController extends Controller
     {
         $pesertaCourse = PesertaCourse::with('course.category')->findOrFail($id);
 
-        return view('courses.confirmation', compact('pesertaCourse', 'id'));
+        return view ('courses.confirmation', compact('pesertaCourse', 'id'));
     }
 
     public function startExam(Request $request, $id)
@@ -30,15 +30,14 @@ class PesertaCourseController extends Controller
         return response()->json([
             'status' => 'success',
             'duration_minutes' => $pesertaCourse->course->duration_minutes,
-            'start_time' => now()->timestamp, 
+            'start_time' => now()->timestamp,
         ]);
     }
 
     public function showQuiz($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
-
-        return view('courses.quiz', compact('pesertaCourse'));
+        return view ('courses.quiz', compact('pesertaCourse'));
     }
 
     public function loadQuestion($id, $numberQuestion)
@@ -50,12 +49,20 @@ class PesertaCourseController extends Controller
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
-        $answer = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
+        $answer = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)
             ->where('question_id', $question->id)
             ->first();
-        $allAnswers = PesertaAnswer::where('peserta_id', $pesertaCourse->peserta_id)
-            ->get()
-            ->pluck('answer_id', 'question_id');
+
+        $allAnswersRaw = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)->get();
+        $answeredNumbers = [];
+
+        foreach ($questions as $index => $q) {
+            $jawaban = $allAnswersRaw->firstWhere('question_id', $q->id);
+            if ($jawaban) {
+                $answeredNumbers[$index + 1] = $jawaban->answer_id; // index + 1 = question number
+            }
+        }
+
         return response()->json([
             'status' => 'success',
             'question_number' => $numberQuestion,
@@ -68,9 +75,9 @@ class PesertaCourseController extends Controller
                     'label' => chr(65 + $index)
                 ];
             }),
-            'answered_questions' => $allAnswers,
+            'answered_questions' => $answeredNumbers,
             'selected_answer' => $answer ? $answer->answer_id : null,
-            'total_questions' => $pesertaCourse->course->questions()->count(),
+            'total_questions' => count($questions),
         ]);
     }
 
@@ -83,7 +90,8 @@ class PesertaCourseController extends Controller
         ]);
 
         $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
-        $question = $pesertaCourse->course->questions()->find($validated['question_number']);
+        $questions = $pesertaCourse->course->questions()->get();
+        $question = $questions[$validated['question_number'] - 1] ?? null;
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
@@ -91,6 +99,7 @@ class PesertaCourseController extends Controller
         $isCorrect = $this->checkIfAnswerIsCorrect($validated['question_number'], $validated['answer_id']);
         $answer = PesertaAnswer::updateOrCreate(
             [
+                'peserta_course_id' => $pesertaCourse->id,
                 'peserta_id' => $pesertaCourse->peserta_id,
                 'question_id' => $question->id,
             ],
@@ -119,29 +128,29 @@ class PesertaCourseController extends Controller
     public function finished($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course', 'peserta.mainDealer'])
-                            ->findOrFail($id);
-    
+            ->findOrFail($id);
+
         return view('courses.examfinished', compact('pesertaCourse'));
     }
 
     public function finishExam(Request $request, $id)
     {
         $pesertaCourse = PesertaCourse::find($id);
-    
+
         if (!$pesertaCourse) {
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.']);
         }
-    
+
         $pesertaCourse->update([
             'sisa_waktu' => $request->sisa_waktu ?? 0,
             'end_exam' => Carbon::now(),
             'status_pengerjaan' => 'selesai',
         ]);
-    
+
         if ($request->ajax()) {
             return response()->json(['status' => 'success', 'message' => 'Ujian berhasil diakhiri.']);
         }
-    
+
         return redirect()->route('exam.finished');
     }
 }

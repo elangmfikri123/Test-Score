@@ -31,4 +31,8 @@ class Score extends Model
     {
         return $this->belongsTo(Parameter::class);
     }
+    public function juripeserta()
+    {
+        return $this->belongsTo(JuriPeserta::class);
+    }
 }

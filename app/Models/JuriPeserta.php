@@ -16,9 +16,12 @@ class JuriPeserta extends Model
     {
         return $this->belongsTo(Juri::class);
     }
-
     public function peserta()
     {
         return $this->belongsTo(Peserta::class);
+    }
+    public function formpenilaian()
+    {
+        return $this->belongsTo(FormPenilaian::class, 'formpenilaian_id');
     }
 }

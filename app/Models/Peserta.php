@@ -48,9 +48,13 @@ class Peserta extends Model
     {
         return $this->hasOne(FilesPeserta::class);
     }
-
     public function riwayatKlhn()
     {
         return $this->hasMany(RiwayatKlhn::class);
     }
+    public function juripeserta()
+    {
+        return $this->hasMany(JuriPeserta::class);
+    }
+    
 }

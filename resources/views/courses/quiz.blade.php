@@ -244,8 +244,6 @@
                     text: 'Ujian akan segera diakhiri.',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
                     confirmButtonText: 'Ya, akhiri ujian!'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -255,5 +253,4 @@
             });
         });
     </script>
-    
 @endsection

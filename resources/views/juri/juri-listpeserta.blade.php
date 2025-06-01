@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'User List')
+@section('title', 'Peserta List')
 @section('content')
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
@@ -12,19 +12,16 @@
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5>User List</h5>
-                                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal"><i class="ion-plus-round"></i>Tambah</button>
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
                                             <table class="display table table-striped table-bordered table-styling" id="myTable" cellspacing="0" width="100%">
                                                 <thead>
-                                                    <tr class="table-primary">
-                                                        <th class="text-center" style="width: 50px;">No</th>
-                                                        <th class="text-center">Nama</th>
-                                                        <th class="text-center">Username</th>
-                                                        <th class="text-center">Email</th>
-                                                        <th class="text-center">Role</th>
+                                                    <tr>
+                                                        <th class="text-center" style="width: 20px;">No</th>
+                                                        <th class="text-center">Peserta</th>
+                                                        <th class="text-center">Kategori</th>
+                                                        <th class="text-center">Score</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
@@ -37,17 +34,16 @@
                                             $('#myTable').DataTable({
                                               processing: true,
                                               serverSide: true,
-                                              ajax: '{{ url("get-user/data") }}',
+                                              ajax: '{{ url("/peserta/list/data") }}',
                                               searching: true, 
                                               lengthChange: true,
                                               columns: [
-                                              { data: 'id', name: 'id' },
-                                              { data: 'nama', name: 'nama' },
-                                              { data: 'username', name: 'username' },
-                                              { data: 'email', name: 'email' },
-                                              { data: 'role', name: 'role' },
-                                              { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
-                                             ],
+                                                { data: 'DT_RowIndex', name: '', orderable: false, searchable: false, className: 'text-center' },
+                                                { data: 'nama', name: 'nama', render: function(data, type, row) { return data; }},
+                                                { data: 'namacategory', name: 'namacategory' },
+                                                { data: 'score', name: 'score', className: 'text-center' },
+                                                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+                                                ],
                                               });
                                             });
                                           </script>
