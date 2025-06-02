@@ -15,7 +15,7 @@ class PesertaCourseController extends Controller
     {
         $pesertaCourse = PesertaCourse::with('course.category')->findOrFail($id);
 
-        return view ('courses.confirmation', compact('pesertaCourse', 'id'));
+        return view('courses.confirmation', compact('pesertaCourse', 'id'));
     }
 
     public function startExam(Request $request, $id)
@@ -37,7 +37,7 @@ class PesertaCourseController extends Controller
     public function showQuiz($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
-        return view ('courses.quiz', compact('pesertaCourse'));
+        return view('courses.quiz', compact('pesertaCourse'));
     }
 
     public function loadQuestion($id, $numberQuestion)
@@ -92,11 +92,13 @@ class PesertaCourseController extends Controller
         $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
         $questions = $pesertaCourse->course->questions()->get();
         $question = $questions[$validated['question_number'] - 1] ?? null;
+
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
 
-        $isCorrect = $this->checkIfAnswerIsCorrect($validated['question_number'], $validated['answer_id']);
+        $isCorrect = $this->checkIfAnswerIsCorrect($question->id, $validated['answer_id']);
+
         $answer = PesertaAnswer::updateOrCreate(
             [
                 'peserta_course_id' => $pesertaCourse->id,
@@ -115,6 +117,7 @@ class PesertaCourseController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan jawaban']);
         }
     }
+
 
     private function checkIfAnswerIsCorrect($questionId, $answerId)
     {
