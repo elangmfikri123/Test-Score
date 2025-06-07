@@ -215,9 +215,13 @@ class CourseController extends Controller
                     $remaining = $endTime->diffInSeconds(now(), false);
                     return $remaining > 0 ? $remaining : 0;
                 }
-
                 if ($row->status_pengerjaan === 'belum_mulai') {
                     return $row->course->duration_minutes * 60;
+                }
+                if ($row->status_pengerjaan === 'selesai' && $row->sisa_waktu) {
+                    $parts = explode(':', $row->sisa_waktu);
+                    $seconds = ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
+                    return $seconds;
                 }
 
                 return 0;
@@ -270,7 +274,7 @@ class CourseController extends Controller
     public function storeParticipants(Request $request, $id)
     {
         $request->validate([
-            'peserta_id' => 'required|array',
+            'peserta_ids' => 'required|array',
         ]);
 
         foreach ($request->peserta_ids as $pesertaId) {

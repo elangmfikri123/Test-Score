@@ -82,8 +82,8 @@
                                             width: 30px;
                                             height: 30px;
                                             border-radius: 6px;
-                                            background-color: #6c757d;
-                                            color: white;
+                                            background-color: white;
+                                            color: black;
                                             display: flex;
                                             align-items: center;
                                             justify-content: center;

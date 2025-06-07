@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Peserta;
 use App\Models\Category;
+use App\Models\Course;
 use App\Models\MainDealer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -232,7 +233,11 @@ class AdminController extends Controller
 
         abort(403, 'Unauthorized action.');
     }
-
+    public function apiCourse()
+    {
+        $data = Course::select('id', 'namacourse')->get();
+        return response()->json($data);
+    }
     public function apiCategory()
     {
         $data = Category::select('id', 'namacategory')->get();

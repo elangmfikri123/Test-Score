@@ -14,12 +14,14 @@ class PesertaCourseController extends Controller
     public function showConfirmation($id)
     {
         $pesertaCourse = PesertaCourse::with('course.category')->findOrFail($id);
-        return view('courses.confirmation', compact('pesertaCourse', 'id'));
+
+        return view ('courses.confirmation', compact('pesertaCourse', 'id'));
     }
 
     public function startExam(Request $request, $id)
     {
         $pesertaCourse = PesertaCourse::with('course')->findOrFail($id);
+
         $pesertaCourse->update([
             'status_pengerjaan' => 'sedang_dikerjakan',
             'start_exam' => now(),
@@ -31,10 +33,11 @@ class PesertaCourseController extends Controller
             'start_time' => now()->timestamp,
         ]);
     }
+
     public function showQuiz($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
-        return view('courses.quiz', compact('pesertaCourse'));
+        return view ('courses.quiz', compact('pesertaCourse'));
     }
 
     public function loadQuestion($id, $numberQuestion)
@@ -56,7 +59,7 @@ class PesertaCourseController extends Controller
         foreach ($questions as $index => $q) {
             $jawaban = $allAnswersRaw->firstWhere('question_id', $q->id);
             if ($jawaban) {
-                $answeredNumbers[$index + 1] = $jawaban->answer_id; // index + 1 = question number
+                $answeredNumbers[$index + 1] = $jawaban->answer_id;
             }
         }
 
@@ -85,14 +88,15 @@ class PesertaCourseController extends Controller
             'question_number' => 'required|integer',
             'answer_id' => 'required|integer',
         ]);
+
         $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
         $questions = $pesertaCourse->course->questions()->get();
         $question = $questions[$validated['question_number'] - 1] ?? null;
-
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
-        $isCorrect = $this->checkIfAnswerIsCorrect($question->id, $validated['answer_id']);
+
+        $isCorrect = $this->checkIfAnswerIsCorrect($validated['question_number'], $validated['answer_id']);
         $answer = PesertaAnswer::updateOrCreate(
             [
                 'peserta_course_id' => $pesertaCourse->id,
@@ -111,11 +115,13 @@ class PesertaCourseController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan jawaban']);
         }
     }
+
     private function checkIfAnswerIsCorrect($questionId, $answerId)
     {
         $correctAnswer = Answer::where('question_id', $questionId)
             ->where('is_correct', true)
             ->first();
+
         return $correctAnswer && $correctAnswer->id == $answerId;
     }
 
@@ -123,8 +129,10 @@ class PesertaCourseController extends Controller
     {
         $pesertaCourse = PesertaCourse::with(['peserta', 'course', 'peserta.mainDealer'])
             ->findOrFail($id);
+
         return view('courses.examfinished', compact('pesertaCourse'));
     }
+
     public function finishExam(Request $request, $id)
     {
         $pesertaCourse = PesertaCourse::find($id);
@@ -132,6 +140,7 @@ class PesertaCourseController extends Controller
         if (!$pesertaCourse) {
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.']);
         }
+
         $pesertaCourse->update([
             'sisa_waktu' => $request->sisa_waktu ?? 0,
             'end_exam' => Carbon::now(),
@@ -141,6 +150,7 @@ class PesertaCourseController extends Controller
         if ($request->ajax()) {
             return response()->json(['status' => 'success', 'message' => 'Ujian berhasil diakhiri.']);
         }
+
         return redirect()->route('exam.finished');
     }
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
 use App\Http\Controllers\EnrolledJuriPesertaController;
+use App\Http\Controllers\ResultCourseController;
 use App\Models\FormPenilaian;
 
 /*
@@ -65,13 +66,17 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/exams/create', [CourseController::class, 'addnewcourse']);
     Route::post('/admin/course/store', [CourseController::class, 'store']);
 
+    Route::get('/admin/results', [ResultCourseController::class, 'showResults']);
+    Route::get('/dataresults/json', [ResultCourseController::class, 'dataResultsJson']);
+    Route::get('/admin/courseresults/details/{id}', [ResultCourseController::class, 'showDetails'])->name('course.details');
+    Route::get('/admin/courseresults/{id}/detailsAnswers', [ResultCourseController::class, 'showDetailsAnswers'])->name('course.detailsAnswers');
+
     //ADD QUESTION
     Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist']);
     Route::get('/dataquestion-answer/json/{id}', [CourseController::class, 'dataquestionAnswerJson']);
     Route::get('/admin/exams/{id}/question-create', [CourseController::class, 'createquestion']);
     Route::post('/admin/exams/{id}/question-store', [CourseController::class, 'storequestion']);
     Route::post('/upload-image', [CourseController::class, 'uploadImage'])->name('image.upload');
-
 
     Route::get('/admin/manage-participants', [CourseController::class, 'showCourseParticipants']);
     Route::get('/datacourseparticipants/json', [CourseController::class, 'JsonParticipantsCourse']);
@@ -88,7 +93,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 
     //ScoreCard
-
     Route::get('/admin/scorecardlist', [FormPenilaianController::class, 'show']);
     Route::get('/scorecardlist/json', [FormPenilaianController::class, 'listScoreCardJson']);
     Route::get('/admin/scorecard/create', [FormPenilaianController::class, 'createdScoring'])->name('scorecard.store');
@@ -121,6 +125,7 @@ Route::get('/admin-maindealers/lampiran', [AdminMDController::class, 'lampiranFi
 Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
     Route::get('/listpeserta', [AdminController::class, 'pesertalist'])->name('list.peserta');
     Route::get('/get-peserta/data', [AdminController::class, 'getpesertatable']);
+    Route::get('/api/course', [AdminController::class, 'apiCourse']);
     Route::get('/api/category', [AdminController::class, 'apiCategory']);
     Route::get('/api/maindealer', [AdminController::class, 'apiMaindealer']);
     Route::get('/get-peserta/download', [ExportController::class, 'downloadPeserta'])->name('peserta.download');
@@ -146,13 +151,13 @@ Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
 //JURI
 Route::middleware(['auth', 'role:Juri'])->group(function () {
     Route::get('/juri/index', [JuriController::class, 'index']);
-    Route::get('/peserta/list', [JuriController::class, 'pesertalist']);
+    Route::get('/peserta/list', [JuriController::class, 'pesertalist'])->name('scorecard.list');;
     Route::get('/peserta/list/data', [JuriController::class, 'getPesertaListData'])->name('juri.peserta.data');
 
     Route::get('/scorecard/scoring/{id}', [JuriController::class, 'showScoring']);
     Route::get('/api/formpenilaian/{id}/parameters', [JuriController::class, 'getParameters']);
 
-    Route::post('/scorecard/submit', [JuriController::class, 'submitScoring'])->name('scorecard.submit');
+    Route::post('/scorecard/submit', [JuriController::class, 'submitScore'])->name('scorecard.submit');
 
 });
 

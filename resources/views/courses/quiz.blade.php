@@ -26,8 +26,8 @@
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer d-flex justify-content-between">
-                                            <button id="btn-prev" class="btn btn-secondary"><i class="ion-chevron-left"></i> Sebelumnya</button>
-                                            <button id="btn-next" class="btn btn-primary">Selanjutnya <i class="ion-chevron-right"></i></button>
+                                            <button id="btn-prev" class="btn btn-secondary"><i class="ion-chevron-left"></i>Previous</button>
+                                            <button id="btn-next" class="btn btn-warning">Next <i class="ion-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -35,15 +35,13 @@
                                 <div class="col-md-3">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Jumlah Soal</h5>
                                             <div class="d-flex justify-content-between">
-                                                <p><strong>Total Soal:</strong> 100</p>
-                                                <p><strong>Sudah Dijawab:</strong> 3</p>
+                                                <p>Total Soal : <strong id="total-questions">-</strong></p>
+                                                <p>Sudah Dijawab : <strong id="answered-count">-</strong></p>
                                             </div>
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-block">
-                                        <!-- Bagian Kanan: Tanda Nomer Soal Sudah dikerjakan dan Dapat Diklik Mengarah ke Nomor Soal -->
                                             <div class="container" style="max-height: 300px; overflow-y: auto;">
                                                 <div class="row row-cols-5 gx-1 gy-1" id="question-buttons">
 
@@ -52,7 +50,7 @@
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary mt-3">Akhiri Ujian <i class="ion-archive"></i></button>
+                                            <button class="btn btn-primary submit">Submit <i class="fa fa-save"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -162,6 +160,8 @@
                     $('#answer-options').html(answersHtml);
                     $('#btn-prev').prop('disabled', questionNumber === 1);
                     $('#btn-next').prop('disabled', questionNumber === response.total_questions);
+                    $('#total-questions').text(response.total_questions);
+                    $('#answered-count').text(Object.keys(answeredQuestions).length);
                     renderQuestionButtons(response.total_questions);
                 } else {
                     alert('Error: ' + response.message);
@@ -190,32 +190,30 @@
                 `);
             }
         }
-    
         function finishExam() {
-            const remaining = getRemainingTime();
-            const remainingSeconds = Math.floor(remaining / 1000);
-    
+            const remainingTime = getRemainingTime();
+            const sisa_waktu = formatTime(remainingTime); 
+
             $.ajax({
                 url: `/exam/finish/${pesertaCourseId}`,
-                type: 'POST',
+                method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    sisa_waktu: remainingSeconds
+                    sisa_waktu: sisa_waktu
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response.status === 'success') {
                         localStorage.removeItem(timerKey);
                         window.location.href = "/finished/exam/{{ $pesertaCourse->id }}";
                     } else {
-                        Swal.fire('Gagal!', response.message, 'error');
+                        Swal.fire('Error', response.message, 'error');
                     }
                 },
-                error: function () {
-                    Swal.fire('Terjadi Kesalahan', 'Gagal mengirim data ujian.', 'error');
+                error: function() {
+                    Swal.fire('Error', 'Gagal mengakhiri ujian.', 'error');
                 }
             });
         }
-    
         $(document).on('click', '#btn-prev', function () {
             if (currentQuestion > 1) {
                 currentQuestion--;
@@ -238,13 +236,13 @@
             loadQuestion(currentQuestion);
     
             // Tombol Akhiri Ujian Manual
-            $('.btn-primary.mt-3').on('click', function () {
+            $('.btn-primary.submit').on('click', function () {
                 Swal.fire({
-                    title: 'Apakah Anda yakin?',
-                    text: 'Ujian akan segera diakhiri.',
+                    title: 'Apakah Anda yakin ?',
+                    text: 'Apakah Anda yakin ingin mengakhiri ujian ini? Semua jawaban akan disimpan.',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, akhiri ujian!'
+                    confirmButtonText: 'Ya, Submit!'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         finishExam();

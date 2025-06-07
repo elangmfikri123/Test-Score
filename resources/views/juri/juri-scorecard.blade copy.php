@@ -16,15 +16,17 @@
                         <input type="hidden" name="formpenilaian_id" value="{{ $formId }}">
 
                         <div class="card mb-3">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div></div>
-                                <div>
-                                    <button type="submit" name="action" value="draft" class="btn btn-warning btn-sm me-2">
-                                        <i class="icofont icofont-copy-black"></i> Draft
-                                    </button>
-                                    <button type="submit" name="action" value="submit" class="btn btn-success btn-sm">
-                                        <i class="ion-checkmark"></i> Submit
-                                    </button>
+                            <div class="card-block">
+                                <div class="row align-items-end justify-content-between">
+                                    <div class="col-md-9"></div>
+                                    <div class="col-md-3 text-end">
+                                        <button type="submit" name="action" value="draft" class="btn btn-warning btn-sm px-3 mb-1">
+                                            <i class="icofont icofont-copy-black"></i> Draft
+                                        </button>
+                                        <button type="submit" name="action" value="submit" class="btn btn-success btn-sm px-3 mb-1">
+                                            <i class="ion-checkmark"></i> Submit
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +36,7 @@
                                 <div class="card mb-3">
                                     <div class="card-block table-border-style">
                                         <div class="table-responsive">
-                                        <table class="table table-sm table-styling">
+                                        <table class="table table-styling">
                                             <thead>
                                                 <tr class="table-primary">
                                                     <th class="text-center" style="width: 10%;">#</th>
@@ -54,7 +56,7 @@
                                 <div class="card mb-6">
                                     <div class="card-block table-border-style">
                                         <div class="table-responsive">
-                                            <table class="table table-sm table-styling">
+                                            <table class="table table-styling">
                                                 <thead>
                                                     <tr class="table-primary">
                                                         <th class="text-center" style="width: 50px;">Catatan</th>
@@ -88,9 +90,9 @@
                                     <div class="card-body p-3">
                                         <h6 class="mb-3">Information</h6>
                                         <div>
-                                            <p class="mb-3">Participant<br><strong>{{ $peserta->nama }}</strong></p>
-                                            <p class="mb-3">Main Dealer<br><strong>{{ $peserta->maindealer->nama_md ?? '-' }}</strong></p>
-                                            <p class="mb-0">Kategori<br><strong>{{ $peserta->category->namacategory ?? '-' }}</strong></p>
+                                            <p class="mb-2"><strong>Participant</strong><br>{{ $peserta->nama }}</p>
+                                            <p class="mb-2"><strong>Main Dealer</strong><br>{{ $peserta->maindealer->nama_md ?? '-' }}</p>
+                                            <p class="mb-0"><strong>Kategori</strong><br>{{ $peserta->category->namacategory ?? '-' }}</p>
                                         </div>
                                     </div>
                                 </div>

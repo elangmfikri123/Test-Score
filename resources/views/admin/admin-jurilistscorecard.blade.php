@@ -119,35 +119,45 @@
                                         });
 
                                         // DETAIL PESERTA
-                                        $('#myTable').on('click', '.btn-detail', function() {
-                                            const juriId = $(this).data('id');
-                                            const formId = $(this).data('formid');
+$('#myTable').on('click', '.btn-detail', function() {
+    const juriId = $(this).data('id');
+    const formId = $(this).data('formid');
 
-                                            $.ajax({
-                                                url: '/juripeserta/detail/' + formId + '/' + juriId,
-                                                type: 'GET',
-                                                success: function(res) {
-                                                    if (res.status === 'success') {
-                                                        let rows = '';
-                                                        res.data.forEach(item => {
-                                                            rows += `<tr>
-                                                                        <td>${item.no}</td>
-                                                                        <td>${item.nama}</td>
-                                                                        <td>${item.email}</td>
-                                                                        <td>${item.main_dealer}</td>
-                                                                    </tr>`;
-                                                        });
-                                                        $('#tableDetailPeserta tbody').html(rows);
-                                                        $('#modalDetailPeserta').modal('show');
-                                                    } else {
-                                                        Swal.fire('Error', 'Gagal mengambil data peserta.', 'error');
-                                                    }
-                                                },
-                                                error: function() {
-                                                    Swal.fire('Error', 'Terjadi kesalahan saat memuat data.', 'error');
-                                                }
-                                            });
-                                        });
+    $.ajax({
+        url: '/juripeserta/detail/' + formId + '/' + juriId,
+        type: 'GET',
+        success: function(res) {
+            if (res.status === 'success') {
+                let rows = '';
+                res.data.forEach(item => {
+                    rows += `<tr>
+                                <td>${item.no}</td>
+                                <td>${item.honda_id}</td>
+                                <td>${item.nama}</td>
+                                <td>${item.namacategory}</td>
+                                <td>${item.nama_md}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-danger btn-sm btn-remove-peserta"
+                                            data-id="${item.id}"
+                                            data-formid="${formId}"
+                                            data-juriid="${juriId}">
+                                        <i class="fa fa-trash"></i> Hapus
+                                    </button>
+                                </td>
+                            </tr>`;
+                });
+                $('#tableDetailPeserta tbody').html(rows);
+                $('#modalDetailPeserta').modal('show');
+            } else {
+                Swal.fire('Error', 'Gagal mengambil data peserta.', 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Terjadi kesalahan saat memuat data.', 'error');
+        }
+    });
+});
+
 
                                     });
                                 </script>
@@ -161,7 +171,7 @@
 
     <!-- Modal Detail Peserta -->
 <div class="modal fade" id="modalDetailPeserta" tabindex="-1" role="dialog" aria-labelledby="modalDetailPesertaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document" style="max-width:80% !important;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalDetailPesertaLabel">Detail Peserta</h5>
@@ -170,19 +180,22 @@
                 </button>
             </div>
             <div class="modal-body">
-                <table class="table table-bordered table-striped" id="tableDetailPeserta">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Peserta</th>
-                            <th>Email</th>
-                            <th>Main Dealer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Diisi lewat AJAX -->
-                    </tbody>
-                </table>
+<table class="table table-bordered table-striped" id="tableDetailPeserta">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Honda ID</th>
+            <th>Nama Peserta</th>
+            <th>Category</th>
+            <th>Main Dealer</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Diisi lewat AJAX -->
+    </tbody>
+</table>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

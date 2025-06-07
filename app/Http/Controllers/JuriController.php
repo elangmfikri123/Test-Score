@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Score;
 use App\Models\Peserta;
+use App\Models\Parameter;
 use App\Models\JuriPeserta;
+use App\Models\ScoreSummary;
 use Illuminate\Http\Request;
 use App\Models\FormPenilaian;
 use Illuminate\Support\Facades\Auth;
@@ -52,11 +54,11 @@ class JuriController extends Controller
             ->addColumn('score', function ($item) use ($juriId) {
                 $score = Score::where('juri_id', $juriId)
                     ->where('peserta_id', $item->peserta_id)
-                    ->sum('score');
+                    ->sum('total_score');
                 return $score > 0 ? number_format($score, 2) : '-';
             })
             ->addColumn('action', function ($item) {
-                return '<a href="' . url("/scorecard/scoring/" . $item->peserta_id) . '" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Mulai</a>';
+                return '<a href="' . url("/scorecard/scoring/" . $item->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Mulai</a>';
             })
             ->rawColumns(['nama', 'action'])
             ->filterColumn('nama', function ($query, $keyword) {
@@ -101,28 +103,65 @@ class JuriController extends Controller
         ]);
     }
 
-    public function submitScoring(Request $request)
+    public function submitScore(Request $request)
     {
-        $validated = $request->validate([
-            'peserta_id' => 'required|exists:pesertas,id',
-            'score_1' => 'required|integer|min:1|max:6',
-            'score_2' => 'required|integer|min:1|max:6',
+        $request->validate([
+            'peserta_id' => 'required|exists:peserta,id',
+            'parameter_id' => 'required|array',
+            'parameter_id.*' => 'required|exists:parameters,id',
+            'score' => 'required|array',
+            'score.*' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
-            'action' => 'required|string|in:draft,submit',
         ]);
 
-        // Simpan data ke tabel skor (buat model Scorecard atau penilaian sesuai DB)
-        FormPenilaian::updateOrCreate(
-            ['peserta_id' => $validated['peserta_id']],
+        $pesertaId = $request->peserta_id;
+        $parameterIds = $request->parameter_id;
+        $scores = $request->score;
+        $notes = $request->notes;
+        $juriId = auth()->user()->juri->id ?? null;
+        $juripesertaId = JuriPeserta::where('peserta_id', $pesertaId)->where('juri_id', $juriId)->first()?->id;
+        $formpenilaianId = JuriPeserta::where('peserta_id', $pesertaId)->where('juri_id', $juriId)->first()?->formpenilaian_id;
+
+        if (!$juriId || !$juripesertaId || !$formpenilaianId) {
+            return back()->with('error', 'Gagal menyimpan, data juri atau peserta tidak valid.');
+        }
+
+        // Hapus data lama jika ingin replace
+        Score::where('juripeserta_id', $juripesertaId)->delete();
+
+        $totalScore = 0;
+        foreach ($parameterIds as $index => $parameterId) {
+            $score = floatval($scores[$index]);
+            $bobot = Parameter::find($parameterId)?->bobot ?? 0;
+            $maxScore = FormPenilaian::find($formpenilaianId)?->maxscore ?? 1;
+
+            $weightedScore = ($score / $maxScore) * $bobot;
+            $totalScore += $weightedScore;
+
+            Score::create([
+                'juripeserta_id' => $juripesertaId,
+                'formpenilaian_id' => $formpenilaianId,
+                'juri_id' => $juriId,
+                'peserta_id' => $pesertaId,
+                'parameter_id' => $parameterId,
+                'score' => $score,
+                'total_score' => $weightedScore,
+            ]);
+        }
+
+        // Simpan catatan juri
+        ScoreSummary::updateOrCreate(
             [
-                'score_1' => $validated['score_1'],
-                'score_2' => $validated['score_2'],
-                'notes' => $validated['notes'],
-                'status' => $validated['action'] == 'submit' ? 'submitted' : 'draft',
-                'scored_by' => auth()->user()->id, // jika login user sebagai juri
+                'formpenilaian_id' => $formpenilaianId,
+                'juri_id' => $juriId,
+                'peserta_id' => $pesertaId,
+            ],
+            [
+                'noted' => $notes,
             ]
         );
 
-        return redirect()->route('some.route')->with('success', 'Penilaian berhasil disimpan!');
+        $msg = $request->action === 'draft' ? 'Draft tersimpan.' : 'Score berhasil disubmit.';
+        return redirect()->route('scorecard.list')->with('success', $msg);
     }
 }

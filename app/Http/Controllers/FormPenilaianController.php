@@ -27,7 +27,7 @@ class FormPenilaianController extends Controller
             })
             ->addColumn('jurilist', function ($row) {
                 return '
-                    <a href="' . url('/admin/scorecard/' . $row->id . '/jurilist') . '" class="btn btn-sm btn-primary"><i class="fa fa-user-plus"></i></a>';
+                    <a href="' . url('/admin/scorecard/' . $row->id . '/jurilist') . '" class="btn btn-sm btn-primary"><i class="fa fa-user-plus"></i> Manage</a>';
             })
             ->addColumn('action', function ($row) {
                 return '

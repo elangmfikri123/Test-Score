@@ -35,8 +35,8 @@ class EnrolledJuriPesertaController extends Controller
             ->addColumn('action', function ($row) use ($id) {
                 return
                     '<a href="' . url('/admin/scorecard/' . $id . '/' . $row->id . '/addpeserta') . '" class="btn btn-sm btn-primary">Add Peserta</a>
-                     <button class="btn btn-info btn-sm btn-detail" data-id="' . $row->id . '" data-formid="' . $id . '">Detail</button>
-                     <button class="btn btn-danger btn-sm btn-delete" data-id="' . $row->id . '" data-formid="' . $id . '">Hapus</button>';
+                     <button class="btn btn-info btn-sm btn-detail" data-id="' . $row->id . '" data-formid="' . $id . '"><i class="fa fa-eye"></i> Detail</button>
+                     <button class="btn btn-danger btn-sm btn-delete" data-id="' . $row->id . '" data-formid="' . $id . '"><i class="fa fa-trash-o"></i> Hapus</button>';
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -152,7 +152,7 @@ class EnrolledJuriPesertaController extends Controller
 
     public function getDetailPeserta($form_id, $juri_id)
     {
-        $peserta = JuriPeserta::with('peserta.mainDealer') // pastikan relasi sudah ada
+        $peserta = JuriPeserta::with('peserta.mainDealer')
             ->where('formpenilaian_id', $form_id)
             ->where('juri_id', $juri_id)
             ->whereNotNull('peserta_id')
@@ -163,9 +163,10 @@ class EnrolledJuriPesertaController extends Controller
             'data' => $peserta->map(function ($item, $index) {
                 return [
                     'no' => $index + 1,
-                    'nama' => $item->peserta->name ?? '-',
-                    'email' => $item->peserta->email ?? '-',
-                    'main_dealer' => $item->peserta->mainDealer->nama ?? '-',
+                    'nama' => $item->peserta->nama ?? '-',
+                    'honda_id' => $item->peserta->honda_id ?? '-',
+                    'namacategory' => $item->peserta->category->namacategory ?? '-',
+                    'nama_md' => $item->peserta->mainDealer->nama_md ?? '-',
                 ];
             })
         ]);

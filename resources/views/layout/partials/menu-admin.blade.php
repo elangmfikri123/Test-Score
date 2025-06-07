@@ -83,6 +83,11 @@
                                                 <span class="pcoded-mtext">Manage Participants</span>
                                             </a>
                                         </li>
+                                        <li class=" ">
+                                            <a href="{{ url('/admin/results') }}">
+                                                <span class="pcoded-mtext">Result</span>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li class="pcoded-hasmenu">

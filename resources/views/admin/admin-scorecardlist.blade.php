@@ -23,9 +23,9 @@
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Nama Scorecard</th>
-                                                        <th class="text-center">Category</th>
+                                                        <th class="text-center">Kategori</th>
                                                         <th class="text-center">Total Parameter</th>
-                                                        <th class="text-center">Juri List</th>
+                                                        <th class="text-center">Manage Juri & Peserta</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
