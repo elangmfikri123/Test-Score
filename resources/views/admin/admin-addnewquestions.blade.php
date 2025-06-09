@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Manage Course')
+@section('title', 'Manage Course Questions')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -83,7 +83,7 @@
                                         </table>
                                         <div id="isCorrectInputs"></div>
 
-                                        <button type="button" class="btn btn-primary" id="addAnswer">
+                                        <button type="button" class="btn btn-sm btn-primary" id="addAnswer">
                                             <i class="icofont icofont-plus"></i> Add Option
                                         </button>
                                         <div class="text-right mt-3">
@@ -208,8 +208,6 @@
                                             };
                                         }
                                     });
-
-
                                     answerIndex++;
                                     updateCheckboxBehavior();
                                     updateRemoveButtonBehavior();
@@ -224,12 +222,11 @@
                                                 cb.closest('tr').style.backgroundColor = "";
                                             });
                                             this.checked = true;
-                                            this.closest('tr').style.backgroundColor = "#9FE9BF";
+                                            this.closest('tr').style.backgroundColor = "#D4EDDA";
                                         };
                                         checkbox.addEventListener('change', checkbox.changeHandler);
                                     });
                                 }
-
                                 function updateRemoveButtonBehavior() {
                                     document.querySelectorAll('.removeAnswer').forEach(button => {
                                         button.onclick = function() {

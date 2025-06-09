@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Manage Course')
+@section('title', 'Edit Course')
 @section('content')
     <div class="pcoded-content">
         <div class="pcoded-inner-content">
@@ -10,17 +10,17 @@
                             <div class="col-sm-12">
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5><i class="feather icon-edit"></i> Tambah Ujian</h5>
+                                        <h5><i class="feather icon-edit"></i> Edit Ujian</h5>
                                     </div>
                                     <hr class="m-0">
                                     <div class="card-block">
-                                        <form action="{{ url('/admin/course/store') }}" method="POST">
+                                        <form action="{{ url('/admin/exams/' . $course->id) }}" method="POST">
                                             @csrf
-
+                                            @method('PUT')
                                             <div class="form-group">
                                                 <label for="namacourse">Nama Ujian</label>
                                                 <input type="text" class="form-control" id="namacourse" name="namacourse"
-                                                    required placeholder="Nama Ujian">
+                                                    value="{{ old('namacourse', $course->namacourse) }}" required>
                                             </div>
 
                                             <div class="form-group">
@@ -28,15 +28,17 @@
                                                 <select class="form-control" id="category" name="category_id" required>
                                                     <option disabled selected>Select Category</option>
                                                     @foreach ($categories as $category)
-                                                        <option value="{{ $category->id }}">{{ $category->namacategory }}
-                                                        </option>
+                                                    <option value="{{ $category->id }}"
+                                                        {{ $course->category_id == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->namacategory }}
+                                                    </option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
                                             <div class="form-group">
                                                 <label for="description">Deskripsi</label>
-                                                <textarea class="form-control" id="description" name="description"></textarea>
+                                                <textarea class="form-control" id="description" name="description">{{ old('description', $course->description) }}</textarea>
                                             </div>
 
                                             <div class="row">
@@ -46,8 +48,8 @@
                                                         <select class="form-control" id="randomquestion"
                                                             name="randomquestion" required>
                                                             <option disabled selected>Select</option>
-                                                            <option value="Ya">Ya</option>
-                                                            <option value="Tidak">Tidak</option>
+                                                            <option value="Ya" {{ $course->randomquestion == 'Ya' ? 'selected' : '' }}>Ya</option>
+                                                            <option value="Tidak" {{ $course->randomquestion == 'Tidak' ? 'selected' : '' }}>Tidak</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -58,8 +60,8 @@
                                                         <select class="form-control" id="randomanswer" name="randomanswer"
                                                             required>
                                                             <option disabled selected>Select</option>
-                                                            <option value="Ya">Ya</option>
-                                                            <option value="Tidak">Tidak</option>
+                                                            <option value="Ya" {{ $course->randomanswer == 'Ya' ? 'selected' : '' }}>Ya</option>
+                                                            <option value="Tidak" {{ $course->randomanswer == 'Tidak' ? 'selected' : '' }}>Tidak</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -72,8 +74,8 @@
                                                         <select class="form-control" id="showscore" name="showscore"
                                                             required>
                                                             <option disabled selected>Select</option>
-                                                            <option value="Ya">Ya</option>
-                                                            <option value="Tidak">Tidak</option>
+                                                            <option value="Ya" {{ $course->showscore == 'Ya' ? 'selected' : '' }}>Ya</option>
+                                                            <option value="Tidak" {{ $course->showscore == 'Tidak' ? 'selected' : '' }}>Tidak</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -82,7 +84,7 @@
                                                     <div class="form-group">
                                                         <label for="duration_minutes">Durasi (Menit)</label>
                                                         <input type="number" class="form-control" id="duration_minutes"
-                                                            name="duration_minutes" required placeholder="Menit">
+                                                            name="duration_minutes" value="{{ old('duration_minutes', $course->duration_minutes) }}" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -92,21 +94,21 @@
                                                 <div class="form-group">
                                                     <label for="start_date">Start Date</label>
                                                     <input type="datetime-local" class="form-control" id="start_date"
-                                                        name="start_date" required>
+                                                        name="start_date" value="{{ old('start_date', $course->start_date) }}" required>
                                                 </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="end_date">End Date</label>
                                                     <input type="datetime-local" class="form-control" id="end_date"
-                                                        name="end_date" required>
+                                                        name="end_date" value="{{ old('end_date', $course->end_date) }}" required>
                                                 </div>
                                                 </div>
                                             </div>
 
                                             <div class="text-right">
                                                 <button type="submit" class="btn btn-success">
-                                                    <i class="ion-checkmark"></i> Submit
+                                                    <i class="ion-checkmark"></i> Update
                                                 </button>
                                             </div>
                                         </form>

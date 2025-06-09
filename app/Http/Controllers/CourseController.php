@@ -71,6 +71,31 @@ class CourseController extends Controller
 
         return redirect('/admin/exams')->with('success', 'Course berhasil ditambahkan!');
     }
+    public function edit($id)
+    {
+        $course = Course::findOrFail($id);
+        $categories = Category::all();
+        return view('admin.admin-editcourse', compact('course', 'categories'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+
+        $course->update([
+            'category_id' => $request->category_id,
+            'namacourse' => $request->namacourse,
+            'description' => $request->description,
+            'randomanswer' => $request->randomanswer,
+            'randomquestion' => $request->randomquestion,
+            'showscore' => $request->showscore,
+            'duration_minutes' => $request->duration_minutes,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ]);
+
+        return redirect('/admin/exams')->with('success', 'Course berhasil diperbarui!');
+    }
     public function showquestionslist($id)
     {
         $course = Course::withCount('questions')->findOrFail($id);
@@ -95,12 +120,13 @@ class CourseController extends Controller
                     $textColor = $isCorrect ? 'green' : 'black';
                     $fontWeight = $isCorrect ? 'bold' : 'normal';
                     $check = $isCorrect ? '<i class="ion-checkmark" style="color: green;"></i>' : '';
+                    $bgColor = $isCorrect ? 'background-color: #D4EDDA;' : '';
 
-                    $html .= "<tr>
-                            <td style='width: 30px; color: $textColor; font-weight: $fontWeight;'>$label.</td>
-                            <td style='color: $textColor; font-weight: $fontWeight; word-break: break-word; white-space: normal; max-width: 600px;'>{$answer->jawaban}</td>
-                            <td style='width: 30px;'>$check</td>
-                          </tr>";
+                    $html .= "<tr style='$bgColor'>
+                    <td style='width: 30px; color: $textColor; font-weight: $fontWeight;'>$label.</td>
+                    <td style='color: $textColor; font-weight: $fontWeight; word-break: break-word; white-space: normal; max-width: 600px;'>{$answer->jawaban}</td>
+                    <td style='width: 30px;'>$check</td>
+                  </tr>";
                 }
 
                 $html .= '</table>';
@@ -159,6 +185,36 @@ class CourseController extends Controller
         }
 
         return response()->json(['error' => 'Tidak ada file diunggah'], 400);
+    }
+
+    public function editquestion($id)
+    {
+        $question = Question::with('answers', 'course.category')->findOrFail($id);
+        $course = $question->course;
+        return view('admin.admin-editquestions', compact('question', 'course'));
+    }
+
+    public function updatequestion(Request $request, $id)
+    {
+        $request->validate([
+            'deskripsi' => 'required|string',
+            'jawaban' => 'required|array|min:1',
+            'is_correct' => 'required|array',
+        ]);
+
+        $question = Question::findOrFail($id);
+        $question->pertanyaan = $request->deskripsi;
+        $question->save();
+        Answer::where('question_id', $id)->delete();
+        foreach ($request->jawaban as $index => $jawabanText) {
+            $answer = new Answer();
+            $answer->question_id = $question->id;
+            $answer->jawaban = $jawabanText;
+            $answer->is_correct = isset($request->is_correct[$index]) && $request->is_correct[$index] == 1 ? 1 : 0;
+            $answer->save();
+        }
+        return redirect()->route('admin.exams.questions', ['id' => $question->course_id])
+            ->with('success', 'Soal berhasil diperbarui.');
     }
 
     public function showCourseParticipants()

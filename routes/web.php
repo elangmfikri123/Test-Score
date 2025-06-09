@@ -65,6 +65,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/datacourse/json', [CourseController::class, 'showcourselist']);
     Route::get('/admin/exams/create', [CourseController::class, 'addnewcourse']);
     Route::post('/admin/course/store', [CourseController::class, 'store']);
+    Route::get('/admin/exams/{id}/edit', [CourseController::class, 'edit']);
+    Route::put('/admin/exams/{id}', [CourseController::class, 'update']);
 
     Route::get('/admin/results', [ResultCourseController::class, 'showResults']);
     Route::get('/dataresults/json', [ResultCourseController::class, 'dataResultsJson']);
@@ -72,11 +74,14 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/courseresults/{id}/detailsAnswers', [ResultCourseController::class, 'showDetailsAnswers'])->name('course.detailsAnswers');
 
     //ADD QUESTION
-    Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist']);
+    Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist'])->name('admin.exams.questions');
     Route::get('/dataquestion-answer/json/{id}', [CourseController::class, 'dataquestionAnswerJson']);
     Route::get('/admin/exams/{id}/question-create', [CourseController::class, 'createquestion']);
     Route::post('/admin/exams/{id}/question-store', [CourseController::class, 'storequestion']);
     Route::post('/upload-image', [CourseController::class, 'uploadImage'])->name('image.upload');
+    Route::get('/admin/exams/question-edit/{id}', [CourseController::class, 'editquestion']);
+    Route::post('/admin/exams/question-update/{id}', [CourseController::class, 'updatequestion']);
+
 
     Route::get('/admin/manage-participants', [CourseController::class, 'showCourseParticipants']);
     Route::get('/datacourseparticipants/json', [CourseController::class, 'JsonParticipantsCourse']);

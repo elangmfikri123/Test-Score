@@ -158,7 +158,6 @@ $('#myTable').on('click', '.btn-detail', function() {
     });
 });
 
-
                                     });
                                 </script>
                             </div>
