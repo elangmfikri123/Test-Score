@@ -178,7 +178,7 @@ class CourseController extends Controller
     {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $filename = 'img_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalName();
+            $filename = 'img_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalName();
             $path = $file->storeAs('uploadcourse', $filename, 'public');
             $url = asset('storage/uploadcourse/' . $filename);
             return response()->json(['location' => $url]);

@@ -14,7 +14,7 @@
                                     </div>
                                     <hr class="m-0">
                                     <div class="card-block">
-                                        <form action="{{ url('/admin/course/store') }}" method="POST">
+                                        <form action="{{ url('/admin/course/store') }}" method="POST" id="courseForm">
                                             @csrf
 
                                             <div class="form-group">
@@ -36,7 +36,8 @@
 
                                             <div class="form-group">
                                                 <label for="description">Deskripsi</label>
-                                                <textarea class="form-control" id="description" name="description"></textarea>
+                                                <div id="quill-description" style="height: 300px;"></div>
+                                                <textarea name="description" id="description" style="display: none;"></textarea>
                                             </div>
 
                                             <div class="row">
@@ -89,18 +90,18 @@
 
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="start_date">Start Date</label>
-                                                    <input type="datetime-local" class="form-control" id="start_date"
-                                                        name="start_date" required>
-                                                </div>
+                                                    <div class="form-group">
+                                                        <label for="start_date">Start Date</label>
+                                                        <input type="datetime-local" class="form-control" id="start_date"
+                                                            name="start_date" required>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="end_date">End Date</label>
-                                                    <input type="datetime-local" class="form-control" id="end_date"
-                                                        name="end_date" required>
-                                                </div>
+                                                    <div class="form-group">
+                                                        <label for="end_date">End Date</label>
+                                                        <input type="datetime-local" class="form-control" id="end_date"
+                                                            name="end_date" required>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -120,35 +121,116 @@
         </div>
     </div>
 
-    <!-- Load TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/2tvyzqqps6o97w5bncqfwpavklp6rlv7mx7voja1cst93eub/tinymce/7/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <!-- Load Quill -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
+    <!-- Load Image Resize Module -->
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 
-        <script>
-            tinymce.init({
-                selector: '#description',
-                height: 300,
-                menubar: false,
-                plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
-                automatic_uploads: true, 
-                file_picker_types: 'image',
-                file_picker_callback: function(callback, value, meta) {
-                    var input = document.createElement('input');
-                    input.setAttribute('type', 'file');
-                    input.setAttribute('accept', 'image/*');
-                    input.click();
-                    input.onchange = function() {
-                        var file = input.files[0];
-                        var reader = new FileReader();
-                        reader.onload = function(e) {
-                            callback(e.target.result, {
-                                alt: file.name
-                            });
-                        };
-                        reader.readAsDataURL(file);
-                    };
+    <script>
+        // Daftarkan modul image resize
+        const ImageResize = window.ImageResize;
+        Quill.register('modules/imageResize', ImageResize);
+
+        // Konfigurasi Quill editor
+        const quill = new Quill('#quill-description', {
+            theme: 'snow',
+            placeholder: 'Tulis deskripsi ujian di sini...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'image', 'code-block'],
+                    ['clean']
+                ],
+                imageResize: {
+                    displaySize: true,
+                    modules: ['Resize', 'DisplaySize', 'Toolbar'],
+                    handleStyles: {
+                        backgroundColor: '#000',
+                        border: 'none',
+                        color: '#fff'
+                    }
                 }
-            });
-        </script>
+            }
+        });
+
+        // Fungsi untuk upload gambar
+        function handleImageUpload() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async function() {
+                const file = input.files[0];
+                if (!file) return;
+
+                try {
+                    // Tampilkan indikator loading
+                    const range = quill.getSelection();
+                    quill.insertText(range.index, 'Mengupload gambar...', { color: '#999' });
+                    
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch('{{ route("image.upload") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.location) {
+                        // Hapus teks loading
+                        quill.deleteText(range.index, 18);
+                        // Sisipkan gambar
+                        quill.insertEmbed(range.index, 'image', data.location);
+                        
+                        // Setelah gambar dimasukkan, aktifkan resize
+                        const img = quill.container.querySelector(`img[src="${data.location}"]`);
+                        if (img) {
+                            img.style.maxWidth = '100%';
+                            img.style.height = 'auto';
+                        }
+                    } else {
+                        throw new Error('Upload gagal');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    quill.deleteText(range.index, 18);
+                    quill.insertText(range.index, 'Upload gambar gagal!', { color: 'red' });
+                }
+            };
+        }
+
+        // Tambahkan handler untuk tombol gambar di toolbar
+        quill.getModule('toolbar').addHandler('image', handleImageUpload);
+
+        // Simpan isi editor ke textarea saat submit form
+        document.getElementById('courseForm').addEventListener('submit', function() {
+            document.getElementById('description').value = quill.root.innerHTML;
+        });
+
+        // Validasi form sebelum submit
+        document.getElementById('courseForm').addEventListener('submit', function(e) {
+            // Validasi tanggal
+            const startDate = new Date(document.getElementById('start_date').value);
+            const endDate = new Date(document.getElementById('end_date').value);
+            
+            if (startDate >= endDate) {
+                e.preventDefault();
+                alert('Tanggal akhir harus setelah tanggal mulai!');
+                return false;
+            }
+            
+            return true;
+        });
+    </script>
 @endsection

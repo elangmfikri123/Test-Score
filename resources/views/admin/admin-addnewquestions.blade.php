@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Manage Course Questions')
+@section('title', 'Kelola Soal Ujian')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">
@@ -21,7 +21,7 @@
                                                 <td>{{ $course->namacourse }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Category</th>
+                                                <th>Kategori</th>
                                                 <td>{{ $course->category->namacategory }}</td>
                                             </tr>
                                             <tr>
@@ -38,21 +38,21 @@
                                     <h5><i class="ion-help-circled"></i> Tambah Soal Ujian</h5>
                                 </div>
                                 <hr class="m-0">
-                                <form action="{{ url('/admin/exams/' . $course->id . '/question-store') }}"
-                                    method="POST" id="questionForm">
+                                <form action="{{ url('/admin/exams/' . $course->id . '/question-store') }}" method="POST" id="questionForm">
                                     @csrf
                                     <div class="card-block">
                                         {{-- SOAL --}}
                                         <table class="table table-bordered" id="soalTable">
                                             <thead class="table-secondary">
                                                 <tr>
-                                                    <th class="text-center">Question</th>
+                                                    <th class="text-center">Pertanyaan</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <textarea class="form-control soal-editor" name="deskripsi"></textarea>
+                                                        <div id="soal-editor" style="height: 250px;"></div>
+                                                        <input type="hidden" name="deskripsi" id="soal-content">
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -62,7 +62,7 @@
                                             <thead class="table-secondary">
                                                 <tr>
                                                     <th class="text-center">Pilihan</th>
-                                                    <th class="text-center">Answers</th>
+                                                    <th class="text-center">Jawaban</th>
                                                     <th class="text-center">Koreksi</th>
                                                 </tr>
                                             </thead>
@@ -71,11 +71,11 @@
                                                 <tr>
                                                     <th>Pilihan {{ $label }}</th>
                                                     <td>
-                                                        <textarea class="form-control jawaban-editor" name="jawaban[]"></textarea>
+                                                        <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;"></div>
+                                                        <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
                                                     </td>
                                                     <td class="text-center">
-                                                        <input type="checkbox" class="is_correct"
-                                                            data-index="{{ $i }}">
+                                                        <input type="checkbox" class="is_correct" data-index="{{ $i }}">
                                                     </td>
                                                 </tr>
                                                 @endforeach
@@ -84,134 +84,126 @@
                                         <div id="isCorrectInputs"></div>
 
                                         <button type="button" class="btn btn-sm btn-primary" id="addAnswer">
-                                            <i class="icofont icofont-plus"></i> Add Option
+                                            <i class="icofont icofont-plus"></i> Tambah Pilihan
                                         </button>
                                         <div class="text-right mt-3">
                                             <button type="submit" class="btn btn-success">
-                                                <i class="ion-checkmark"></i> Submit
+                                                <i class="ion-checkmark"></i> Simpan
                                             </button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
 
-                            <script src="https://cdn.tiny.cloud/1/2tvyzqqps6o97w5bncqfwpavklp6rlv7mx7voja1cst93eub/tinymce/7/tinymce.min.js"
-                                referrerpolicy="origin"></script>
+                            <!-- Include Quill stylesheet -->
+                            <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+                            <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+                            
                             <script>
                                 let answerIndex = 4;
                                 const abjad = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-
-                                function initTinyMCE(selector = '.soal-editor, .jawaban-editor') {
-                                    tinymce.init({
-                                        selector: '.soal-editor, .jawaban-editor',
-                                        height: 200,
-                                        menubar: false,
-                                        resize: false,
-                                        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                                        toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
-                                        automatic_uploads: true,
-                                        images_upload_url: '{{ route("image.upload") }}',
-                                        images_upload_credentials: true,
-                                        file_picker_types: 'image',
-                                        file_picker_callback: function(callback, value, meta) {
-                                            var input = document.createElement('input');
-                                            input.setAttribute('type', 'file');
-                                            input.setAttribute('accept', 'image/*');
-                                            input.click();
-                                            input.onchange = function() {
-                                                var file = input.files[0];
-                                                var formData = new FormData();
-                                                formData.append('file', file);
-
-                                                fetch('{{ route("image.upload") }}', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                                        },
-                                                        body: formData
-                                                    })
-                                                    .then(response => response.json())
-                                                    .then(data => {
-                                                        callback(data.location);
-                                                    })
-                                                    .catch(() => {
-                                                        alert('Upload gagal.');
-                                                    });
-                                            };
+                                let quillInstances = {};
+                                const ImageResize = window.ImageResize;
+                                const resizeModules = [{
+                                    name: 'imageResize',
+                                    module: ImageResize,
+                                    options: {
+                                        displaySize: true,
+                                        displayStyles: {
+                                            backgroundColor: 'black',
+                                            border: 'none',
+                                            color: 'white'
                                         }
-                                    });
+                                    }
+                                }];
+                                async function uploadGambar(quill) {
+                                    const input = document.createElement('input');
+                                    input.setAttribute('type', 'file');
+                                    input.setAttribute('accept', 'image/*');
+                                    input.click();
+
+                                    input.onchange = async function() {
+                                        const file = input.files[0];
+                                        if (!file) return;
+                                        const range = quill.getSelection();
+                                        quill.insertText(range.index, 'Mengupload gambar...', 'bold', true);
+                                        
+                                        try {
+                                            const formData = new FormData();
+                                            formData.append('file', file);
+
+                                            const response = await fetch('{{ route("image.upload") }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: formData
+                                            });
+
+                                            const data = await response.json();
+                                            if (data.location) {
+                                                quill.deleteText(range.index, 20);
+                                                quill.insertEmbed(range.index, 'image', data.location);
+                                            } else {
+                                                throw new Error('Upload gagal');
+                                            }
+                                        } catch (error) {
+                                            console.error('Error:', error);
+                                            quill.deleteText(range.index, 20);
+                                            quill.insertText(range.index, 'Upload gambar gagal!', { color: 'red' });
+                                        }
+                                    };
                                 }
 
-                                initTinyMCE();
-                                updateCheckboxBehavior();
-                                updateRemoveButtonBehavior();
-
-                                document.getElementById('addAnswer').addEventListener('click', function() {
-                                    if (answerIndex >= abjad.length) {
-                                        alert('Batas maksimal jawaban tercapai!');
-                                        return;
-                                    }
-
-                                    let abjadLabel = abjad[answerIndex];
-                                    let newRow = document.createElement('tr');
-                                    let textareaId = `jawaban_${answerIndex}`;
-
-                                    newRow.innerHTML = `
-                                                <th>Pilihan ${abjadLabel}</th>
-                                                <td>
-                                                    <textarea class="form-control jawaban-editor" id="${textareaId}" name="jawaban[]"></textarea>
-                                                    <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
-                                                        <i class="ion-trash-a"></i> Delete
-                                                    </button>
-                                                </td>
-                                                <td class="text-center">
-                                                    <input type="checkbox" class="is_correct" data-index="${answerIndex}">
-                                                </td>
-                                            `;
-
-                                    document.querySelector('#jawabanTable tbody').appendChild(newRow);
-                                    tinymce.init({
-                                        selector: '.soal-editor, .jawaban-editor',
-                                        height: 200,
-                                        menubar: false,
-                                        resize: false,
-                                        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                                        toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | preview code | image',
-                                        automatic_uploads: true,
-                                        images_upload_url: '{{ route("image.upload") }}',
-                                        images_upload_credentials: true,
-                                        file_picker_types: 'image',
-                                        file_picker_callback: function(callback, value, meta) {
-                                            var input = document.createElement('input');
-                                            input.setAttribute('type', 'file');
-                                            input.setAttribute('accept', 'image/*');
-                                            input.click();
-                                            input.onchange = function() {
-                                                var file = input.files[0];
-                                                var formData = new FormData();
-                                                formData.append('file', file);
-
-                                                fetch('{{ route("image.upload") }}', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                                        },
-                                                        body: formData
-                                                    })
-                                                    .then(response => response.json())
-                                                    .then(data => {
-                                                        callback(data.location);
-                                                    })
-                                                    .catch(() => {
-                                                        alert('Upload gagal.');
-                                                    });
-                                            };
+                                // Inisialisasi Quill untuk pertanyaan
+                                const soalQuill = new Quill('#soal-editor', {
+                                    theme: 'snow',
+                                    modules: {
+                                        toolbar: [
+                                            [{ 'header': [1, 2, 3, false] }],
+                                            ['bold', 'italic', 'underline', 'strike'],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                            ['link', 'image'],
+                                            ['clean']
+                                        ],
+                                        imageResize: {
+                                            displaySize: true,
+                                            modules: ['Resize', 'DisplaySize']
                                         }
-                                    });
-                                    answerIndex++;
-                                    updateCheckboxBehavior();
-                                    updateRemoveButtonBehavior();
+                                    },
+                                    placeholder: 'Tulis pertanyaan disini...'
                                 });
+
+                                soalQuill.getModule('toolbar').addHandler('image', () => {
+                                    uploadGambar(soalQuill);
+                                });
+
+                                quillInstances['soal'] = soalQuill;
+                                @foreach (['A', 'B', 'C', 'D'] as $i => $label)
+                                quillInstances['jawaban-{{ $i }}'] = new Quill('#jawaban-editor-{{ $i }}', {
+                                    theme: 'snow',
+                                    modules: {
+                                        toolbar: [
+                                            ['bold', 'italic', 'underline', 'strike'],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                            ['link', 'image'],
+                                            ['clean']
+                                        ],
+                                        imageResize: {
+                                            displaySize: true,
+                                            modules: ['Resize', 'DisplaySize']
+                                        }
+                                    },
+                                    placeholder: 'Tulis jawaban disini...'
+                                });
+                                
+                                quillInstances['jawaban-{{ $i }}'].getModule('toolbar').addHandler('image', () => {
+                                    uploadGambar(quillInstances['jawaban-{{ $i }}']);
+                                });
+                                @endforeach
 
                                 function updateCheckboxBehavior() {
                                     document.querySelectorAll('.is_correct').forEach(checkbox => {
@@ -227,22 +219,81 @@
                                         checkbox.addEventListener('change', checkbox.changeHandler);
                                     });
                                 }
+
                                 function updateRemoveButtonBehavior() {
                                     document.querySelectorAll('.removeAnswer').forEach(button => {
                                         button.onclick = function() {
                                             let row = this.closest('tr');
-                                            // Remove TinyMCE instance
-                                            let textarea = row.querySelector('textarea');
-                                            if (tinymce.get(textarea.id)) {
-                                                tinymce.get(textarea.id).remove();
-                                            }
+                                            const textareaId = row.querySelector('.jawaban-editor').id;
+                                            delete quillInstances[textareaId.replace('jawaban-editor-', 'jawaban-')];
                                             row.remove();
                                             answerIndex--;
                                         };
                                     });
                                 }
 
+                                updateCheckboxBehavior();
+                                updateRemoveButtonBehavior();
+                                document.getElementById('addAnswer').addEventListener('click', function() {
+                                    if (answerIndex >= abjad.length) {
+                                        alert('Batas maksimal pilihan jawaban telah tercapai!');
+                                        return;
+                                    }
+
+                                    let abjadLabel = abjad[answerIndex];
+                                    let newRow = document.createElement('tr');
+                                    let editorId = 'jawaban-editor-' + answerIndex;
+                                    let contentId = 'jawaban-content-' + answerIndex;
+
+                                    newRow.innerHTML = `
+                                        <th>Pilihan ${abjadLabel}</th>
+                                        <td>
+                                            <div class="jawaban-editor" id="${editorId}" style="height: 150px;"></div>
+                                            <input type="hidden" name="jawaban[]" id="${contentId}">
+                                            <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
+                                                <i class="ion-trash-a"></i> Hapus
+                                            </button>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="is_correct" data-index="${answerIndex}">
+                                        </td>
+                                    `;
+
+                                    document.querySelector('#jawabanTable tbody').appendChild(newRow);
+                                    
+                                    quillInstances['jawaban-' + answerIndex] = new Quill('#' + editorId, {
+                                        theme: 'snow',
+                                        modules: {
+                                            toolbar: [
+                                                ['bold', 'italic', 'underline', 'strike'],
+                                                [{ 'color': [] }, { 'background': [] }],
+                                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                ['link', 'image'],
+                                                ['clean']
+                                            ],
+                                            imageResize: {
+                                                displaySize: true,
+                                                modules: ['Resize', 'DisplaySize']
+                                            }
+                                        },
+                                        placeholder: 'Tulis jawaban ' + abjadLabel + ' disini...'
+                                    });
+                                    quillInstances['jawaban-' + answerIndex].getModule('toolbar').addHandler('image', () => {
+                                        uploadGambar(quillInstances['jawaban-' + answerIndex]);
+                                    });
+
+                                    answerIndex++;
+                                    updateCheckboxBehavior();
+                                    updateRemoveButtonBehavior();
+                                });
                                 document.getElementById('questionForm').addEventListener('submit', function(e) {
+                                    document.getElementById('soal-content').value = soalQuill.root.innerHTML;
+                                    for (let i = 0; i < answerIndex; i++) {
+                                        if (quillInstances['jawaban-' + i]) {
+                                            document.getElementById('jawaban-content-' + i).value = 
+                                                quillInstances['jawaban-' + i].root.innerHTML;
+                                        }
+                                    }
                                     const container = document.getElementById('isCorrectInputs');
                                     container.innerHTML = '';
 
