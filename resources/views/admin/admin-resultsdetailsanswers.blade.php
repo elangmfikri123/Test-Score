@@ -121,14 +121,12 @@
                                                             </div>
                                                             <div class="text-nowrap ps-2">
                                                                 @if ($isUserAnswer && !$isCorrect)
-                                                                    <span class="text-danger fw-bold"><i
-                                                                            class="ion-close-round"></i> Salah</span>
+<span class="fw-bold text-danger"><i class="ion-close-round"></i> Salah</span>
                                                                 @elseif ($isCorrect && $isUserAnswer)
-                                                                    <span class="text-white fw-bold"><i
-                                                                            class="ion-checkmark-round"></i> Benar</span>
+<span class="fw-bold text-success"><i class="ion-checkmark-round"></i> Benar</span>
                                                                 @elseif ($isCorrect)
-                                                                    <span class="text-warning"><i
-                                                                            class="ion-alert-circled"></i> Koreksi</span>
+<span class="fw-bold text-warning"><i class="ion-alert-circled"></i> Koreksi</span>
+
                                                                 @endif
                                                             </div>
                                                         </div>
