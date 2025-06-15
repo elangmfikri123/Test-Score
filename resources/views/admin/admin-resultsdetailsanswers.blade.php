@@ -118,9 +118,9 @@
                                                                     @if ($isUserAnswer && !$isCorrect)
                                                                         <span class="text-danger fw-bold"><i class="ion-close-round"></i> Salah</span>
                                                                     @elseif ($isCorrect && $isUserAnswer)
-                                                                        <span class="text-success fw-bold"><i class="ion-checkmark-round"></i> Benar</span>
+                                                                        <span class="text-white fw-bold"><i class="ion-checkmark-round"></i> Benar</span>
                                                                     @elseif ($isCorrect)
-                                                                        <span class="text-success"><i class="ion-alert-circled"></i> Koreksi</span>
+                                                                        <span class="text-warning"><i class="ion-alert-circled"></i> Koreksi</span>
                                                                     @endif
                                                                 </div>
                                                             </div>
