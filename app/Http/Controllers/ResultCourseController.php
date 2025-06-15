@@ -23,6 +23,7 @@ class ResultCourseController extends Controller
             'peserta',
             'course.category'
         ])
+            ->where('status_pengerjaan', 'selesai')
             ->when($request->status_pengerjaan, function ($q) use ($request) {
                 $q->where('status_pengerjaan', $request->status_pengerjaan);
             })
@@ -39,8 +40,6 @@ class ResultCourseController extends Controller
                     $p->where('maindealer_id', $request->maindealer_id);
                 });
             });
-
-
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('namacourse', function ($row) {
@@ -110,9 +109,8 @@ class ResultCourseController extends Controller
 
         if ($start && $end) {
             $durasiAsli = $start->diff($end);
-            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0); // pembulatan ke atas kalau lebih dari 30 detik
+            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
             $maksDurasi = $pesertaCourse->course->duration_minutes;
-
             if ($durasiDalamMenit > $maksDurasi) {
                 $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
             } else {
@@ -133,129 +131,83 @@ class ResultCourseController extends Controller
         ]);
     }
 
-public function showDetailsAnswers($id)
-{
-    $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
-    $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
-        $query->where('peserta_id', $pesertaCourse->peserta_id)
-              ->where('peserta_course_id', $pesertaCourse->id);
-    }])
-    ->where('course_id', $pesertaCourse->course_id)
-    ->get();
+    public function showDetailsAnswers($id)
+    {
+        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
+        $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
+            $query->where('peserta_id', $pesertaCourse->peserta_id)
+                ->where('peserta_course_id', $pesertaCourse->id);
+        }])
+            ->where('course_id', $pesertaCourse->course_id)
+            ->get();
+        $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
 
-    // Hitung jumlah benar/salah/skip
-    $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
-
-    foreach ($questions as $q) {
-        $userAnswer = $q->pesertaAnswer->first();
-        if (!$userAnswer) {
-            $jumlahSkip++;
-        } elseif ($userAnswer->is_correct) {
-            $jumlahBenar++;
-        } else {
-            $jumlahSalah++;
+        foreach ($questions as $q) {
+            $userAnswer = $q->pesertaAnswer->first();
+            if (!$userAnswer) {
+                $jumlahSkip++;
+            } elseif ($userAnswer->is_correct) {
+                $jumlahBenar++;
+            } else {
+                $jumlahSalah++;
+            }
         }
-    }
 
-    $totalSoal = $questions->count();
-    $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $totalSoal = $questions->count();
+        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
 
-    // Durasi
-    $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
-    $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
-    $durasi = null;
+        $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
+        $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
+        $durasi = null;
 
-    if ($start && $end) {
-        $durasiAsli = $start->diff($end);
-        $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
-        $maksDurasi = $pesertaCourse->course->duration_minutes;
+        if ($start && $end) {
+            $durasiAsli = $start->diff($end);
+            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
+            $maksDurasi = $pesertaCourse->course->duration_minutes;
 
-        if ($durasiDalamMenit > $maksDurasi) {
-            $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
-        } else {
-            $durasi = $durasiAsli;
+            if ($durasiDalamMenit > $maksDurasi) {
+                $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
+            } else {
+                $durasi = $durasiAsli;
+            }
         }
-    }
 
-    // Format pertanyaan
-    $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
-        $userAnswer = $q->pesertaAnswer->first();
-        $correctAnswer = $q->answers->firstWhere('is_correct', true);
+        $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
+            $userAnswer = $q->pesertaAnswer->first();
+            $correctAnswer = $q->answers->firstWhere('is_correct', true);
 
-        $options = [];
-        foreach ($q->answers->values() as $i => $ans) {
-            $label = chr(65 + $i);
-            $options[$label] = [
-                'id' => $ans->id,
-                'text' => $ans->jawaban,
-                'is_correct' => $ans->is_correct
+            $options = [];
+            foreach ($q->answers->values() as $i => $ans) {
+                $label = chr(65 + $i);
+                $options[$label] = [
+                    'id' => $ans->id,
+                    'text' => $ans->jawaban,
+                    'is_correct' => $ans->is_correct
+                ];
+            }
+
+            $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
+            $correctLabel = collect($options)->search(fn($val) => $val['is_correct']);
+
+            return [
+                'question' => $q->pertanyaan,
+                'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
+                'correct_answer' => $correctLabel,
+                'user_answer' => $userSelectedLabel,
+                'is_skipped' => is_null($userAnswer),
             ];
-        }
+        });
 
-        $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
-        $correctLabel = collect($options)->search(fn($val) => $val['is_correct']);
-
-        return [
-            'question' => $q->pertanyaan,
-            'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
-            'correct_answer' => $correctLabel,
-            'user_answer' => $userSelectedLabel,
-            'is_skipped' => is_null($userAnswer),
-        ];
-    });
-
-    return view('admin.admin-resultsdetailsanswers', [
-        'questions' => $formattedQuestions,
-        'pesertaCourse' => $pesertaCourse,
-        'jumlahBenar' => $jumlahBenar,
-        'jumlahSalah' => $jumlahSalah,
-        'jumlahSkip' => $jumlahSkip,
-        'score' => $score,
-        'durasi' => $durasi,
-        'waktuUjian' => $start,
-        'status' => $pesertaCourse->status_pengerjaan,
-    ]);
-}
-
-
-
-    // public function showDetailsAnswers($id)
-    // {
-    //     $pesertaCourse = PesertaCourse::with('peserta', 'course')->findOrFail($id);
-    //     $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
-    //         $query->where('peserta_id', $pesertaCourse->peserta_id)
-    //               ->where('peserta_course_id', $pesertaCourse->id);
-    //     }])
-    //     ->where('course_id', $pesertaCourse->course_id)
-    //     ->get();
-
-    //     $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
-    //         $userAnswer = $q->pesertaAnswer->first();
-    //         $correctAnswer = $q->answers->firstWhere('is_correct', true);
-
-    //         $options = [];
-    //         $label = 'A';
-    //         foreach ($q->answers as $ans) {
-    //             $options[$label] = [
-    //                 'id' => $ans->id,
-    //                 'text' => $ans->jawaban,
-    //                 'is_correct' => $ans->is_correct
-    //             ];
-    //             $label++;
-    //         }
-
-    //         $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
-    //         $correctLabel = collect($options)->search(fn($val) => $val['is_correct']);
-
-    //         return [
-    //             'question' => $q->pertanyaan,
-    //             'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
-    //             'correct_answer' => $correctLabel,
-    //             'user_answer' => $userSelectedLabel,
-    //             'is_skipped' => is_null($userAnswer),
-    //         ];
-    //     });
-
-    //     return view('admin.admin-resultsdetailsanswers', ['questions' => $formattedQuestions]);
-    // }
+        return view('admin.admin-resultsdetailsanswers', [
+            'questions' => $formattedQuestions,
+            'pesertaCourse' => $pesertaCourse,
+            'jumlahBenar' => $jumlahBenar,
+            'jumlahSalah' => $jumlahSalah,
+            'jumlahSkip' => $jumlahSkip,
+            'score' => $score,
+            'durasi' => $durasi,
+            'waktuUjian' => $start,
+            'status' => $pesertaCourse->status_pengerjaan,
+        ]);
+    }
 }
