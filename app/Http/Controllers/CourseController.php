@@ -11,6 +11,7 @@ use App\Models\Question;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -36,6 +37,7 @@ class CourseController extends Controller
         }
 
         $result = DataTables()->of($data)
+            ->addIndexColumn()
             ->addColumn('categoryname', function ($row) {
                 return $row->category ? $row->category->namacategory : '-';
             })
@@ -46,7 +48,7 @@ class CourseController extends Controller
                 return '
                     <a href="' . url('/admin/exams/' . $row->id . '/questions') . '" class="btn btn-sm btn-info">Add</a>
                     <a href="' . url('/admin/exams/' . $row->id . '/edit') . '" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="' . url('/admin/exams/' . $row->id) . '" class="btn btn-sm btn-danger">Hapus</a>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCourse(' . $row->id . ')">Hapus</button>
                 ';
             })
             ->rawColumns(['action'])
@@ -96,6 +98,17 @@ class CourseController extends Controller
 
         return redirect('/admin/exams')->with('success', 'Course berhasil diperbarui!');
     }
+    public function deleteCourse($id)
+    {
+        $course = Course::with('questions.answers')->findOrFail($id);
+        foreach ($course->questions as $question) {
+            $question->answers()->delete();
+        }
+        $course->questions()->delete();
+        $course->delete();
+
+        return response()->json(['success' => true, 'message' => 'Course berhasil dihapus']);
+    }
     public function showquestionslist($id)
     {
         $course = Course::withCount('questions')->findOrFail($id);
@@ -134,17 +147,14 @@ class CourseController extends Controller
             })
             ->addColumn('action', function ($question) {
                 $editUrl = url("/admin/exams/question-edit/" . $question->id);
-                $deleteUrl = url("/admin/exams/question-delete/" . $question->id);
-
                 return '
-                <a href="' . $editUrl . '" class="btn btn-sm btn-warning"><i class="ion-edit"></i> Edit</a>
-                <button class="btn btn-sm btn-danger" onclick="deleteQuestion(' . $question->id . ')"><i class="ion-trash-b"></i> Hapus</button>
-            ';
+                    <a href="' . $editUrl . '" class="btn btn-sm btn-warning"><i class="ion-edit"></i> Edit</a>
+                    <button class="btn btn-sm btn-danger" onclick="deleteQuestion(' . $question->id . ')"><i class="ion-trash-b"></i> Hapus</button>
+                ';
             })
             ->rawColumns(['questions_answer', 'action'])
             ->make(true);
     }
-
     public function createquestion($id)
     {
         $course = Course::withCount('questions')->findOrFail($id);
@@ -217,6 +227,17 @@ class CourseController extends Controller
             ->with('success', 'Soal berhasil diperbarui.');
     }
 
+    public function deleteQuestion($id)
+    {
+        $question = Question::with('answers')->findOrFail($id);
+        $question->answers()->delete();
+        $question->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Berhasil Dihapus'
+        ]);
+    }
     public function showCourseParticipants()
     {
         return view('admin.admin-managecourseparticipants');

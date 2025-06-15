@@ -203,6 +203,72 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Detail User -->
+                <div class="modal fade" id="detailUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Detail User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th width="30%">Nama</th>
+                                                <td id="detail_nama"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Username</th>
+                                                <td id="detail_username"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email</th>
+                                                <td id="detail_email"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Role</th>
+                                                <td id="detail_role"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Main Dealer</th>
+                                                <td id="detail_maindealer"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Kode MD</th>
+                                                <td id="detail_kodemd"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Jabatan</th>
+                                                <td id="detail_jabatan"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Divisi</th>
+                                                <td id="detail_division"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td id="detail_status"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Dibuat Pada</th>
+                                                <td id="detail_created"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Modal Edit User -->
                 <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -236,18 +302,19 @@
                                     <div class="form-group">
                                         <label>Password</label>
                                         <div class="input-group">
-                                            <input type="password" id="password" name="password" class="form-control" autocomplete="off" inputmode="text"
-                                                required placeholder="Password">
+                                            <input type="password" id="password" name="password" class="form-control"
+                                                placeholder="Kosongkan jika tidak ingin mengubah">
                                             <span class="input-group-addon" onclick="togglePassword()"
                                                 style="cursor: pointer;">
                                                 <i class="ion-eye-disabled" id="eye-icon"></i>
                                             </span>
                                         </div>
+                                        <small class="text-muted">Biarkan kosong jika tidak ingin mengubah password</small>
                                     </div>
                                     <div class="form-group">
                                         <label>Role</label>
                                         <select name="role" id="edit_role" class="form-control"
-                                            onchange="toggleEditMaindealer()">
+                                            onchange="toggleEditFields()">
                                             <option value="Admin">Admin</option>
                                             <option value="AdminMD">Admin MD</option>
                                             <option value="Juri">Juri</option>
@@ -264,6 +331,14 @@
                                                     {{ $md->nama_md }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                    <div class="form-group" id="edit_jabatan_field" style="display:none;">
+                                        <label>Jabatan</label>
+                                        <input type="text" class="form-control" name="jabatan" id="edit_jabatan">
+                                    </div>
+                                    <div class="form-group" id="edit_division_field" style="display:none;">
+                                        <label>Divisi</label>
+                                        <input type="text" class="form-control" name="division" id="edit_division">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -302,6 +377,63 @@
                     });
                 </script>
                 <script>
+                    $(document).ready(function() {
+                        $('#editUserForm').on('submit', function(e) {
+                            e.preventDefault();
+
+                            var form = $(this);
+                            var url = form.attr('action');
+                            var formData = form.serialize();
+
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: formData,
+                                success: function(response) {
+                                    if (response.success) {
+                                        $('#editUserModal').modal('hide');
+                                        Swal.fire({
+                                            title: 'Berhasil!',
+                                            text: response.message,
+                                            icon: 'success',
+                                            confirmButtonColor: '#01a9ac',
+                                            confirmButtonText: 'OK'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $('#myTable').DataTable().ajax.reload();
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function(xhr) {
+                                    var errorMessage = xhr.responseJSON.message ||
+                                        'Terjadi kesalahan saat memperbarui data';
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: errorMessage,
+                                        icon: 'error',
+                                        confirmButtonColor: '#01a9ac'
+                                    });
+                                }
+                            });
+                        });
+                    });
+
+                    function togglePassword() {
+                        const passwordInput = document.getElementById('password');
+                        const eyeIcon = document.getElementById('eye-icon');
+
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            eyeIcon.classList.remove('ion-eye-disabled');
+                            eyeIcon.classList.add('ion-eye');
+                        } else {
+                            passwordInput.type = 'password';
+                            eyeIcon.classList.remove('ion-eye');
+                            eyeIcon.classList.add('ion-eye-disabled');
+                        }
+                    }
+
                     function editUser(userId) {
                         $.ajax({
                             url: '/user/' + userId,
@@ -311,11 +443,17 @@
                                 $('#edit_nama').val(data.nama);
                                 $('#edit_email').val(data.email);
                                 $('#edit_username').val(data.username);
-                                $('#edit_password').val(data.password);
                                 $('#edit_role').val(data.role);
-                                $('#edit_maindealer_id').val(data.maindealer_id);
+                                $('#password').val('');
+                                if (data.role === 'AdminMD' || data.role === 'Peserta') {
+                                    $('#edit_maindealer_id').val(data.maindealer_id).trigger('change');
+                                }
+                                if (data.role === 'Juri') {
+                                    $('#edit_jabatan').val(data.jabatan);
+                                    $('#edit_division').val(data.division);
+                                }
 
-                                toggleEditMaindealer();
+                                toggleEditFields();
 
                                 $('#editUserForm').attr('action', '/user/' + userId);
                                 $('#editUserModal').modal('show');
@@ -323,14 +461,45 @@
                         });
                     }
 
-                    function toggleEditMaindealer() {
+                    function toggleEditFields() {
                         const role = $('#edit_role').val();
+                        $('#edit_maindealer_field, #edit_jabatan_field, #edit_division_field').hide();
                         if (role === 'AdminMD' || role === 'Peserta') {
                             $('#edit_maindealer_field').show();
-                        } else {
-                            $('#edit_maindealer_field').hide();
-                            $('#edit_maindealer_id').val('');
+                        } else if (role === 'Juri') {
+                            $('#edit_jabatan_field, #edit_division_field').show();
                         }
+                    }
+                    // Fungsi untuk menampilkan detail user
+                    function showUserDetail(userId) {
+                        $.ajax({
+                            url: '/user/detail/' + userId,
+                            method: 'GET',
+                            success: function(data) {
+                                // Isi data ke modal
+                                $('#detail_nama').text(data.nama);
+                                $('#detail_username').text(data.username);
+                                $('#detail_email').text(data.email);
+                                $('#detail_role').text(data.role);
+                                $('#detail_maindealer').text(data.maindealer);
+                                $('#detail_kodemd').text(data.kodemd);
+                                $('#detail_jabatan').text(data.jabatan);
+                                $('#detail_division').text(data.division);
+                                $('#detail_status').text(data.status);
+                                $('#detail_created').text(data.created_at);
+
+                                // Tampilkan modal
+                                $('#detailUserModal').modal('show');
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Gagal memuat data user',
+                                    icon: 'error',
+                                    confirmButtonColor: '#01a9ac'
+                                });
+                            }
+                        });
                     }
                     $(document).ready(function() {
                         $('.select2-maindealeredit').select2({
@@ -338,45 +507,47 @@
                             dropdownParent: $('#editUserModal')
                         });
 
-                        $('#editUserModal').on('show.bs.modal', function() {
-                            toggleForm();
-                            $('.select2-maindealer').val(null).trigger('change');
+                        $('#editUserModal').on('shown.bs.modal', function() {
+                            $('.select2-maindealeredit').select2({
+                                placeholder: "Pilih Main Dealer",
+                                dropdownParent: $('#editUserModal')
+                            });
                         });
                     });
                 </script>
-        <style>
-            .icon-black {
-                color: #444 !important;
-                font-size: 16px;
-            }
+                <style>
+                    .icon-black {
+                        color: #444 !important;
+                        font-size: 16px;
+                    }
 
-            #eye-icon {
-                font-size: 16px;
-                color: #444;
-            }
-            input::-ms-reveal {
-                display: none;
-            }
-        </style>
-        <script>
-            function togglePassword() {
-                const passwordInput = document.getElementById('password');
-                const eyeIcon = document.getElementById('eye-icon');
+                    #eye-icon {
+                        font-size: 16px;
+                        color: #444;
+                    }
 
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    eyeIcon.classList.remove('ion-eye-disabled');
-                    eyeIcon.classList.add('ion-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    eyeIcon.classList.remove('ion-eye');
-                    eyeIcon.classList.add('ion-eye-disabled');
-                }
-            }
-        </script>
+                    input::-ms-reveal {
+                        display: none;
+                    }
+                </style>
+                <script>
+                    function togglePassword() {
+                        const passwordInput = document.getElementById('password');
+                        const eyeIcon = document.getElementById('eye-icon');
+
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            eyeIcon.classList.remove('ion-eye-disabled');
+                            eyeIcon.classList.add('ion-eye');
+                        } else {
+                            passwordInput.type = 'password';
+                            eyeIcon.classList.remove('ion-eye');
+                            eyeIcon.classList.add('ion-eye-disabled');
+                        }
+                    }
+                </script>
             </div>
         </div>
     </div>
     </div>
-
 @endsection

@@ -107,10 +107,9 @@
                                         });
 
                                         setInterval(() => {
-                                            table.ajax.reload(null, false); // Tetap di halaman saat ini
+                                            table.ajax.reload(null, false); 
                                         }, 10000);
     
-                                        // Countdown logic
                                         function startCountdown(elementId, secondsRemaining) {
                                             const el = document.getElementById(elementId);
                                             if (!el) return;

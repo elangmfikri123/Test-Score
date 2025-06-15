@@ -165,7 +165,7 @@
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <th scope="row">Kategori</th>
-                                                                                        <td>{{ $peserta->Category->namacategory }}</td>
+                                                                                        <td>{{ $peserta->Category->namacategory ?? '-' }}</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <th scope="row">Jabatan</th>

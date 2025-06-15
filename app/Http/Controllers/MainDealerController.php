@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class MainDealerController extends Controller
 {
-    public function maindealerlist ()
+    public function maindealerlist()
     {
         return view('admin.adminmaindealer');
     }
@@ -22,20 +22,21 @@ class MainDealerController extends Controller
                     ->orWhere('nama_md', 'like', '%' . $search . '%');
             });
         }
-    
+
         $result = DataTables()->of($data)
+            ->addIndexColumn()
             ->addColumn('action', function ($row) {
-                $edit = '<a href="' . url('/maindealer/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
+                $edit = '<button class="btn btn-sm btn-warning edit-button" data-id="' . $row->id . '">Edit</button>';
                 $delete = '<form action="' . url('/maindealer/delete/' . $row->id) . '" method="POST" style="display:inline;">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
                     <button type="submit" class="btn btn-sm btn-danger delete-button">Hapus</button>
-                </form>';            
+                </form>';
                 return $edit . ' ' . $delete;
             })
             ->rawColumns(['action'])
             ->toJson();
-    
+
         return $result;
     }
     public function storemaindealer(Request $request)
@@ -44,15 +45,36 @@ class MainDealerController extends Controller
             'kodemd' => 'required|string|max:10',
             'nama_md' => 'required|string|max:255',
         ]);
-    
-        // Simpan data ke database
+
         MainDealer::create([
             'kodemd' => $request->kodemd,
             'nama_md' => $request->nama_md,
         ]);
-    
+
         return redirect()->back()->with('success', 'Main Dealer berhasil ditambahkan!');
-    }  
+    }
+
+    public function editMainDealer($id)
+    {
+        $data = MainDealer::findOrFail($id);
+        return response()->json($data);
+    }
+
+    public function updateMainDealer(Request $request, $id)
+    {
+        $request->validate([
+            'kodemd' => 'required|string|max:10',
+            'nama_md' => 'required|string|max:255',
+        ]);
+
+        $data = MainDealer::findOrFail($id);
+        $data->kodemd = $request->kodemd;
+        $data->nama_md = $request->nama_md;
+        $data->save();
+
+        return response()->json(['success' => 'Data berhasil diupdate!']);
+    }
+
     public function deleteMainDealer($id)
     {
         try {

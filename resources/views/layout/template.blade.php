@@ -37,7 +37,6 @@
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\jquery.mCustomScrollbar.css') }}">
-    
 </head>
 
 <body>
@@ -198,7 +197,6 @@
             });
         }, 60000);
     </script>   
-    
 
     <!-- Warning Section Ends -->
     <!-- Required Jquery -->
@@ -252,7 +250,7 @@
     <script src="{{ asset('files\assets\pages\form-masking\form-mask.js') }}"></script>
 
     <!-- ck editor -->
-    <script src="{{ asset('files\assets\pages\ckeditor\ckeditor.js') }}"></script>
+    {{-- <script src="{{ asset('files\assets\pages\ckeditor\ckeditor.js') }}"></script> --}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>

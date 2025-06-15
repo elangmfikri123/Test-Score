@@ -1,5 +1,5 @@
 @extends('layout.template')
-@section('title', 'Kelola Soal Ujian')
+@section('title', 'Manage Soal Ujian')
 @section('content')
 <div class="pcoded-content">
     <div class="pcoded-inner-content">

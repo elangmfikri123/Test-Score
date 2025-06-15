@@ -41,7 +41,6 @@ class ExportController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Honda ID');
         $sheet->setCellValue('C1', 'Nama');

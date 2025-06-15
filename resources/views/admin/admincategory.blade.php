@@ -38,7 +38,7 @@
                                               searching: true,
                                               lengthChange: true, 
                                               columns: [
-                                              { data: 'id', name: 'id' },
+                                              { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
                                               { data: 'namacategory', name: 'namacategory' },
                                               { data: 'keterangan', name: 'keterangan' },
                                               { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
@@ -83,8 +83,115 @@
                 </div>
             </div>
 
+            <!-- Modal Edit Category -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="formEditCategory" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Category</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_id" name="id">
+                    <div class="form-group">
+                        <label>Nama Category</label>
+                        <input type="text" class="form-control" id="edit_namacategory" name="namacategory" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan</label>
+                        <input type="text" class="form-control" id="edit_keterangan" name="keterangan" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function editCategory(id) {
+    $.get('/category/edit/' + id, function(data) {
+        $('#edit_id').val(data.id);
+        $('#edit_namacategory').val(data.namacategory);
+        $('#edit_keterangan').val(data.keterangan);
+        $('#editCategoryModal').modal('show');
+        $('#formEditCategory').attr('action', '/category/update/' + id);
+    });
+}
+
+$('#formEditCategory').on('submit', function(e) {
+    e.preventDefault();
+
+    var id = $('#edit_id').val();
+    var form = $(this);
+    var formData = form.serialize();
+
+    $.ajax({
+        url: '/category/update/' + id,
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            $('#editCategoryModal').modal('hide');
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Kategori berhasil diupdate',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            $('#myTable').DataTable().ajax.reload();
+        },
+        error: function() {
+            Swal.fire('Error', 'Gagal update data', 'error');
+        }
+    });
+});
+
+function deleteCategory(id) {
+    Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Data akan hilang permanen",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/category/delete/' + id,
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    $('#myTable').DataTable().ajax.reload();
+                },
+                error: function() {
+                    Swal.fire('Error', 'Gagal menghapus data', 'error');
+                }
+            });
+        }
+    });
+}
+</script>
+
 @endsection

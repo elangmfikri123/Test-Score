@@ -67,6 +67,42 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Edit Main Dealer -->
+                <div class="modal fade" id="editMainDealerModal" tabindex="-1" role="dialog"
+                    aria-labelledby="editMainDealerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <form id="editMainDealerForm">
+                            @csrf
+                            @method('PUT')
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Edit Main Dealer</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="edit_id" name="id">
+                                    <div class="form-group">
+                                        <label for="edit_kodemd">Kode Main Dealer</label>
+                                        <input type="text" class="form-control" id="edit_kodemd" name="kodemd" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_nama_md">Nama Main Dealer</label>
+                                        <input type="text" class="form-control" id="edit_nama_md" name="nama_md"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -80,11 +116,28 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{{ url('/get-maindealer/data') }}',
-                columns: [
-                {data: 'id',name: 'id',className: 'text-center'},
-                {data: 'kodemd',name: 'kodemd'},
-                {data: 'nama_md',name: 'nama_md'},
-                {data: 'action',name: 'action', orderable: false, searchable: false, className: 'text-center'}
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'kodemd',
+                        name: 'kodemd'
+                    },
+                    {
+                        data: 'nama_md',
+                        name: 'nama_md'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    }
                 ]
             });
             $('#addMainDealerForm').on('submit', function(e) {
@@ -117,6 +170,39 @@
                 });
             });
 
+            let table = $('#myTable').DataTable();
+
+            $(document).on('click', '.edit-button', function() {
+                let id = $(this).data('id');
+                $.get('/maindealer/edit/' + id, function(data) {
+                    $('#edit_id').val(data.id);
+                    $('#edit_kodemd').val(data.kodemd);
+                    $('#edit_nama_md').val(data.nama_md);
+                    $('#editMainDealerModal').modal('show');
+                });
+            });
+
+            $('#editMainDealerForm').on('submit', function(e) {
+                e.preventDefault();
+                let id = $('#edit_id').val();
+                let formData = $(this).serialize();
+
+                $.ajax({
+                    url: '/maindealer/update/' + id,
+                    method: 'POST',
+                    data: formData,
+                    success: function(res) {
+                        $('#editMainDealerModal').modal('hide');
+                        Swal.fire('Berhasil!', res.success, 'success');
+                        table.ajax.reload();
+                    },
+                    error: function(err) {
+                        Swal.fire('Gagal!', 'Terjadi kesalahan saat update.', 'error');
+                    }
+                });
+            });
+
+
             // Konfirmasi hapus data
             $(document).on('click', '.delete-button', function(e) {
                 e.preventDefault();
@@ -139,7 +225,8 @@
                                 '_token': $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
-                                Swal.fire('Dihapus!', response.success, 'success').then(
+                                Swal.fire('Berhasil Dihapus!', response.success,
+                                    'success').then(
                                     () => {
                                         form.closest('tr').remove();
                                     });

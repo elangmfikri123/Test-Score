@@ -112,9 +112,9 @@ class AdminController extends Controller
                 return $status;
             })
             ->addColumn('action', function ($row) {
-                $action = '<a href="' . url('/survey-awarenesshc/data/' . $row->id) . '" class="btn btn-sm btn-primary">Detail</a>';
+                $detail = '<button class="btn btn-sm btn-primary" onclick="showUserDetail(' . $row->id . ')">Detail</button>';
                 $edit = '<button class="btn btn-sm btn-warning" onclick="editUser(' . $row->id . ')">Edit</button>';
-                return $action . ' ' . $edit;
+                return $detail . ' ' . $edit;
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
@@ -170,8 +170,7 @@ class AdminController extends Controller
                 ->with('error', 'Gagal membuat user: ' . $e->getMessage());
         }
     }
-
-    public function show($id)
+    public function detail($id)
     {
         $user = User::with(['peserta', 'admin', 'juri'])->findOrFail($id);
 
@@ -181,7 +180,30 @@ class AdminController extends Controller
             'role' => $user->role,
             'email' => $user->peserta->email ?? $user->admin->email ?? $user->juri->email ?? '',
             'nama' => $user->peserta->nama ?? $user->admin->nama_lengkap ?? $user->juri->namajuri ?? '',
-            'maindealer_id' => $user->admin->maindealer_id ?? $user->peserta->maindealer_id ?? null
+            'maindealer' => $user->admin->mainDealer->nama_md ?? $user->peserta->mainDealer->nama_md ?? '-',
+            'kodemd' => $user->admin->mainDealer->kodemd ?? $user->peserta->mainDealer->kodemd ?? '-',
+            'jabatan' => $user->juri->jabatan ?? '-',
+            'division' => $user->juri->division ?? '-',
+            'status' => $user->login_token ? 'Online' : 'Offline',
+            'created_at' => $user->created_at->format('d-m-Y H:i:s'),
+            'updated_at' => $user->updated_at->format('d-m-Y H:i:s')
+        ];
+
+        return response()->json($response);
+    }
+    public function edit($id)
+    {
+        $user = User::with(['peserta', 'admin', 'juri'])->findOrFail($id);
+
+        $response = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'role' => $user->role,
+            'email' => $user->peserta->email ?? $user->admin->email ?? $user->juri->email ?? '',
+            'nama' => $user->peserta->nama ?? $user->admin->nama_lengkap ?? $user->juri->namajuri ?? '',
+            'maindealer_id' => $user->admin->maindealer_id ?? $user->peserta->maindealer_id ?? null,
+            'jabatan' => $user->juri->jabatan ?? null,
+            'division' => $user->juri->division ?? null
         ];
 
         return response()->json($response);
@@ -199,8 +221,12 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->username = $request->username;
         $user->role = $request->role;
-        $user->save();
 
+        if (!empty($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
         if ($user->role == 'AdminMD') {
             $user->admin()->updateOrCreate(['user_id' => $id], [
                 'nama_lengkap' => $request->nama,
@@ -217,10 +243,15 @@ class AdminController extends Controller
             $user->juri()->updateOrCreate(['user_id' => $id], [
                 'namajuri' => $request->nama,
                 'email' => $request->email,
+                'jabatan' => $request->jabatan,
+                'division' => $request->division,
             ]);
         }
 
-        return response()->json(['success' => true, 'message' => 'User berhasil diperbarui.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil Diperbarui.'
+        ]);
     }
 
     public function pesertalist()
@@ -318,7 +349,6 @@ class AdminController extends Controller
                 } else {
                     $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
                 }
-
                 return $detail . ' ' . $edit;
             })
             ->rawColumns(['status', 'action'])

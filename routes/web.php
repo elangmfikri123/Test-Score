@@ -42,7 +42,8 @@ Route::get('/check-session', [AuthController::class, 'checkSession'])->name('che
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard']);
     Route::get('/listuser', [AdminController::class, 'userlist'])->name('admin.userlist');
-    Route::get('/user/{id}', [AdminController::class, 'show']);
+    Route::get('/user/detail/{id}', [AdminController::class, 'detail'])->name('user.detail');
+    Route::get('/user/{id}', [AdminController::class, 'edit'])->name('user.edit');
     Route::put('/user/{id}', [AdminController::class, 'update'])->name('user.update');
     Route::get('/get-user/data', [AdminController::class, 'getusertable']);
     Route::post('/force-logout/{id}', [AuthController::class, 'forceLogout']);
@@ -55,10 +56,15 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/categorylist', [CategoryController::class, 'categorylist']);
     Route::get('/get-category/data', [CategoryController::class, 'getcategory']);
     Route::post('/category/store', [CategoryController::class, 'storecategory'])->name('category.store');
-
+    Route::get('/category/edit/{id}', [CategoryController::class, 'edit']);
+    Route::put('/category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
+    Route::delete('/category/delete/{id}', [CategoryController::class, 'delete'])->name('category.delete');
+    
     Route::get('/maindealerlist', [MainDealerController::class, 'maindealerlist']);
     Route::get('/get-maindealer/data', [MainDealerController::class, 'getmaindealer']);
     Route::post('/maindealer/store', [MainDealerController::class, 'storemaindealer'])->name('maindealer.store');
+    Route::get('/maindealer/edit/{id}', [MainDealerController::class, 'editMainDealer']);
+    Route::put('/maindealer/update/{id}', [MainDealerController::class, 'updateMainDealer'])->name('maindealer.update');
     Route::delete('/maindealer/delete/{id}', [MainDealerController::class, 'deleteMainDealer'])->name('maindealer.delete');
 
     Route::get('/admin/exams', [CourseController::class, 'managecourselist']);
@@ -67,6 +73,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/course/store', [CourseController::class, 'store']);
     Route::get('/admin/exams/{id}/edit', [CourseController::class, 'edit']);
     Route::put('/admin/exams/{id}', [CourseController::class, 'update']);
+    Route::delete('/admin/exams/{id}/delete', [CourseController::class, 'deleteCourse'])->name('course.delete');
 
     Route::get('/admin/results', [ResultCourseController::class, 'showResults']);
     Route::get('/dataresults/json', [ResultCourseController::class, 'dataResultsJson']);
@@ -81,6 +88,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/upload-image', [CourseController::class, 'uploadImage'])->name('image.upload');
     Route::get('/admin/exams/question-edit/{id}', [CourseController::class, 'editquestion']);
     Route::post('/admin/exams/question-update/{id}', [CourseController::class, 'updatequestion']);
+    Route::delete('/admin/exams/question-delete/{id}', [CourseController::class, 'deleteQuestion'])->name('question.delete');
 
 
     Route::get('/admin/manage-participants', [CourseController::class, 'showCourseParticipants']);
@@ -98,12 +106,14 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/enrolle/store/{id}', [CourseController::class, 'storeParticipants'])->name('participants.store');
 
     //ScoreCard
-    Route::get('/admin/scorecardlist', [FormPenilaianController::class, 'show']);
+    Route::get('/admin/scorecardlist', [FormPenilaianController::class, 'show'])->name('scorecard.adminlist');
     Route::get('/scorecardlist/json', [FormPenilaianController::class, 'listScoreCardJson']);
     Route::get('/admin/scorecard/create', [FormPenilaianController::class, 'createdScoring'])->name('scorecard.store');
     Route::post('/scorecard/store', [FormPenilaianController::class, 'store']);
-    Route::get('/admin/scorecard/{id}/edit', [EnrolledJuriPesertaController::class, 'edit'])->name('scorecard.edit');
-
+    Route::get('/admin/scorecard/{id}/edit', [FormPenilaianController::class, 'edit'])->name('scorecard.edit');
+    Route::put('/admin/scorecard/{id}/update', [FormPenilaianController::class, 'update'])->name('scorecard.update');
+    Route::delete('/admin/scorecard/{id}/delete', [FormPenilaianController::class, 'delete'])->name('scorecard.delete');
+    
     // Enrolled Juri
     Route::get('/admin/scorecard/{id}/jurilist', [EnrolledJuriPesertaController::class, 'listJuriScoring'])->name('scorecard.jurilist');
     Route::get('/jurienrolled/json/{id}', [EnrolledJuriPesertaController::class, 'getEnrolledJuriTable']);

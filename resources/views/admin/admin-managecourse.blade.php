@@ -18,7 +18,8 @@
                                     </div>
                                     <div class="card-block">
                                         <div class="table-responsive">
-                                            <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
+                                            <table class="display table table-striped table-bordered" id="myTable"
+                                                cellspacing="0" width="100%">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
@@ -34,24 +35,49 @@
                                             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                                             <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
                                             <script>
-                                            $(document).ready(function() {
-                                            $('#myTable').DataTable({
-                                              processing: true,
-                                              serverSide: true,
-                                              ajax: '{{ url("/datacourse/json") }}',
-                                              searching: true,
-                                              lengthChange: true,
-                                              columns: [
-                                              { data: 'id', name: 'id' },
-                                              { data: 'namacourse', name: 'namacourse' },
-                                              { data: 'categoryname', name: 'categoryname' },
-                                              { data: 'totalquestion', name: 'totalquestion', className: 'text-center' },
-                                              { data: 'duration_minutes', name: 'duration_minutes', className: 'text-center' },
-                                              { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
-                                             ],
-                                              });
-                                            });
-                                          </script>
+                                                $(document).ready(function() {
+                                                    $('#myTable').DataTable({
+                                                        processing: true,
+                                                        serverSide: true,
+                                                        ajax: '{{ url('/datacourse/json') }}',
+                                                        searching: true,
+                                                        lengthChange: true,
+                                                        columns: [{
+                                                                data: 'DT_RowIndex',
+                                                                name: 'DT_RowIndex',
+                                                                orderable: false,
+                                                                searchable: false,
+                                                                className: 'text-center'
+                                                            },
+                                                            {
+                                                                data: 'namacourse',
+                                                                name: 'namacourse'
+                                                            },
+                                                            {
+                                                                data: 'categoryname',
+                                                                name: 'categoryname'
+                                                            },
+                                                            {
+                                                                data: 'totalquestion',
+                                                                name: 'totalquestion',
+                                                                className: 'text-center'
+                                                            },
+                                                            {
+                                                                data: 'duration_minutes',
+                                                                name: 'duration_minutes',
+                                                                className: 'text-center'
+                                                            },
+                                                            {
+                                                                data: 'action',
+                                                                name: 'action',
+                                                                orderable: false,
+                                                                searchable: false,
+                                                                className: 'text-center'
+                                                            },
+                                                        ],
+                                                    });
+                                                });
+                                            </script>
                                         </div>
                                     </div>
                                 </div>
@@ -59,8 +85,49 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
         </div>
     </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function deleteCourse(id) {
+            Swal.fire({
+                title: 'Yakin ingin menghapus course ini?',
+                text: "Seluruh soal dan jawaban juga akan dihapus.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/admin/exams/' + id + '/delete',
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil Dihapus!',
+                                    text: response.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                $('#myTable').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire('Gagal', 'Gagal menghapus data', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 @endsection

@@ -41,7 +41,7 @@
                                               searching: true,
                                               lengthChange: true,
                                               columns: [
-                                              { data: 'id', name: 'id' },
+                                              { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center'  },
                                               { data: 'namaform', name: 'namaform' },
                                               { data: 'category', name: 'category' },
                                               { data: 'parameter', name: 'parameter', className: 'text-center' },
@@ -62,4 +62,28 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).on('click', '.btn-delete', function () {
+        let id = $(this).data('id');
+        let name = $(this).data('name');
+
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            text: "Scorecard: " + name,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e3342f',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-delete-' + id).submit();
+            }
+        });
+    });
+</script>
 @endsection
