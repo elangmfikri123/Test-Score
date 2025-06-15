@@ -83,64 +83,54 @@
                                     </div>
                                 </div>
 
-                                <!-- Questions Table -->
-                                <table class="table" id="questionTable">
-                                    <tbody>
-                                        @foreach ($questions as $index => $q)
-                                            <tr>
-                                                <td>
-                                                    <div class="card shadow-sm mb-3 border">
-                                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                                            <strong>Soal No {{ $index + 1 }}</strong>
-                                                            @if ($q['is_skipped'])
-                                                                <span class="text-warning"><i class="ion-help-circled"></i> Terlewati</span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="card-body p-3">
-                                                            <div class="mb-3 text-break">{!! $q['question'] !!}</div>
+                                <!-- Questions List -->
+                                <div id="questionList">
+                                    @foreach ($questions as $index => $q)
+                                        <div class="card shadow-sm mb-3 border">
+                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                <strong>Soal No {{ $index + 1 }}</strong>
+                                                @if ($q['is_skipped'])
+                                                    <span class="text-warning"><i class="ion-help-circled"></i> Terlewati</span>
+                                                @endif
+                                            </div>
+                                            <div class="card-body p-3">
+                                                <div class="mb-3 text-wrap">{!! $q['question'] !!}</div>
+                                                
+                                                <div class="options-container">
+                                                    @foreach ($q['options'] as $optionKey => $optionText)
+                                                        @php
+                                                            $isCorrect = $optionKey === $q['correct_answer'];
+                                                            $isUserAnswer = $optionKey === $q['user_answer'];
+                                                            $optionClass = 'option-item';
                                                             
-                                                            <table class="table table-bordered mb-0">
-                                                                <tbody>
-                                                                    @foreach ($q['options'] as $optionKey => $optionText)
-                                                                        @php
-                                                                            $isCorrect = $optionKey === $q['correct_answer'];
-                                                                            $isUserAnswer = $optionKey === $q['user_answer'];
-                                                                            $rowClass = '';
-
-                                                                            if ($isCorrect) {
-                                                                                $rowClass = 'table-success';
-                                                                            }
-                                                                            if ($isUserAnswer && !$isCorrect) {
-                                                                                $rowClass = 'table-danger';
-                                                                            }
-                                                                        @endphp
-                                                                        <tr class="{{ $rowClass }}">
-                                                                            <td style="width: 5%"><strong>{{ $optionKey }}.</strong></td>
-                                                                            <td class="text-break">
-                                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                                    <div class="flex-grow-1">{!! $optionText !!}</div>
-                                                                                    <div class="ps-2 text-nowrap">
-                                                                                        @if ($isUserAnswer && !$isCorrect)
-                                                                                            <span class="text-danger fw-bold"><i class="ion-close-round"></i> Salah</span>
-                                                                                        @elseif ($isCorrect && $isUserAnswer)
-                                                                                            <span class="text-success fw-bold"><i class="ion-checkmark-round"></i> Benar</span>
-                                                                                        @elseif ($isCorrect)
-                                                                                            <span class="text-success"><i class="ion-alert-circled"></i> Koreksi</span>
-                                                                                        @endif
-                                                                                    </div>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                            if ($isCorrect) {
+                                                                $optionClass .= ' bg-success bg-opacity-10';
+                                                            }
+                                                            if ($isUserAnswer && !$isCorrect) {
+                                                                $optionClass .= ' bg-danger bg-opacity-10';
+                                                            }
+                                                        @endphp
+                                                        <div class="{{ $optionClass }} p-2 mb-2 rounded">
+                                                            <div class="d-flex">
+                                                                <strong class="me-2">{{ $optionKey }}.</strong>
+                                                                <div class="flex-grow-1 text-wrap">{!! $optionText !!}</div>
+                                                                <div class="ps-2">
+                                                                    @if ($isUserAnswer && !$isCorrect)
+                                                                        <span class="text-danger fw-bold"><i class="ion-close-round"></i> Salah</span>
+                                                                    @elseif ($isCorrect && $isUserAnswer)
+                                                                        <span class="text-success fw-bold"><i class="ion-checkmark-round"></i> Benar</span>
+                                                                    @elseif ($isCorrect)
+                                                                        <span class="text-success"><i class="ion-alert-circled"></i> Koreksi</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -148,4 +138,23 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .options-container {
+            border-left: 3px solid #dee2e6;
+            padding-left: 15px;
+        }
+        .option-item {
+            border-left: 3px solid transparent;
+        }
+        .option-item:hover {
+            background-color: #f8f9fa !important;
+        }
+        .bg-success.bg-opacity-10 {
+            border-left-color: #198754;
+        }
+        .bg-danger.bg-opacity-10 {
+            border-left-color: #dc3545;
+        }
+    </style>
 @endsection
