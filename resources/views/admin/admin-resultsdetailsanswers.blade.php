@@ -12,7 +12,8 @@
 
                                 <!-- Result Header Card -->
                                 <div class="card shadow-sm">
-                                    <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center gap-3 py-3">
+                                    <div
+                                        class="card-header bg-primary text-white d-flex justify-content-center align-items-center gap-3 py-3">
                                         <h4 class="mb-0 fw-bold">{{ $pesertaCourse->course->namacourse ?? '-' }}</h4>
                                     </div>
                                     <div class="card-body">
@@ -63,7 +64,7 @@
                                                 <div class="border rounded-3 p-3 bg-light h-100">
                                                     <div class="text-muted small">Durasi</div>
                                                     <div class="fw-bold fs-6">
-                                                        @if($durasi)
+                                                        @if ($durasi)
                                                             {{ str_pad($durasi->h, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($durasi->i, 2, '0', STR_PAD_LEFT) }}:{{ str_pad($durasi->s, 2, '0', STR_PAD_LEFT) }}
                                                         @else
                                                             -
@@ -87,22 +88,25 @@
                                 <div id="questionList">
                                     @foreach ($questions as $index => $q)
                                         <div class="card shadow-sm mb-3 border">
-                                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <div
+                                                class="card-header bg-light d-flex justify-content-between align-items-center">
                                                 <strong>Soal No {{ $index + 1 }}</strong>
                                                 @if ($q['is_skipped'])
-                                                    <span class="text-warning"><i class="ion-help-circled"></i> Terlewati</span>
+                                                    <span class="text-warning"><i class="ion-help-circled"></i>
+                                                        Terlewati</span>
                                                 @endif
                                             </div>
                                             <div class="card-body p-3">
                                                 <div class="mb-3 text-wrap">{!! $q['question'] !!}</div>
-                                                
+
                                                 <div class="options-container">
                                                     @foreach ($q['options'] as $optionKey => $optionText)
                                                         @php
                                                             $isCorrect = $optionKey === $q['correct_answer'];
                                                             $isUserAnswer = $optionKey === $q['user_answer'];
-                                                            $optionClass = 'option-item';
-                                                            
+                                                            $optionClass =
+                                                                'option-item d-flex align-items-start justify-content-between';
+
                                                             if ($isCorrect) {
                                                                 $optionClass .= ' bg-success bg-opacity-10';
                                                             }
@@ -111,18 +115,21 @@
                                                             }
                                                         @endphp
                                                         <div class="{{ $optionClass }} p-2 mb-2 rounded">
-                                                            <div class="d-flex">
+                                                            <div class="d-flex flex-grow-1">
                                                                 <strong class="me-2">{{ $optionKey }}.</strong>
-                                                                <div class="flex-grow-1 text-wrap">{!! $optionText !!}</div>
-                                                                <div class="ps-2">
-                                                                    @if ($isUserAnswer && !$isCorrect)
-                                                                        <span class="text-danger fw-bold"><i class="ion-close-round"></i> Salah</span>
-                                                                    @elseif ($isCorrect && $isUserAnswer)
-                                                                        <span class="text-white fw-bold"><i class="ion-checkmark-round"></i> Benar</span>
-                                                                    @elseif ($isCorrect)
-                                                                        <span class="text-warning"><i class="ion-alert-circled"></i> Koreksi</span>
-                                                                    @endif
-                                                                </div>
+                                                                <div class="text-wrap">{!! $optionText !!}</div>
+                                                            </div>
+                                                            <div class="text-nowrap ps-2">
+                                                                @if ($isUserAnswer && !$isCorrect)
+                                                                    <span class="text-danger fw-bold"><i
+                                                                            class="ion-close-round"></i> Salah</span>
+                                                                @elseif ($isCorrect && $isUserAnswer)
+                                                                    <span class="text-white fw-bold"><i
+                                                                            class="ion-checkmark-round"></i> Benar</span>
+                                                                @elseif ($isCorrect)
+                                                                    <span class="text-warning"><i
+                                                                            class="ion-alert-circled"></i> Koreksi</span>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -144,15 +151,20 @@
             border-left: 3px solid #dee2e6;
             padding-left: 15px;
         }
+
         .option-item {
             border-left: 3px solid transparent;
         }
+
         .option-item:hover {
             background-color: #f8f9fa !important;
+            color: #000 !important;
         }
+
         .bg-success.bg-opacity-10 {
             border-left-color: #198754;
         }
+
         .bg-danger.bg-opacity-10 {
             border-left-color: #dc3545;
         }
