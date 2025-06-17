@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Peserta;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -168,7 +169,8 @@ class ExportController extends Controller
             $sheet->setCellValue('AX' . $row, $peserta->created_at ? $peserta->created_at->format('d-M-Y H:i:s') : '');
             $linkFoto = '';
             if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
-                $linkFoto = url(Storage::url($peserta->filesPeserta->foto_profil));
+                $slugNama = Str::slug($peserta->nama, '');
+                $linkFoto = url("/storage/files/foto_profil/{$peserta->honda_id}_{$slugNama}");
             }
             $sheet->setCellValue('AY' . $row, $linkFoto);
 

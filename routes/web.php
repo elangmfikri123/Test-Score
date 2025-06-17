@@ -3,8 +3,10 @@
 use App\Models\AdminMD;
 use App\Models\Category;
 use App\Models\MainDealer;
+use App\Models\FormPenilaian;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Utilities\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JuriController;
@@ -16,11 +18,10 @@ use App\Http\Controllers\PesertaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MainDealerController;
 use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\ResultCourseController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
 use App\Http\Controllers\EnrolledJuriPesertaController;
-use App\Http\Controllers\ResultCourseController;
-use App\Models\FormPenilaian;
 
 /*
 |--------------------------------------------------------------------------
@@ -193,3 +194,23 @@ Route::middleware(['auth', 'role:Peserta'])->group(function () {
 
 });
 
+Route::get('/storage/files/foto_profil/{customName}', function ($customName) {
+    $parts = explode('_', $customName, 2);
+    if (count($parts) < 2) {
+        abort(404);
+    }
+
+    $honda_id = $parts[0];
+    $nameSlug = strtolower($parts[1]);
+
+    $files = Storage::disk('public')->files('files/foto_profil');
+
+    foreach ($files as $file) {
+        $fileLower = strtolower($file);
+        if (str_contains($fileLower, strtolower($honda_id)) && str_contains($fileLower, $nameSlug)) {
+            return response()->file(storage_path('app/public/' . $file));
+        }
+    }
+
+    abort(404);
+});
