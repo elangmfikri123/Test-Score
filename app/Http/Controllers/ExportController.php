@@ -167,11 +167,12 @@ class ExportController extends Controller
             $sheet->setCellValue('AV' . $row, $peserta->filesPeserta->tahun_pembuatan_project);
             $sheet->setCellValue('AW' . $row, $peserta->status_lolos);
             $sheet->setCellValue('AX' . $row, $peserta->created_at ? $peserta->created_at->format('d-M-Y H:i:s') : '');
-            $linkFoto = '';
-            if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
-                $slugNama = Str::slug($peserta->nama, '');
-                $linkFoto = url("/storage/files/foto_profil/{$peserta->honda_id}_{$slugNama}");
-            }
+if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
+    $slugNama = Str::slug($peserta->nama, ''); // hilangkan spasi & simbol
+    $linkFoto = url("/storage/files/foto_profil/{$peserta->honda_id}_{$slugNama}");
+} else {
+    $linkFoto = '';
+}
             $sheet->setCellValue('AY' . $row, $linkFoto);
 
             $row++;

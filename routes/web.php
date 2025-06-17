@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\AdminMD;
+use App\Models\Peserta;
 use App\Models\Category;
 use App\Models\MainDealer;
 use App\Models\FormPenilaian;
@@ -201,16 +202,22 @@ Route::get('/storage/files/foto_profil/{customName}', function ($customName) {
     }
 
     $honda_id = $parts[0];
-    $nameSlug = strtolower($parts[1]);
+    // $nameSlug = strtolower($parts[1]); // tidak dipakai karena nama bebas
 
-    $files = Storage::disk('public')->files('files/foto_profil');
-
-    foreach ($files as $file) {
-        $fileLower = strtolower($file);
-        if (str_contains($fileLower, strtolower($honda_id)) && str_contains($fileLower, $nameSlug)) {
-            return response()->file(storage_path('app/public/' . $file));
-        }
+    // Cari peserta berdasarkan honda_id
+    $peserta = Peserta::where('honda_id', $honda_id)->first();
+    if (!$peserta || !$peserta->filesPeserta || !$peserta->filesPeserta->foto_profil) {
+        abort(404);
     }
 
-    abort(404);
+    // Nama file asli di database (misal: DELIVERYMAN.jpeg)
+    $fileName = $peserta->filesPeserta->foto_profil;
+
+    $filePath = 'files/foto_profil/' . $fileName;
+
+    if (!Storage::disk('public')->exists($filePath)) {
+        abort(404);
+    }
+
+    return response()->file(storage_path('app/public/' . $filePath));
 });
