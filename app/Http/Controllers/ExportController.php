@@ -201,8 +201,11 @@ class ExportController extends Controller
 
     public function downloadResultsExams(Request $request)
     {
-        $query = PesertaCourse::with(['peserta.maindealer', 'course'])
-            ->where('status_pengerjaan', 'selesai');
+        $query = PesertaCourse::with([
+            'peserta.maindealer',
+            'peserta.category', // relasi kategori (pastikan ini ada di model)
+            'course'
+        ])->where('status_pengerjaan', 'selesai');
 
         if ($request->filled('course_id')) {
             $query->where('course_id', $request->course_id);
@@ -224,7 +227,6 @@ class ExportController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header
         $headers = [
             'No',
             'Honda ID',
@@ -247,26 +249,31 @@ class ExportController extends Controller
         $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-        // Data Rows
         $row = 2;
         foreach ($pesertaCourses as $index => $pc) {
             $questions = Question::where('course_id', $pc->course_id)->get();
             $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $pc->id)->get()->keyBy('question_id');
 
-            $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
-            foreach ($questions as $q) {
-                $jawaban = $jawabanPeserta->get($q->id);
-                if (!$jawaban) {
-                    $jumlahSkip++;
-                } elseif ($jawaban->is_correct) {
-                    $jumlahBenar++;
-                } else {
-                    $jumlahSalah++;
+            $jumlahBenar = 0;
+            $jumlahSalah = 0;
+            $jumlahSkip  = 0;
+
+            if ($questions->count() > 0) {
+                foreach ($questions as $q) {
+                    $jawaban = $jawabanPeserta->get($q->id);
+                    if (!$jawaban) {
+                        $jumlahSkip++;
+                    } elseif ($jawaban->is_correct) {
+                        $jumlahBenar++;
+                    } else {
+                        $jumlahSalah++;
+                    }
                 }
             }
 
             $totalSoal = $questions->count();
-            $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+            $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : '0.00';
+
             $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
             $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
 
@@ -281,7 +288,7 @@ class ExportController extends Controller
                 $pc->peserta->honda_id,
                 $pc->peserta->nama,
                 $pc->peserta->maindealer->nama_md ?? '',
-                $pc->peserta->category_id ?? '',
+                $pc->peserta->category->namacategory ?? '', // ganti jadi relasi
                 $pc->course->namacourse ?? '',
                 $totalSoal,
                 $jumlahBenar,
@@ -296,16 +303,13 @@ class ExportController extends Controller
             $row++;
         }
 
-        // Border for all data
         $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-        // Save to temporary file
         $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
         $filePath = storage_path("app/public/{$filename}");
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
 
-        // Return download response
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }
