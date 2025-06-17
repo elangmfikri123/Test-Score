@@ -81,6 +81,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/dataresults/json', [ResultCourseController::class, 'dataResultsJson']);
     Route::get('/admin/courseresults/details/{id}', [ResultCourseController::class, 'showDetails'])->name('course.details');
     Route::get('/admin/courseresults/{id}/detailsAnswers', [ResultCourseController::class, 'showDetailsAnswers'])->name('course.detailsAnswers');
+    Route::get('/results/exams/download', [ExportController::class, 'downloadResultsExams'])->name('resultsExams.download');
 
     //ADD QUESTION
     Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist'])->name('admin.exams.questions');

@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Admin;
 use App\Models\Peserta;
+use App\Models\Question;
 use Illuminate\Http\Request;
+use App\Models\PesertaAnswer;
+use App\Models\PesertaCourse;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class ExportController extends Controller
 {
@@ -185,13 +190,122 @@ class ExportController extends Controller
         ];
         $sheet->getStyle('A1:AY' . ($row - 1))->applyFromArray($styleArray);
 
-        // Export as file
         $writer = new Xlsx($spreadsheet);
         $fileName = 'Data_PesertaKLHN' . now()->format('Ymd_His') . '.xlsx';
         $filePath = storage_path("app/public/{$fileName}");
 
         $writer->save($filePath);
 
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
+    public function downloadResultsExams(Request $request)
+    {
+        $query = PesertaCourse::with(['peserta.maindealer', 'course'])
+            ->where('status_pengerjaan', 'selesai');
+
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('peserta', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
+        }
+
+        if ($request->filled('maindealer_id')) {
+            $query->whereHas('peserta', function ($q) use ($request) {
+                $q->where('maindealer_id', $request->maindealer_id);
+            });
+        }
+
+        $pesertaCourses = $query->get();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $headers = [
+            'No',
+            'Honda ID',
+            'Nama',
+            'Main Dealer',
+            'Kategori',
+            'Nama Course',
+            'Jumlah Soal',
+            'Jumlah Benar',
+            'Jumlah Salah',
+            'Jumlah Terlewati',
+            'Total Scores',
+            'Durasi',
+            'Time Start Date',
+            'Time Submit Date'
+        ];
+
+        $sheet->fromArray([$headers], null, 'A1');
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Data Rows
+        $row = 2;
+        foreach ($pesertaCourses as $index => $pc) {
+            $questions = Question::where('course_id', $pc->course_id)->get();
+            $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $pc->id)->get()->keyBy('question_id');
+
+            $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
+            foreach ($questions as $q) {
+                $jawaban = $jawabanPeserta->get($q->id);
+                if (!$jawaban) {
+                    $jumlahSkip++;
+                } elseif ($jawaban->is_correct) {
+                    $jumlahBenar++;
+                } else {
+                    $jumlahSalah++;
+                }
+            }
+
+            $totalSoal = $questions->count();
+            $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+            $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
+            $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
+
+            $durasi = '';
+            if ($start && $end) {
+                $selisih = $start->diff($end);
+                $durasi = $selisih->format('%H:%I:%S');
+            }
+
+            $sheet->fromArray([
+                $index + 1,
+                $pc->peserta->honda_id,
+                $pc->peserta->nama,
+                $pc->peserta->maindealer->nama_md ?? '',
+                $pc->peserta->category_id ?? '',
+                $pc->course->namacourse ?? '',
+                $totalSoal,
+                $jumlahBenar,
+                $jumlahSalah,
+                $jumlahSkip,
+                $score,
+                $durasi,
+                $pc->start_exam,
+                $pc->end_exam
+            ], null, 'A' . $row);
+
+            $row++;
+        }
+
+        // Border for all data
+        $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        // Save to temporary file
+        $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
+        $filePath = storage_path("app/public/{$filename}");
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+
+        // Return download response
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 }

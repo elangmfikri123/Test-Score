@@ -147,7 +147,7 @@
                                                     const corId = $('#course_id').val();
                                                     const catId = $('#category_id').val();
                                                     const mdId = $('#maindealer_id').val();
-                                                    let url = '{{ url("/get-peserta/download") }}' + `?category_id=${catId}&maindealer_id=${mdId}`;
+                                                    let url = '{{ url("/results/exams/download") }}' + `?course_id=${corId}&category_id=${catId}&maindealer_id=${mdId}`;
                                                     window.location.href = url;
                                                 });
                                             });
