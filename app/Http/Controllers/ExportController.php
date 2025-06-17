@@ -246,7 +246,7 @@ class ExportController extends Controller
 
         $sheet->fromArray([$headers], null, 'A1');
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $row = 2;
@@ -258,16 +258,14 @@ class ExportController extends Controller
             $jumlahSalah = 0;
             $jumlahSkip  = 0;
 
-            if ($questions->count() > 0) {
-                foreach ($questions as $q) {
-                    $jawaban = $jawabanPeserta->get($q->id);
-                    if (!$jawaban) {
-                        $jumlahSkip++;
-                    } elseif ($jawaban->is_correct) {
-                        $jumlahBenar++;
-                    } else {
-                        $jumlahSalah++;
-                    }
+            foreach ($questions as $q) {
+                $jawaban = $jawabanPeserta->get($q->id);
+                if (!$jawaban) {
+                    $jumlahSkip++;
+                } elseif ($jawaban->is_correct) {
+                    $jumlahBenar++;
+                } else {
+                    $jumlahSalah++;
                 }
             }
 
@@ -279,26 +277,26 @@ class ExportController extends Controller
 
             $durasi = '';
             if ($start && $end) {
-                $selisih = $start->diff($end);
-                $durasi = $selisih->format('%H:%I:%S');
+                $durasi = $start->diff($end)->format('%H:%I:%S');
             }
 
-            // Format tanggal
-            $startFormatted = $start ? $start->format('d-M-Y') : '';
-            $endFormatted   = $end ? $end->format('d-M-Y') : '';
+            $startFormatted = $start ? $start->format('d-M-Y H:i:s') : '';
+            $endFormatted   = $end ? $end->format('d-M-Y H:i:s') : '';
 
-            // Data row
+            // Buat Main Dealer: kode + nama
+            $mainDealer = ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? '');
+
             $data = [
                 $index + 1,
-                "'" . $pc->peserta->honda_id,
+                $pc->peserta->honda_id, // Akan diubah secara eksplisit jadi string di bawah
                 $pc->peserta->nama,
-                ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? ''),
+                $mainDealer,
                 $pc->peserta->category->namacategory ?? '',
                 $pc->course->namacourse ?? '',
                 $totalSoal,
-                $jumlahBenar ?? '0',
-                $jumlahSalah ?? '0',
-                $jumlahSkip ?? '0',
+                $jumlahBenar,
+                $jumlahSalah,
+                $jumlahSkip,
                 $score,
                 $durasi,
                 $startFormatted,
@@ -306,6 +304,8 @@ class ExportController extends Controller
             ];
 
             $sheet->fromArray([$data], null, 'A' . $row);
+
+            // Kolom Honda ID (B) sebagai teks agar tidak berubah ke angka
             $sheet->setCellValueExplicit('B' . $row, $pc->peserta->honda_id, DataType::TYPE_STRING);
 
             $row++;
