@@ -203,7 +203,7 @@ class ExportController extends Controller
     {
         $query = PesertaCourse::with([
             'peserta.maindealer',
-            'peserta.category', // relasi kategori (pastikan ini ada di model)
+            'peserta.category',
             'course'
         ])->where('status_pengerjaan', 'selesai');
 
@@ -246,7 +246,7 @@ class ExportController extends Controller
 
         $sheet->fromArray([$headers], null, 'A1');
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $row = 2;
@@ -283,22 +283,32 @@ class ExportController extends Controller
                 $durasi = $selisih->format('%H:%I:%S');
             }
 
-            $sheet->fromArray([
+            // Format tanggal
+            $startFormatted = $start ? $start->format('d-M-Y') : '';
+            $endFormatted   = $end ? $end->format('d-M-Y') : '';
+
+            // Data row
+            $data = [
                 $index + 1,
-                $pc->peserta->honda_id,
+                "'" . $pc->peserta->honda_id, // pakai kutip 1 untuk simpan sebagai string di Excel
                 $pc->peserta->nama,
-                $pc->peserta->maindealer->nama_md ?? '',
-                $pc->peserta->category->namacategory ?? '', // ganti jadi relasi
+                ($pc->peserta->maindealer->kode_md ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? ''),
+                $pc->peserta->category->namacategory ?? '',
                 $pc->course->namacourse ?? '',
                 $totalSoal,
-                $jumlahBenar,
-                $jumlahSalah,
-                $jumlahSkip,
+                $jumlahBenar ?? 0,
+                $jumlahSalah ?? 0,
+                $jumlahSkip ?? 0,
                 $score,
                 $durasi,
-                $pc->start_exam,
-                $pc->end_exam
-            ], null, 'A' . $row);
+                $startFormatted,
+                $endFormatted
+            ];
+
+            $sheet->fromArray([$data], null, 'A' . $row);
+
+            // Force Honda ID as string (if Excel still auto-converts)
+            $sheet->setCellValueExplicit('B' . $row, $pc->peserta->honda_id, DataType::TYPE_STRING);
 
             $row++;
         }
