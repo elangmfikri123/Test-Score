@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Peserta;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -167,12 +166,10 @@ class ExportController extends Controller
             $sheet->setCellValue('AV' . $row, $peserta->filesPeserta->tahun_pembuatan_project);
             $sheet->setCellValue('AW' . $row, $peserta->status_lolos);
             $sheet->setCellValue('AX' . $row, $peserta->created_at ? $peserta->created_at->format('d-M-Y H:i:s') : '');
-if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
-    $slugNama = Str::slug($peserta->nama, ''); // hilangkan spasi & simbol
-    $linkFoto = url("/storage/files/foto_profil/{$peserta->honda_id}_{$slugNama}");
-} else {
-    $linkFoto = '';
-}
+            $linkFoto = '';
+            if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
+                $linkFoto = url(Storage::url($peserta->filesPeserta->foto_profil));
+            }
             $sheet->setCellValue('AY' . $row, $linkFoto);
 
             $row++;
