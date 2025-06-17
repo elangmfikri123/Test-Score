@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -91,13 +92,14 @@ class ExportController extends Controller
         $sheet->setCellValue('AV1', 'Tahun Project');
         $sheet->setCellValue('AW1', 'Status');
         $sheet->setCellValue('AX1', 'Created Time');
+        $sheet->setCellValue('AY1', 'Link Foto Profil');
         // Mengatur Format Header
         $headerStyle = [
             'font' => ['bold' => true],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ];
 
-        $sheet->getStyle('A1:AX1')->applyFromArray($headerStyle);
+        $sheet->getStyle('A1:AY1')->applyFromArray($headerStyle);
 
         // Data
         $row = 2;
@@ -126,7 +128,7 @@ class ExportController extends Controller
             $sheet->setCellValue('U' . $row, $peserta->link_facebook);
             $sheet->setCellValue('V' . $row, $peserta->link_instagram);
             $sheet->setCellValue('W' . $row, $peserta->link_tiktok);
-        
+
             $riwayats = $peserta->riwayatKlhn ?? [];
             for ($i = 0; $i < 3; $i++) {
                 $tahun = '';
@@ -143,9 +145,9 @@ class ExportController extends Controller
                 $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
                 $sheet->setCellValue($colLetter . $row, $status);
                 $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 2);
-                $sheet->setCellValue($colLetter . $row, $kategori);           
+                $sheet->setCellValue($colLetter . $row, $kategori);
             }
-        
+
             $sheet->setCellValue('AG' . $row, $peserta->identitasAtasan->nama_lengkap_atasan ?? '');
             $sheet->setCellValue('AH' . $row, $peserta->identitasAtasan->jabatan ?? '');
             $sheet->setCellValue('AI' . $row, $peserta->identitasAtasan->no_hp ?? '');
@@ -164,7 +166,12 @@ class ExportController extends Controller
             $sheet->setCellValue('AV' . $row, $peserta->filesPeserta->tahun_pembuatan_project);
             $sheet->setCellValue('AW' . $row, $peserta->status_lolos);
             $sheet->setCellValue('AX' . $row, $peserta->created_at ? $peserta->created_at->format('d-M-Y H:i:s') : '');
-        
+            $linkFoto = '';
+            if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil) {
+                $linkFoto = url(Storage::url('files/foto_profil/' . $peserta->filesPeserta->foto_profil));
+            }
+            $sheet->setCellValue('AY' . $row, $linkFoto);
+
             $row++;
             $no++;
         }
@@ -176,7 +183,7 @@ class ExportController extends Controller
                 ],
             ],
         ];
-        $sheet->getStyle('A1:AX' . ($row - 1))->applyFromArray($styleArray);
+        $sheet->getStyle('A1:AY' . ($row - 1))->applyFromArray($styleArray);
 
         // Export as file
         $writer = new Xlsx($spreadsheet);
