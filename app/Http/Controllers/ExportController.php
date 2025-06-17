@@ -290,15 +290,15 @@ class ExportController extends Controller
             // Data row
             $data = [
                 $index + 1,
-                "'" . $pc->peserta->honda_id, // pakai kutip 1 untuk simpan sebagai string di Excel
+                "'" . $pc->peserta->honda_id,
                 $pc->peserta->nama,
-                ($pc->peserta->maindealer->kode_md ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? ''),
+                ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? ''),
                 $pc->peserta->category->namacategory ?? '',
                 $pc->course->namacourse ?? '',
                 $totalSoal,
-                $jumlahBenar ?? 0,
-                $jumlahSalah ?? 0,
-                $jumlahSkip ?? 0,
+                $jumlahBenar ?? '0',
+                $jumlahSalah ?? '0',
+                $jumlahSkip ?? '0',
                 $score,
                 $durasi,
                 $startFormatted,
@@ -306,8 +306,6 @@ class ExportController extends Controller
             ];
 
             $sheet->fromArray([$data], null, 'A' . $row);
-
-            // Force Honda ID as string (if Excel still auto-converts)
             $sheet->setCellValueExplicit('B' . $row, $pc->peserta->honda_id, DataType::TYPE_STRING);
 
             $row++;
