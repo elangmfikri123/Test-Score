@@ -76,24 +76,23 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-@foreach ($question->answers as $i => $answer)
-<tr @if($answer->is_correct) style="background-color: #D4EDDA" @endif>
-    <th>Pilihan {{ chr(65 + $i) }}</th>
-    <td>
-        <input type="hidden" name="answer_ids[]" value="{{ $answer->id }}">
-        <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;">{!! $answer->jawaban !!}</div>
-        <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
-        @if($i >= 4)
-        <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
-            <i class="ion-trash-a"></i> Hapus
-        </button>
-        @endif
-    </td>
-    <td class="text-center">
-        <input type="checkbox" class="is_correct" data-index="{{ $i }}" @if($answer->is_correct) checked @endif>
-    </td>
-</tr>
-@endforeach
+                                                @foreach ($question->answers as $i => $answer)
+                                                <tr @if($answer->is_correct) style="background-color: #D4EDDA" @endif>
+                                                    <th>Pilihan {{ chr(65 + $i) }}</th>
+                                                    <td>
+                                                        <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;">{!! $answer->jawaban !!}</div>
+                                                        <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
+                                                        @if($i >= 4)
+                                                        <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
+                                                            <i class="ion-trash-a"></i> Hapus
+                                                        </button>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" class="is_correct" data-index="{{ $i }}" @if($answer->is_correct) checked @endif>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
                                                 @php $answerCount = count($question->answers); @endphp
                                                 @for($i = $answerCount; $i < 4; $i++)
                                                 <tr>

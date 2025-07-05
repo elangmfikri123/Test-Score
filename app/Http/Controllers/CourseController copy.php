@@ -300,51 +300,25 @@ class CourseController extends Controller
             'deskripsi' => 'required|string',
             'jawaban' => 'required|array|min:1',
             'is_correct' => 'required|array',
-            'categoryquestion_id' => 'nullable|exists:categoryquestion,id',
-            'answer_ids' => 'sometimes|array'
+            'categoryquestion_id' => 'nullable|exists:categoryquestion,id' // Tambahkan validasi kategori
         ]);
 
-        // Update pertanyaan utama
         $question = Question::findOrFail($id);
         $question->pertanyaan = $request->deskripsi;
-        $question->categoryquestion_id = $request->categoryquestion_id;
+        $question->categoryquestion_id = $request->categoryquestion_id; // Tambahkan ini
         $question->save();
 
-        // Proses jawaban
-        $existingAnswerIds = [];
-
+        Answer::where('question_id', $id)->delete();
         foreach ($request->jawaban as $index => $jawabanText) {
-            // Cek apakah jawaban sudah ada atau baru
-            $answerId = $request->answer_ids[$index] ?? null;
-
-            if ($answerId) {
-                // Update jawaban yang sudah ada
-                $answer = Answer::find($answerId);
-                $answer->jawaban = $jawabanText;
-                $answer->is_correct = isset($request->is_correct[$index]) ? 1 : 0;
-                $answer->save();
-                $existingAnswerIds[] = $answer->id;
-            } else {
-                // Buat jawaban baru
-                $answer = new Answer();
-                $answer->question_id = $question->id;
-                $answer->jawaban = $jawabanText;
-                $answer->is_correct = isset($request->is_correct[$index]) ? 1 : 0;
-                $answer->save();
-                $existingAnswerIds[] = $answer->id;
-            }
+            $answer = new Answer();
+            $answer->question_id = $question->id;
+            $answer->jawaban = $jawabanText;
+            $answer->is_correct = isset($request->is_correct[$index]) && $request->is_correct[$index] == 1 ? 1 : 0;
+            $answer->save();
         }
 
-        // Hapus jawaban yang tidak lagi digunakan (jika ada)
-        if (!empty($existingAnswerIds)) {
-            Answer::where('question_id', $question->id)
-                ->whereNotIn('id', $existingAnswerIds)
-                ->delete();
-        }
-
-        return redirect()
-            ->route('admin.exams.questions', ['id' => $question->course_id])
-            ->with('success', 'Soal berhasil diperbarui tanpa menghapus jawaban peserta.');
+        return redirect()->route('admin.exams.questions', ['id' => $question->course_id])
+            ->with('success', 'Soal berhasil diperbarui.');
     }
 
     public function deleteQuestion($id)
