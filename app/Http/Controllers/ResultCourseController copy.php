@@ -69,103 +69,67 @@ class ResultCourseController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
-public function showDetails($id)
-{
-    $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])
-        ->findOrFail($id);
-    $courseId = $pesertaCourse->course_id;
-    
-    // Load questions with category
-    $questions = Question::with('categoryquestion')
-        ->where('course_id', $courseId)
-        ->get();
-        
-    $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $id)
-        ->get()
-        ->keyBy('question_id');
+    public function showDetails($id)
+    {
+        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])
+            ->findOrFail($id);
+        $courseId = $pesertaCourse->course_id;
+        $questions = Question::where('course_id', $courseId)->get();
+        $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $id)->get()->keyBy('question_id');
 
-    $resultDetails = [];
-    $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
-    $categoryAnalysis = [];
+        $resultDetails = [];
+        $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
 
-    foreach ($questions as $index => $question) {
-        $jawaban = $jawabanPeserta->get($question->id);
-        $categoryId = $question->categoryquestion_id ?? 0;
-        $categoryName = $question->categoryquestion->vnamacategory ?? 'Uncategorized';
+        foreach ($questions as $index => $question) {
+            $jawaban = $jawabanPeserta->get($question->id);
 
-        // Initialize category data if not exists
-        if (!isset($categoryAnalysis[$categoryId])) {
-            $categoryAnalysis[$categoryId] = [
-                'name' => $categoryName,
-                'correct' => 0,
-                'incorrect' => 0,
-                'skipped' => 0,
-                'total' => 0
+            if (!$jawaban) {
+                $status = 'Skip';
+                $jumlahSkip++;
+            } elseif ($jawaban->is_correct) {
+                $status = 'Benar';
+                $jumlahBenar++;
+            } else {
+                $status = 'Salah';
+                $jumlahSalah++;
+            }
+
+            $resultDetails[] = [
+                'nomor' => $index + 1,
+                'question' => $question,
+                'status' => $status,
             ];
         }
 
-        if (!$jawaban) {
-            $status = 'Skip';
-            $jumlahSkip++;
-            $categoryAnalysis[$categoryId]['skipped']++;
-        } elseif ($jawaban->is_correct) {
-            $status = 'Benar';
-            $jumlahBenar++;
-            $categoryAnalysis[$categoryId]['correct']++;
-        } else {
-            $status = 'Salah';
-            $jumlahSalah++;
-            $categoryAnalysis[$categoryId]['incorrect']++;
+        $totalSoal = $questions->count();
+        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
+        $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
+        $durasi = null;
+
+        if ($start && $end) {
+            $durasiAsli = $start->diff($end);
+            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
+            $maksDurasi = $pesertaCourse->course->duration_minutes;
+            if ($durasiDalamMenit > $maksDurasi) {
+                $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
+            } else {
+                $durasi = $durasiAsli;
+            }
         }
 
-        $categoryAnalysis[$categoryId]['total']++;
-        
-        $resultDetails[] = [
-            'nomor' => $index + 1,
-            'question' => $question,
-            'status' => $status,
-        ];
+        return view('admin.admin-resultsdetails', [
+            'pesertaCourse' => $pesertaCourse,
+            'jumlahBenar' => $jumlahBenar,
+            'jumlahSalah' => $jumlahSalah,
+            'jumlahSkip' => $jumlahSkip,
+            'score' => $score,
+            'durasi' => $durasi,
+            'waktuUjian' => $start,
+            'status' => $pesertaCourse->status_pengerjaan,
+            'resultDetails' => $resultDetails,
+        ]);
     }
-
-    // Calculate category scores
-    foreach ($categoryAnalysis as &$category) {
-        $category['score'] = $category['total'] > 0 
-            ? round(($category['correct'] / $category['total']) * 100, 2)
-            : 0;
-    }
-
-    $totalSoal = $questions->count();
-    $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-    
-    // Durasi calculation
-    $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
-    $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
-    $durasi = null;
-
-    if ($start && $end) {
-        $durasiAsli = $start->diff($end);
-        $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
-        $maksDurasi = $pesertaCourse->course->duration_minutes;
-        if ($durasiDalamMenit > $maksDurasi) {
-            $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
-        } else {
-            $durasi = $durasiAsli;
-        }
-    }
-
-    return view('admin.admin-resultsdetails', [
-        'pesertaCourse' => $pesertaCourse,
-        'jumlahBenar' => $jumlahBenar,
-        'jumlahSalah' => $jumlahSalah,
-        'jumlahSkip' => $jumlahSkip,
-        'score' => $score,
-        'durasi' => $durasi,
-        'waktuUjian' => $start,
-        'status' => $pesertaCourse->status_pengerjaan,
-        'resultDetails' => $resultDetails,
-        'categoryAnalysis' => $categoryAnalysis,
-    ]);
-}
 
     public function showDetailsAnswers($id)
     {

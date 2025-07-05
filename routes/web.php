@@ -131,7 +131,6 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/json/pesertalist/{form_id}/{juri_id}', [EnrolledJuriPesertaController::class, 'getNonEnrolledPeserta'])->name('peserta.json');
     Route::post('/admin/store/{form_id}/{juri_id}/peserta', [EnrolledJuriPesertaController::class, 'storePesertaToJuri'])->name('peserta.store');
     Route::delete('/admin/delete/{juri_id}/{form_id}', [EnrolledJuriPesertaController::class, 'deleteJuri'])->name('listjuri.delete');
-
     Route::get('/juripeserta/detail/{form_id}/{juri_id}', [EnrolledJuriPesertaController::class, 'getDetailPeserta'])->name('juripeserta.detail');
 
 });
