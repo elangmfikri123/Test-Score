@@ -75,7 +75,7 @@
                                             serverSide: true,
                                             ajax: '{{ url("/monitoring/data/json/" . $course->id) }}',
                                             columns: [
-                                                { data: 'id', name: 'id' },
+                                                { data: 'DT_RowIndex', name: 'DT_RowIndex', class: 'text-center', orderable: false, searchable: false },
                                                 { data: 'honda_id', name: 'honda_id' },
                                                 { data: 'nama', name: 'nama' },
                                                 { data: 'namacategory', name: 'namacategory' },

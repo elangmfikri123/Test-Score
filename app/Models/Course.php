@@ -16,7 +16,11 @@ class Course extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    
+    public function categoryquestion()
+    {
+        return $this->hasMany(CategoryQuestion::class);
+    }
+
     public function questions()
     {
         return $this->hasMany(Question::class);
@@ -26,5 +30,4 @@ class Course extends Model
     {
         return $this->belongsToMany(Peserta::class, 'peserta_course');
     }
-    
 }

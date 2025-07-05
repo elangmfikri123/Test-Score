@@ -27,10 +27,10 @@ class PesertaController extends Controller
         if (!$peserta) {
             return response()->json([]);
         }
-        
+
         $pesertaCourses = PesertaCourse::with('course')
-        ->where('peserta_id', $peserta->id)
-        ->get();
+            ->where('peserta_id', $peserta->id)
+            ->get();
 
         return DataTables::of($pesertaCourses)
             ->addIndexColumn()
@@ -47,7 +47,13 @@ class PesertaController extends Controller
                 return $row->course->end_date ? date('d-m-Y H:i', strtotime($row->course->end_date)) : '-';
             })
             ->addColumn('action', function ($row) {
-                return '<a href="' . url('/exam/confirmation/' . $row->id) . '" class="btn btn-sm btn-primary">Mulai</a>';
+                if ($row->status_pengerjaan === 'selesai') {
+                    return '<a href="' . route('exam.finished', $row->id) . '" class="btn btn-sm btn-success">Selesai</a>';
+                } elseif ($row->status_pengerjaan === 'sedang_dikerjakan') {
+                    return '<a href="' . url('/exam/confirmation/' . $row->id) . '" class="btn btn-sm btn-info">Lanjutkan</a>';
+                } else {
+                    return '<a href="' . url('/exam/confirmation/' . $row->id) . '" class="btn btn-sm btn-primary">Mulai</a>';
+                }
             })
             ->rawColumns(['action'])
             ->make(true);

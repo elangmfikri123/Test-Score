@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('question', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')->constrained('course')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->foreignId('categoryquestion_id')->nullable()->constrained('categoryquestion')->onUpdate('cascade')->onDelete('set null');
             $table->text('pertanyaan')->nullable();
             $table->string('created_by')->nullable();
             $table->timestamps();

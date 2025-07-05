@@ -11,7 +11,9 @@ use App\Models\Question;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
+use App\Models\CategoryQuestion;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class CourseController extends Controller
 {
@@ -58,7 +60,7 @@ class CourseController extends Controller
     }
     public function store(Request $request)
     {
-        Course::create([
+        $course = Course::create([
             'category_id' => $request->category_id,
             'namacourse' => $request->namacourse,
             'description' => $request->description,
@@ -70,14 +72,26 @@ class CourseController extends Controller
             'end_date' => $request->end_date,
             'created_by' => auth()->user()->username ?? 'SystemAdmin'
         ]);
+        $subcategories = $request->input('subcategories', []);
+        foreach ($subcategories as $subcat) {
+            if (!empty($subcat)) {
+                CategoryQuestion::create([
+                    'course_id' => $course->id,
+                    'vnamacategory' => $subcat
+                ]);
+            }
+        }
 
-        return redirect('/admin/exams')->with('success', 'Course berhasil ditambahkan!');
+        return redirect('/admin/exams')->with('success', 'Course dan Subkategori berhasil ditambahkan!');
     }
+
     public function edit($id)
     {
         $course = Course::findOrFail($id);
         $categories = Category::all();
-        return view('admin.admin-editcourse', compact('course', 'categories'));
+        $subcategories = CategoryQuestion::where('course_id', $id)->get();
+
+        return view('admin.admin-editcourse', compact('course', 'categories', 'subcategories'));
     }
 
     public function update(Request $request, $id)
@@ -96,7 +110,17 @@ class CourseController extends Controller
             'end_date' => $request->end_date,
         ]);
 
-        return redirect('/admin/exams')->with('success', 'Course berhasil diperbarui!');
+        CategoryQuestion::where('course_id', $course->id)->delete();
+        foreach ($request->subcategories ?? [] as $subcat) {
+            if (!empty($subcat)) {
+                CategoryQuestion::create([
+                    'course_id' => $course->id,
+                    'vnamacategory' => $subcat,
+                ]);
+            }
+        }
+
+        return redirect('/admin/exams')->with('success', 'Course dan Subkategori berhasil diperbarui!');
     }
     public function deleteCourse($id)
     {
@@ -155,22 +179,27 @@ class CourseController extends Controller
             ->rawColumns(['questions_answer', 'action'])
             ->make(true);
     }
+
     public function createquestion($id)
     {
         $course = Course::withCount('questions')->findOrFail($id);
-        return view('admin.admin-addnewquestions', compact('course'));
+        $categories = CategoryQuestion::where('course_id', $id)->get();
+        return view('admin.admin-addnewquestions', compact('course', 'categories'));
     }
+
     public function storequestion(Request $request, $id)
     {
         $request->validate([
             'deskripsi' => 'required|string',
             'jawaban' => 'required|array|min:1',
             'is_correct' => 'required|array',
+            'categoryquestion_id' => 'nullable|exists:categoryquestion,id'
         ]);
 
         $question = new Question();
         $question->course_id = $id;
         $question->pertanyaan = $request->deskripsi;
+        $question->categoryquestion_id = $request->categoryquestion_id;
         $question->save();
 
         foreach ($request->jawaban as $index => $jawabanText) {
@@ -199,9 +228,10 @@ class CourseController extends Controller
 
     public function editquestion($id)
     {
-        $question = Question::with('answers', 'course.category')->findOrFail($id);
+        $question = Question::with('answers', 'course.category', 'categoryquestion')->findOrFail($id);
         $course = $question->course;
-        return view('admin.admin-editquestions', compact('question', 'course'));
+        $categories = CategoryQuestion::where('course_id', $course->id)->get(); // Tambahkan ini
+        return view('admin.admin-editquestions', compact('question', 'course', 'categories')); // Tambahkan categories
     }
 
     public function updatequestion(Request $request, $id)
@@ -210,11 +240,14 @@ class CourseController extends Controller
             'deskripsi' => 'required|string',
             'jawaban' => 'required|array|min:1',
             'is_correct' => 'required|array',
+            'categoryquestion_id' => 'nullable|exists:categoryquestion,id' // Tambahkan validasi kategori
         ]);
 
         $question = Question::findOrFail($id);
         $question->pertanyaan = $request->deskripsi;
+        $question->categoryquestion_id = $request->categoryquestion_id; // Tambahkan ini
         $question->save();
+
         Answer::where('question_id', $id)->delete();
         foreach ($request->jawaban as $index => $jawabanText) {
             $answer = new Answer();
@@ -223,6 +256,7 @@ class CourseController extends Controller
             $answer->is_correct = isset($request->is_correct[$index]) && $request->is_correct[$index] == 1 ? 1 : 0;
             $answer->save();
         }
+
         return redirect()->route('admin.exams.questions', ['id' => $question->course_id])
             ->with('success', 'Soal berhasil diperbarui.');
     }
@@ -283,6 +317,7 @@ class CourseController extends Controller
             ->get();
 
         return datatables()->of($pesertaCourses)
+            ->addIndexColumn()
             ->addColumn('nama', fn($row) => $row->peserta->nama)
             ->addColumn('honda_id', fn($row) => $row->peserta->honda_id)
             ->addColumn('namacategory', fn($row) => $row->peserta->category->namacategory ?? '-')

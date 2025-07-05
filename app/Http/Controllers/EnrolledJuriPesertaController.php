@@ -14,7 +14,7 @@ class EnrolledJuriPesertaController extends Controller
     {
         $data = FormPenilaian::findOrFail($id);
         return view('admin.admin-jurilistscorecard', compact('data'));
-    }
+    } 
 
     public function getEnrolledJuriTable($id)
     {

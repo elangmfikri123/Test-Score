@@ -35,6 +35,21 @@
                                 <form action="{{ url('/admin/exams/question-update/' . $question->id) }}" method="POST" id="questionForm">
                                     @csrf
                                     <div class="card-block">
+
+                                                <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Kategori Soal</label>
+            <div class="col-sm-10">
+                <select name="categoryquestion_id" class="form-control">
+                    <option value="">-- Pilih Kategori --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ $question->categoryquestion_id == $category->id ? 'selected' : '' }}>
+                            {{ $category->vnamacategory }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
                                         {{-- SOAL --}}
                                         <table class="table table-bordered" id="soalTable">
                                             <thead class="table-secondary">

@@ -40,6 +40,19 @@
                                             <input type="hidden" name="description" id="description">
                                         </div>
 
+                                        <div class="form-group">
+    <label for="subcategories">Subkategori Soal</label>
+    <div id="subcategory-wrapper">
+        <div class="input-group mb-2">
+            <input type="text" name="subcategories[]" class="form-control" placeholder="Nama Subkategori" required>
+            <div class="input-group-append">
+                <button class="btn btn-danger btn-remove-subcat" type="button">&times;</button>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm mt-2" id="btn-add-subcat">+ Tambah Subkategori</button>
+</div>
+
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -138,8 +151,30 @@
         }
     });
 
+    // Simpan deskripsi Quill ke input hidden saat submit
     document.getElementById('courseForm').addEventListener('submit', function () {
         document.getElementById('description').value = quill.root.innerHTML;
+    });
+
+    // Tambah subkategori
+    document.getElementById('btn-add-subcat').addEventListener('click', function () {
+        const wrapper = document.getElementById('subcategory-wrapper');
+        const div = document.createElement('div');
+        div.classList.add('input-group', 'mb-2');
+        div.innerHTML = `
+            <input type="text" name="subcategories[]" class="form-control" placeholder="Nama Subkategori" required>
+            <div class="input-group-append">
+                <button class="btn btn-danger btn-remove-subcat" type="button">&times;</button>
+            </div>
+        `;
+        wrapper.appendChild(div);
+    });
+
+    // Hapus subkategori
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btn-remove-subcat')) {
+            e.target.closest('.input-group').remove();
+        }
     });
 </script>
 @endsection
