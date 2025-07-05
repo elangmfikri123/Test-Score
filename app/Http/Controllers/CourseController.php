@@ -133,52 +133,6 @@ class CourseController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Course berhasil dihapus']);
     }
-    // public function showquestionslist($id)
-    // {
-    //     $course = Course::withCount('questions')->findOrFail($id);
-    //     return view('admin.admin-questionslist', compact('course'));
-    // }
-    // public function dataquestionAnswerJson($id)
-    // {
-    //     $questions = Question::with('answers')
-    //         ->where('course_id', $id)
-    //         ->orderBy('created_at', 'asc')
-    //         ->get();
-
-    //     return datatables()->of($questions)
-    //         ->addIndexColumn()
-    //         ->addColumn('questions_answer', function ($question) {
-    //             $html = '<div style="word-break: break-word; white-space: normal;">' . $question->pertanyaan . '</div>';
-    //             $html .= '<table style="width: 100%;">';
-
-    //             foreach ($question->answers as $index => $answer) {
-    //                 $label = chr(65 + $index);
-    //                 $isCorrect = $answer->is_correct;
-    //                 $textColor = $isCorrect ? 'green' : 'black';
-    //                 $fontWeight = $isCorrect ? 'bold' : 'normal';
-    //                 $check = $isCorrect ? '<i class="ion-checkmark" style="color: green;"></i>' : '';
-    //                 $bgColor = $isCorrect ? 'background-color: #D4EDDA;' : '';
-
-    //                 $html .= "<tr style='$bgColor'>
-    //                 <td style='width: 30px; color: $textColor; font-weight: $fontWeight;'>$label.</td>
-    //                 <td style='color: $textColor; font-weight: $fontWeight; word-break: break-word; white-space: normal; max-width: 600px;'>{$answer->jawaban}</td>
-    //                 <td style='width: 30px;'>$check</td>
-    //               </tr>";
-    //             }
-
-    //             $html .= '</table>';
-    //             return $html;
-    //         })
-    //         ->addColumn('action', function ($question) {
-    //             $editUrl = url("/admin/exams/question-edit/" . $question->id);
-    //             return '
-    //                 <a href="' . $editUrl . '" class="btn btn-sm btn-warning"><i class="ion-edit"></i> Edit</a>
-    //                 <button class="btn btn-sm btn-danger" onclick="deleteQuestion(' . $question->id . ')"><i class="ion-trash-b"></i> Hapus</button>
-    //             ';
-    //         })
-    //         ->rawColumns(['questions_answer', 'action'])
-    //         ->make(true);
-    // }
 
     public function showquestionslist($id)
     {
@@ -312,6 +266,7 @@ class CourseController extends Controller
 
         // Proses jawaban
         $existingAnswerIds = [];
+        $correctAnswerIndex = array_search('1', $request->is_correct); // Cari index jawaban yang benar
 
         foreach ($request->jawaban as $index => $jawabanText) {
             // Cek apakah jawaban sudah ada atau baru
@@ -321,7 +276,7 @@ class CourseController extends Controller
                 // Update jawaban yang sudah ada
                 $answer = Answer::find($answerId);
                 $answer->jawaban = $jawabanText;
-                $answer->is_correct = isset($request->is_correct[$index]) ? 1 : 0;
+                $answer->is_correct = ($index == $correctAnswerIndex) ? 1 : 0;
                 $answer->save();
                 $existingAnswerIds[] = $answer->id;
             } else {
@@ -329,7 +284,7 @@ class CourseController extends Controller
                 $answer = new Answer();
                 $answer->question_id = $question->id;
                 $answer->jawaban = $jawabanText;
-                $answer->is_correct = isset($request->is_correct[$index]) ? 1 : 0;
+                $answer->is_correct = ($index == $correctAnswerIndex) ? 1 : 0;
                 $answer->save();
                 $existingAnswerIds[] = $answer->id;
             }
@@ -344,7 +299,7 @@ class CourseController extends Controller
 
         return redirect()
             ->route('admin.exams.questions', ['id' => $question->course_id])
-            ->with('success', 'Soal berhasil diperbarui tanpa menghapus jawaban peserta.');
+            ->with('success', 'Soal berhasil diperbarui.');
     }
 
     public function deleteQuestion($id)

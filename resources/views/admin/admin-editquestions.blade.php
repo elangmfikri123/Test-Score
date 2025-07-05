@@ -36,19 +36,19 @@
                                     @csrf
                                     <div class="card-block">
 
-                                                <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Kategori Soal</label>
-            <div class="col-sm-10">
-                <select name="categoryquestion_id" class="form-control">
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ $question->categoryquestion_id == $category->id ? 'selected' : '' }}>
-                            {{ $category->vnamacategory }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Kategori Soal</label>
+                                            <div class="col-sm-10">
+                                                <select name="categoryquestion_id" class="form-control">
+                                                    <option value="">-- Pilih Kategori --</option>
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}" {{ $question->categoryquestion_id == $category->id ? 'selected' : '' }}>
+                                                            {{ $category->vnamacategory }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
 
                                         {{-- SOAL --}}
                                         <table class="table table-bordered" id="soalTable">
@@ -76,45 +76,46 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-@foreach ($question->answers as $i => $answer)
-<tr @if($answer->is_correct) style="background-color: #D4EDDA" @endif>
-    <th>Pilihan {{ chr(65 + $i) }}</th>
-    <td>
-        <input type="hidden" name="answer_ids[]" value="{{ $answer->id }}">
-        <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;">{!! $answer->jawaban !!}</div>
-        <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
-        @if($i >= 4)
-        <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
-            <i class="ion-trash-a"></i> Hapus
-        </button>
-        @endif
-    </td>
-    <td class="text-center">
-        <input type="checkbox" class="is_correct" data-index="{{ $i }}" @if($answer->is_correct) checked @endif>
-    </td>
-</tr>
-@endforeach
+                                                @foreach ($question->answers as $i => $answer)
+                                                    <tr @if($answer->is_correct) style="background-color: #D4EDDA" @endif>
+                                                        <th>Pilihan {{ chr(65 + $i) }}</th>
+                                                        <td>
+                                                            <input type="hidden" name="answer_ids[]" value="{{ $answer->id }}">
+                                                            <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;">{!! $answer->jawaban !!}</div>
+                                                            <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
+                                                            @if($i >= 4)
+                                                                <button type="button" class="btn btn-danger btn-sm removeAnswer mt-2">
+                                                                    <i class="ion-trash-a"></i> Hapus
+                                                                </button>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input type="checkbox" class="is_correct" data-index="{{ $i }}" @if($answer->is_correct) checked @endif>
+                                                            <input type="hidden" name="is_correct[]" value="{{ $answer->is_correct ? '1' : '0' }}" id="hidden-is-correct-{{ $i }}">
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                                 @php $answerCount = count($question->answers); @endphp
-                                                @for($i = $answerCount; $i < 4; $i++)
-                                                <tr>
-                                                    <th>Pilihan {{ chr(65 + $i) }}</th>
-                                                    <td>
-                                                        <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;"></div>
-                                                        <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <input type="checkbox" class="is_correct" data-index="{{ $i }}">
-                                                    </td>
-                                                </tr>
+                                                @for ($i = $answerCount; $i < 4; $i++)
+                                                    <tr>
+                                                        <th>Pilihan {{ chr(65 + $i) }}</th>
+                                                        <td>
+                                                            <div class="jawaban-editor" id="jawaban-editor-{{ $i }}" style="height: 150px;"></div>
+                                                            <input type="hidden" name="jawaban[]" id="jawaban-content-{{ $i }}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input type="checkbox" class="is_correct" data-index="{{ $i }}">
+                                                            <input type="hidden" name="is_correct[]" value="0" id="hidden-is-correct-{{ $i }}">
+                                                        </td>
+                                                    </tr>
                                                 @endfor
                                             </tbody>
                                         </table>
-                                        <div id="isCorrectInputs"></div>
 
-                                        @if(count($question->answers) < 10)
-                                        <button type="button" class="btn btn-sm btn-primary" id="addAnswer">
-                                            <i class="icofont icofont-plus"></i> Tambah Pilihan
-                                        </button>
+                                        @if (count($question->answers) < 10)
+                                            <button type="button" class="btn btn-sm btn-primary" id="addAnswer">
+                                                <i class="icofont icofont-plus"></i> Tambah Pilihan
+                                            </button>
                                         @endif
                                         <div class="text-right mt-3">
                                             <button type="submit" class="btn btn-success">
@@ -129,7 +130,7 @@
                             <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
                             <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
                             <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
-                            
+
                             <script>
                                 let answerIndex = {{ count($question->answers) }};
                                 const abjad = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
@@ -147,7 +148,7 @@
                                         }
                                     }
                                 }];
-                                
+
                                 async function uploadGambar(quill) {
                                     const input = document.createElement('input');
                                     input.setAttribute('type', 'file');
@@ -159,12 +160,12 @@
                                         if (!file) return;
                                         const range = quill.getSelection();
                                         quill.insertText(range.index, 'Mengupload gambar...', 'bold', true);
-                                        
+
                                         try {
                                             const formData = new FormData();
                                             formData.append('file', file);
 
-                                            const response = await fetch('{{ route("image.upload") }}', {
+                                            const response = await fetch('{{ route('image.upload') }}', {
                                                 method: 'POST',
                                                 headers: {
                                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -182,7 +183,9 @@
                                         } catch (error) {
                                             console.error('Error:', error);
                                             quill.deleteText(range.index, 20);
-                                            quill.insertText(range.index, 'Upload gambar gagal!', { color: 'red' });
+                                            quill.insertText(range.index, 'Upload gambar gagal!', {
+                                                color: 'red'
+                                            });
                                         }
                                     };
                                 }
@@ -192,10 +195,20 @@
                                     theme: 'snow',
                                     modules: {
                                         toolbar: [
-                                            [{ 'header': [1, 2, 3, false] }],
+                                            [{
+                                                'header': [1, 2, 3, false]
+                                            }],
                                             ['bold', 'italic', 'underline', 'strike'],
-                                            [{ 'color': [] }, { 'background': [] }],
-                                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                            [{
+                                                'color': []
+                                            }, {
+                                                'background': []
+                                            }],
+                                            [{
+                                                'list': 'ordered'
+                                            }, {
+                                                'list': 'bullet'
+                                            }],
                                             ['link', 'image'],
                                             ['clean']
                                         ],
@@ -212,35 +225,53 @@
                                 });
 
                                 quillInstances['soal'] = soalQuill;
-                                
-                                @for($i = 0; $i < max(count($question->answers), 4); $i++)
-                                quillInstances['jawaban-{{ $i }}'] = new Quill('#jawaban-editor-{{ $i }}', {
-                                    theme: 'snow',
-                                    modules: {
-                                        toolbar: [
-                                            ['bold', 'italic', 'underline', 'strike'],
-                                            [{ 'color': [] }, { 'background': [] }],
-                                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                            ['link', 'image'],
-                                            ['clean']
-                                        ],
-                                        imageResize: {
-                                            displaySize: true,
-                                            modules: ['Resize', 'DisplaySize']
-                                        }
-                                    },
-                                    placeholder: 'Tulis jawaban disini...'
-                                });
-                                
-                                quillInstances['jawaban-{{ $i }}'].getModule('toolbar').addHandler('image', () => {
-                                    uploadGambar(quillInstances['jawaban-{{ $i }}']);
-                                });
+
+                                @for ($i = 0; $i < max(count($question->answers), 4); $i++)
+                                    quillInstances['jawaban-{{ $i }}'] = new Quill('#jawaban-editor-{{ $i }}', {
+                                        theme: 'snow',
+                                        modules: {
+                                            toolbar: [
+                                                ['bold', 'italic', 'underline', 'strike'],
+                                                [{
+                                                    'color': []
+                                                }, {
+                                                    'background': []
+                                                }],
+                                                [{
+                                                    'list': 'ordered'
+                                                }, {
+                                                    'list': 'bullet'
+                                                }],
+                                                ['link', 'image'],
+                                                ['clean']
+                                            ],
+                                            imageResize: {
+                                                displaySize: true,
+                                                modules: ['Resize', 'DisplaySize']
+                                            }
+                                        },
+                                        placeholder: 'Tulis jawaban disini...'
+                                    });
+
+                                    quillInstances['jawaban-{{ $i }}'].getModule('toolbar').addHandler('image', () => {
+                                        uploadGambar(quillInstances['jawaban-{{ $i }}']);
+                                    });
                                 @endfor
 
                                 function updateCheckboxBehavior() {
                                     document.querySelectorAll('.is_correct').forEach(checkbox => {
                                         checkbox.removeEventListener('change', checkbox.changeHandler);
                                         checkbox.changeHandler = function() {
+                                            // Update semua hidden input terlebih dahulu
+                                            document.querySelectorAll('[name="is_correct[]"]').forEach(input => {
+                                                input.value = '0';
+                                            });
+                                            
+                                            // Update yang dipilih
+                                            const index = this.dataset.index;
+                                            document.querySelector(`#hidden-is-correct-${index}`).value = this.checked ? '1' : '0';
+                                            
+                                            // Update tampilan
                                             document.querySelectorAll('.is_correct').forEach(cb => {
                                                 cb.checked = false;
                                                 cb.closest('tr').style.backgroundColor = "";
@@ -267,7 +298,7 @@
                                 // Initialize with existing correct answer
                                 updateCheckboxBehavior();
                                 updateRemoveButtonBehavior();
-                                
+
                                 document.getElementById('addAnswer').addEventListener('click', function() {
                                     if (answerIndex >= abjad.length) {
                                         alert('Batas maksimal pilihan jawaban telah tercapai!');
@@ -290,18 +321,27 @@
                                         </td>
                                         <td class="text-center">
                                             <input type="checkbox" class="is_correct" data-index="${answerIndex}">
+                                            <input type="hidden" name="is_correct[]" value="0" id="hidden-is-correct-${answerIndex}">
                                         </td>
                                     `;
 
                                     document.querySelector('#jawabanTable tbody').appendChild(newRow);
-                                    
+
                                     quillInstances['jawaban-' + answerIndex] = new Quill('#' + editorId, {
                                         theme: 'snow',
                                         modules: {
                                             toolbar: [
                                                 ['bold', 'italic', 'underline', 'strike'],
-                                                [{ 'color': [] }, { 'background': [] }],
-                                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                [{
+                                                    'color': []
+                                                }, {
+                                                    'background': []
+                                                }],
+                                                [{
+                                                    'list': 'ordered'
+                                                }, {
+                                                    'list': 'bullet'
+                                                }],
                                                 ['link', 'image'],
                                                 ['clean']
                                             ],
@@ -320,26 +360,26 @@
                                     updateCheckboxBehavior();
                                     updateRemoveButtonBehavior();
                                 });
-                                
+
                                 document.getElementById('questionForm').addEventListener('submit', function(e) {
+                                    // Update konten soal dan jawaban
                                     document.getElementById('soal-content').value = soalQuill.root.innerHTML;
+                                    
                                     for (let i = 0; i < answerIndex; i++) {
                                         if (quillInstances['jawaban-' + i]) {
                                             document.getElementById('jawaban-content-' + i).value = 
                                                 quillInstances['jawaban-' + i].root.innerHTML;
                                         }
                                     }
-                                    const container = document.getElementById('isCorrectInputs');
-                                    container.innerHTML = '';
-
-                                    const checkboxes = document.querySelectorAll('.is_correct');
-                                    checkboxes.forEach((checkbox, index) => {
-                                        const hidden = document.createElement('input');
-                                        hidden.type = 'hidden';
-                                        hidden.name = 'is_correct[]';
-                                        hidden.value = checkbox.checked ? 1 : 0;
-                                        container.appendChild(hidden);
-                                    });
+                                    
+                                    // Validasi minimal satu jawaban benar
+                                    const hasCorrectAnswer = Array.from(document.querySelectorAll('[name="is_correct[]"]')).some(input => input.value === '1');
+                                    
+                                    if (!hasCorrectAnswer) {
+                                        e.preventDefault();
+                                        alert('Pilih salah satu jawaban yang benar!');
+                                        return false;
+                                    }
                                 });
                             </script>
                         </div>
