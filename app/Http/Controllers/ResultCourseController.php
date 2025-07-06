@@ -72,11 +72,8 @@ class ResultCourseController extends Controller
     //
     public function showDetails($id)
     {
-        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])
-            ->findOrFail($id);
+        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
         $courseId = $pesertaCourse->course_id;
-
-        // Load questions with category and their correct answers
         $questions = Question::with(['categoryquestion', 'answers' => function ($query) {
             $query->where('is_correct', true);
         }])
@@ -96,7 +93,6 @@ class ResultCourseController extends Controller
             $categoryId = $question->categoryquestion_id ?? 0;
             $categoryName = $question->categoryquestion->vnamacategory ?? 'Uncategorized';
 
-            // Initialize category data if not exists
             if (!isset($categoryAnalysis[$categoryId])) {
                 $categoryAnalysis[$categoryId] = [
                     'name' => $categoryName,
@@ -136,7 +132,6 @@ class ResultCourseController extends Controller
             ];
         }
 
-        // Calculate category scores
         foreach ($categoryAnalysis as &$category) {
             $category['score'] = $category['total'] > 0
                 ? round(($category['correct'] / $category['total']) * 100, 2)
@@ -174,96 +169,91 @@ class ResultCourseController extends Controller
         ]);
     }
 
-public function showDetailsAnswers($id)
-{
-    $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
+    public function showDetailsAnswers($id)
+    {
+        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
+        $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
+            $query->where('peserta_id', $pesertaCourse->peserta_id)
+                ->where('peserta_course_id', $pesertaCourse->id);
+        }])
+            ->where('course_id', $pesertaCourse->course_id)
+            ->get();
 
-    // Load questions with their answers and correct answers
-    $questions = Question::with(['answers', 'pesertaAnswer' => function($query) use ($pesertaCourse) {
-        $query->where('peserta_id', $pesertaCourse->peserta_id)
-              ->where('peserta_course_id', $pesertaCourse->id);
-    }])
-    ->where('course_id', $pesertaCourse->course_id)
-    ->get();
+        $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
 
-    $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
+        foreach ($questions as $q) {
+            $userAnswer = $q->pesertaAnswer->first();
 
-    foreach ($questions as $q) {
-        $userAnswer = $q->pesertaAnswer->first();
-        
-        if (!$userAnswer) {
-            $jumlahSkip++;
-            continue;
+            if (!$userAnswer) {
+                $jumlahSkip++;
+                continue;
+            }
+
+            $correctAnswer = $q->answers->firstWhere('is_correct', true);
+            $isCorrect = $correctAnswer && ($userAnswer->answer_id == $correctAnswer->id);
+
+            if ($isCorrect) {
+                $jumlahBenar++;
+            } else {
+                $jumlahSalah++;
+            }
         }
-        
-        // Get first correct answer (assuming single correct answer)
-        $correctAnswer = $q->answers->firstWhere('is_correct', true);
-        $isCorrect = $correctAnswer && ($userAnswer->answer_id == $correctAnswer->id);
-        
-        if ($isCorrect) {
-            $jumlahBenar++;
-        } else {
-            $jumlahSalah++;
+
+        $totalSoal = $questions->count();
+        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
+        $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
+        $durasi = null;
+
+        if ($start && $end) {
+            $durasiAsli = $start->diff($end);
+            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
+            $maksDurasi = $pesertaCourse->course->duration_minutes;
+
+            if ($durasiDalamMenit > $maksDurasi) {
+                $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
+            } else {
+                $durasi = $durasiAsli;
+            }
         }
-    }
 
-    $totalSoal = $questions->count();
-    $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
+            $userAnswer = $q->pesertaAnswer->first();
+            $correctAnswer = $q->answers->firstWhere('is_correct', true);
 
-    // Durasi calculation
-    $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
-    $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
-    $durasi = null;
+            $options = [];
+            foreach ($q->answers->values() as $i => $ans) {
+                $label = chr(65 + $i);
+                $options[$label] = [
+                    'id' => $ans->id,
+                    'text' => $ans->jawaban,
+                    'is_correct' => $ans->is_correct
+                ];
+            }
 
-    if ($start && $end) {
-        $durasiAsli = $start->diff($end);
-        $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
-        $maksDurasi = $pesertaCourse->course->duration_minutes;
+            $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
+            $correctLabel = $correctAnswer ? collect($options)->search(fn($val) => $val['id'] == $correctAnswer->id) : null;
 
-        if ($durasiDalamMenit > $maksDurasi) {
-            $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
-        } else {
-            $durasi = $durasiAsli;
-        }
-    }
-
-    $formattedQuestions = $questions->map(function($q) use ($pesertaCourse) {
-        $userAnswer = $q->pesertaAnswer->first();
-        $correctAnswer = $q->answers->firstWhere('is_correct', true);
-
-        $options = [];
-        foreach ($q->answers->values() as $i => $ans) {
-            $label = chr(65 + $i);
-            $options[$label] = [
-                'id' => $ans->id,
-                'text' => $ans->jawaban,
-                'is_correct' => $ans->is_correct
+            return [
+                'question' => $q->pertanyaan,
+                'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
+                'correct_answer' => $correctLabel,
+                'user_answer' => $userSelectedLabel,
+                'is_correct' => $userAnswer && $correctAnswer ? ($userAnswer->answer_id == $correctAnswer->id) : null,
+                'is_skipped' => is_null($userAnswer),
             ];
-        }
+        });
 
-        $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
-        $correctLabel = $correctAnswer ? collect($options)->search(fn($val) => $val['id'] == $correctAnswer->id) : null;
-
-        return [
-            'question' => $q->pertanyaan,
-            'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
-            'correct_answer' => $correctLabel, // Single answer key untuk compatibility dengan view
-            'user_answer' => $userSelectedLabel,
-            'is_correct' => $userAnswer && $correctAnswer ? ($userAnswer->answer_id == $correctAnswer->id) : null,
-            'is_skipped' => is_null($userAnswer),
-        ];
-    });
-
-    return view('admin.admin-resultsdetailsanswers', [
-        'questions' => $formattedQuestions,
-        'pesertaCourse' => $pesertaCourse,
-        'jumlahBenar' => $jumlahBenar,
-        'jumlahSalah' => $jumlahSalah,
-        'jumlahSkip' => $jumlahSkip,
-        'score' => $score,
-        'durasi' => $durasi,
-        'waktuUjian' => $start,
-        'status' => $pesertaCourse->status_pengerjaan,
-    ]);
-}
+        return view('admin.admin-resultsdetailsanswers', [
+            'questions' => $formattedQuestions,
+            'pesertaCourse' => $pesertaCourse,
+            'jumlahBenar' => $jumlahBenar,
+            'jumlahSalah' => $jumlahSalah,
+            'jumlahSkip' => $jumlahSkip,
+            'score' => $score,
+            'durasi' => $durasi,
+            'waktuUjian' => $start,
+            'status' => $pesertaCourse->status_pengerjaan,
+        ]);
+    }
 }
