@@ -174,98 +174,96 @@ class ResultCourseController extends Controller
         ]);
     }
 
-    public function showDetailsAnswers($id)
-    {
-        $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
+public function showDetailsAnswers($id)
+{
+    $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
 
-        // Load questions with their answers and correct answers
-        $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
-            $query->where('peserta_id', $pesertaCourse->peserta_id)
-                ->where('peserta_course_id', $pesertaCourse->id);
-        }])
-            ->where('course_id', $pesertaCourse->course_id)
-            ->get();
+    // Load questions with their answers and correct answers
+    $questions = Question::with(['answers', 'pesertaAnswer' => function($query) use ($pesertaCourse) {
+        $query->where('peserta_id', $pesertaCourse->peserta_id)
+              ->where('peserta_course_id', $pesertaCourse->id);
+    }])
+    ->where('course_id', $pesertaCourse->course_id)
+    ->get();
 
-        $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
+    $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
 
-        foreach ($questions as $q) {
-            $userAnswer = $q->pesertaAnswer->first();
-
-            if (!$userAnswer) {
-                $jumlahSkip++;
-                continue;
-            }
-
-            // Check if the answer is correct by comparing with correct answers
-            $correctAnswers = $q->answers->where('is_correct', true)->pluck('id')->toArray();
-            $isCorrect = in_array($userAnswer->answer_id, $correctAnswers);
-
-            if ($isCorrect) {
-                $jumlahBenar++;
-            } else {
-                $jumlahSalah++;
-            }
+    foreach ($questions as $q) {
+        $userAnswer = $q->pesertaAnswer->first();
+        
+        if (!$userAnswer) {
+            $jumlahSkip++;
+            continue;
         }
-
-        $totalSoal = $questions->count();
-        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-
-        // Durasi calculation
-        $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
-        $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
-        $durasi = null;
-
-        if ($start && $end) {
-            $durasiAsli = $start->diff($end);
-            $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
-            $maksDurasi = $pesertaCourse->course->duration_minutes;
-
-            if ($durasiDalamMenit > $maksDurasi) {
-                $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
-            } else {
-                $durasi = $durasiAsli;
-            }
+        
+        // Get first correct answer (assuming single correct answer)
+        $correctAnswer = $q->answers->firstWhere('is_correct', true);
+        $isCorrect = $correctAnswer && ($userAnswer->answer_id == $correctAnswer->id);
+        
+        if ($isCorrect) {
+            $jumlahBenar++;
+        } else {
+            $jumlahSalah++;
         }
-
-        $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
-            $userAnswer = $q->pesertaAnswer->first();
-            $correctAnswers = $q->answers->where('is_correct', true);
-
-            $options = [];
-            foreach ($q->answers->values() as $i => $ans) {
-                $label = chr(65 + $i);
-                $options[$label] = [
-                    'id' => $ans->id,
-                    'text' => $ans->jawaban,
-                    'is_correct' => $ans->is_correct
-                ];
-            }
-
-            $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
-            $correctLabels = $correctAnswers->map(function ($ans) use ($options) {
-                return collect($options)->search(fn($val) => $val['id'] == $ans->id);
-            })->toArray();
-
-            return [
-                'question' => $q->pertanyaan,
-                'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
-                'correct_answers' => $correctLabels,
-                'user_answer' => $userSelectedLabel,
-                'is_correct' => $userAnswer ? in_array($userAnswer->answer_id, $correctAnswers->pluck('id')->toArray()) : null,
-                'is_skipped' => is_null($userAnswer),
-            ];
-        });
-
-        return view('admin.admin-resultsdetailsanswers', [
-            'questions' => $formattedQuestions,
-            'pesertaCourse' => $pesertaCourse,
-            'jumlahBenar' => $jumlahBenar,
-            'jumlahSalah' => $jumlahSalah,
-            'jumlahSkip' => $jumlahSkip,
-            'score' => $score,
-            'durasi' => $durasi,
-            'waktuUjian' => $start,
-            'status' => $pesertaCourse->status_pengerjaan,
-        ]);
     }
+
+    $totalSoal = $questions->count();
+    $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+
+    // Durasi calculation
+    $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
+    $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
+    $durasi = null;
+
+    if ($start && $end) {
+        $durasiAsli = $start->diff($end);
+        $durasiDalamMenit = $durasiAsli->h * 60 + $durasiAsli->i + ($durasiAsli->s >= 30 ? 1 : 0);
+        $maksDurasi = $pesertaCourse->course->duration_minutes;
+
+        if ($durasiDalamMenit > $maksDurasi) {
+            $durasi = Carbon::createFromTime(0, 0, 0)->diff(Carbon::createFromTime(0, $maksDurasi, 0));
+        } else {
+            $durasi = $durasiAsli;
+        }
+    }
+
+    $formattedQuestions = $questions->map(function($q) use ($pesertaCourse) {
+        $userAnswer = $q->pesertaAnswer->first();
+        $correctAnswer = $q->answers->firstWhere('is_correct', true);
+
+        $options = [];
+        foreach ($q->answers->values() as $i => $ans) {
+            $label = chr(65 + $i);
+            $options[$label] = [
+                'id' => $ans->id,
+                'text' => $ans->jawaban,
+                'is_correct' => $ans->is_correct
+            ];
+        }
+
+        $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
+        $correctLabel = $correctAnswer ? collect($options)->search(fn($val) => $val['id'] == $correctAnswer->id) : null;
+
+        return [
+            'question' => $q->pertanyaan,
+            'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
+            'correct_answer' => $correctLabel, // Single answer key untuk compatibility dengan view
+            'user_answer' => $userSelectedLabel,
+            'is_correct' => $userAnswer && $correctAnswer ? ($userAnswer->answer_id == $correctAnswer->id) : null,
+            'is_skipped' => is_null($userAnswer),
+        ];
+    });
+
+    return view('admin.admin-resultsdetailsanswers', [
+        'questions' => $formattedQuestions,
+        'pesertaCourse' => $pesertaCourse,
+        'jumlahBenar' => $jumlahBenar,
+        'jumlahSalah' => $jumlahSalah,
+        'jumlahSkip' => $jumlahSkip,
+        'score' => $score,
+        'durasi' => $durasi,
+        'waktuUjian' => $start,
+        'status' => $pesertaCourse->status_pengerjaan,
+    ]);
+}
 }
