@@ -22,6 +22,7 @@ use App\Http\Controllers\ResultCourseController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
 use App\Http\Controllers\EnrolledJuriPesertaController;
+use App\Http\Controllers\ResultsAnswersController;
 use App\Models\Peserta;
 
 /*
@@ -83,6 +84,10 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/admin/courseresults/{id}/detailsAnswers', [ResultCourseController::class, 'showDetailsAnswers'])->name('course.detailsAnswers');
     Route::get('/results/exams/download', [ExportController::class, 'downloadResultsExams'])->name('resultsExams.download');
 
+    // Results Details
+Route::get('/admin/results/details', [ResultsAnswersController::class, 'showResultsDetails'])->name('admin.results.details');
+Route::get('/results/exams/download', [ResultsAnswersController::class, 'downloadExamResults'])->name('admin.results.download');
+    
     //ADD QUESTION
     Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist'])->name('admin.exams.questions');
     Route::get('/dataquestion-answer/json/{id}', [CourseController::class, 'dataquestionAnswerJson']);

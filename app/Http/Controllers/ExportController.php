@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Admin;
+use App\Models\Course;
 use App\Models\Peserta;
 use App\Models\Question;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
 use App\Models\PesertaCourse;
@@ -199,250 +201,225 @@ class ExportController extends Controller
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
-    // public function downloadResultsExams(Request $request)
-    // {
-    //     $query = PesertaCourse::with([
-    //         'peserta.maindealer',
-    //         'peserta.category',
-    //         'course'
-    //     ])->where('status_pengerjaan', 'selesai');
-
-    //     if ($request->filled('course_id')) {
-    //         $query->where('course_id', $request->course_id);
-    //     }
-
-    //     if ($request->filled('category_id')) {
-    //         $query->whereHas('peserta', function ($q) use ($request) {
-    //             $q->where('category_id', $request->category_id);
-    //         });
-    //     }
-
-    //     if ($request->filled('maindealer_id')) {
-    //         $query->whereHas('peserta', function ($q) use ($request) {
-    //             $q->where('maindealer_id', $request->maindealer_id);
-    //         });
-    //     }
-
-    //     $pesertaCourses = $query->get();
-    //     $spreadsheet = new Spreadsheet();
-    //     $sheet = $spreadsheet->getActiveSheet();
-
-    //     $headers = [
-    //         'No',
-    //         'Honda ID',
-    //         'Nama',
-    //         'Main Dealer',
-    //         'Kategori',
-    //         'Nama Course',
-    //         'Jumlah Soal',
-    //         'Jumlah Benar',
-    //         'Jumlah Salah',
-    //         'Jumlah Terlewati',
-    //         'Total Scores',
-    //         'Durasi',
-    //         'Time Start Date',
-    //         'Time Submit Date'
-    //     ];
-
-    //     $sheet->fromArray([$headers], null, 'A1');
-    //     $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-    //     $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    //     $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    //     $row = 2;
-    //     foreach ($pesertaCourses as $index => $pc) {
-    //         $questions = Question::where('course_id', $pc->course_id)->get();
-    //         $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $pc->id)->get()->keyBy('question_id');
-
-    //         $jumlahBenar = 0;
-    //         $jumlahSalah = 0;
-    //         $jumlahSkip  = 0;
-
-    //         foreach ($questions as $q) {
-    //             $jawaban = $jawabanPeserta->get($q->id);
-    //             if (!$jawaban) {
-    //                 $jumlahSkip++;
-    //             } elseif ($jawaban->is_correct) {
-    //                 $jumlahBenar++;
-    //             } else {
-    //                 $jumlahSalah++;
-    //             }
-    //         }
-
-    //         $totalSoal = $questions->count();
-    //         $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : '0.00';
-
-    //         $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
-    //         $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
-
-    //         $durasi = '';
-    //         if ($start && $end) {
-    //             $durasi = $start->diff($end)->format('%H:%I:%S');
-    //         }
-
-    //         $startFormatted = $start ? $start->format('d-M-Y H:i:s') : '';
-    //         $endFormatted   = $end ? $end->format('d-M-Y H:i:s') : '';
-
-    //         $mainDealer = ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? '');
-
-    //         $sheet->setCellValue("A{$row}", $index + 1);
-    //         $sheet->setCellValueExplicit("B{$row}", $pc->peserta->honda_id, DataType::TYPE_STRING);
-    //         $sheet->setCellValue("C{$row}", $pc->peserta->nama);
-    //         $sheet->setCellValue("D{$row}", $mainDealer);
-    //         $sheet->setCellValue("E{$row}", $pc->peserta->category->namacategory ?? '');
-    //         $sheet->setCellValue("F{$row}", $pc->course->namacourse ?? '');
-    //         $sheet->setCellValue("G{$row}", $totalSoal);
-    //         $sheet->setCellValue("H{$row}", (int)$jumlahBenar);
-    //         $sheet->setCellValue("I{$row}", (int)$jumlahSalah);
-    //         $sheet->setCellValue("J{$row}", (int)$jumlahSkip);
-    //         $sheet->setCellValue("K{$row}", $score);
-    //         $sheet->setCellValue("L{$row}", $durasi);
-    //         $sheet->setCellValue("M{$row}", $startFormatted);
-    //         $sheet->setCellValue("N{$row}", $endFormatted);
-
-    //         $row++;
-    //     }
-
-    //     $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    //     $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
-    //     $filePath = storage_path("app/public/{$filename}");
-    //     $writer = new Xlsx($spreadsheet);
-    //     $writer->save($filePath);
-
-    //     return response()->download($filePath)->deleteFileAfterSend(true);
-    // }
-
     public function downloadResultsExams(Request $request)
-{
-    $query = PesertaCourse::with([
-        'peserta.maindealer',
-        'peserta.category',
-        'course'
-    ])->where('status_pengerjaan', 'selesai');
+    {
+        $query = PesertaCourse::with([
+            'peserta.maindealer',
+            'peserta.category',
+            'course'
+        ])->where('status_pengerjaan', 'selesai');
 
-    if ($request->filled('course_id')) {
-        $query->where('course_id', $request->course_id);
-    }
-
-    if ($request->filled('category_id')) {
-        $query->whereHas('peserta', function($q) use ($request) {
-            $q->where('category_id', $request->category_id);
-        });
-    }
-
-    if ($request->filled('maindealer_id')) {
-        $query->whereHas('peserta', function($q) use ($request) {
-            $q->where('maindealer_id', $request->maindealer_id);
-        });
-    }
-
-    $pesertaCourses = $query->get();
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    $headers = [
-        'No',
-        'Honda ID',
-        'Nama',
-        'Main Dealer',
-        'Kategori',
-        'Nama Course',
-        'Jumlah Soal',
-        'Jumlah Benar',
-        'Jumlah Salah',
-        'Jumlah Terlewati',
-        'Total Scores',
-        'Durasi',
-        'Time Start Date',
-        'Time Submit Date'
-    ];
-
-    $sheet->fromArray([$headers], null, 'A1');
-    $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-    $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    $row = 2;
-    foreach ($pesertaCourses as $index => $pc) {
-        // Load questions with their correct answers
-        $questions = Question::with(['answers' => function($query) {
-            $query->where('is_correct', true);
-        }])->where('course_id', $pc->course_id)->get();
-
-        $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $pc->id)
-            ->get()
-            ->keyBy('question_id');
-
-        $jumlahBenar = 0;
-        $jumlahSalah = 0;
-        $jumlahSkip = 0;
-
-        foreach ($questions as $q) {
-            $jawaban = $jawabanPeserta->get($q->id);
-            
-            if (!$jawaban) {
-                $jumlahSkip++;
-                continue;
-            }
-
-            // Check if participant's answer matches any correct answer
-            $correctAnswerIds = $q->answers->pluck('id')->toArray();
-            $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
-            
-            if ($isCorrect) {
-                $jumlahBenar++;
-            } else {
-                $jumlahSalah++;
-            }
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
         }
 
-        $totalSoal = $questions->count();
-        $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : '0.00';
-
-        $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
-        $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
-
-        $durasi = '';
-        if ($start && $end) {
-            $durasi = $start->diff($end)->format('%H:%I:%S');
+        if ($request->filled('category_id')) {
+            $query->whereHas('peserta', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
         }
 
-        $startFormatted = $start ? $start->format('d-M-Y H:i:s') : '';
-        $endFormatted = $end ? $end->format('d-M-Y H:i:s') : '';
+        if ($request->filled('maindealer_id')) {
+            $query->whereHas('peserta', function ($q) use ($request) {
+                $q->where('maindealer_id', $request->maindealer_id);
+            });
+        }
 
-        $mainDealer = ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? '');
+        $pesertaCourses = $query->get();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue("A{$row}", $index + 1);
-        $sheet->setCellValueExplicit("B{$row}", $pc->peserta->honda_id, DataType::TYPE_STRING);
-        $sheet->setCellValue("C{$row}", $pc->peserta->nama);
-        $sheet->setCellValue("D{$row}", $mainDealer);
-        $sheet->setCellValue("E{$row}", $pc->peserta->category->namacategory ?? '');
-        $sheet->setCellValue("F{$row}", $pc->course->namacourse ?? '');
-        $sheet->setCellValue("G{$row}", $totalSoal);
-        $sheet->setCellValue("H{$row}", (int)$jumlahBenar);
-        $sheet->setCellValue("I{$row}", (int)$jumlahSalah);
-        $sheet->setCellValue("J{$row}", (int)$jumlahSkip);
-        $sheet->setCellValue("K{$row}", $score);
-        $sheet->setCellValue("L{$row}", $durasi);
-        $sheet->setCellValue("M{$row}", $startFormatted);
-        $sheet->setCellValue("N{$row}", $endFormatted);
+        $headers = [
+            'No',
+            'Honda ID',
+            'Nama',
+            'Main Dealer',
+            'Kategori',
+            'Nama Course',
+            'Jumlah Soal',
+            'Jumlah Benar',
+            'Jumlah Salah',
+            'Jumlah Terlewati',
+            'Total Scores',
+            'Durasi',
+            'Time Start Date',
+            'Time Submit Date'
+        ];
 
-        $row++;
+        $sheet->fromArray([$headers], null, 'A1');
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        $row = 2;
+        foreach ($pesertaCourses as $index => $pc) {
+            // Load questions with their correct answers
+            $questions = Question::with(['answers' => function ($query) {
+                $query->where('is_correct', true);
+            }])->where('course_id', $pc->course_id)->get();
+
+            $jawabanPeserta = PesertaAnswer::where('peserta_course_id', $pc->id)->get()->keyBy('question_id');
+            $jumlahBenar = 0;
+            $jumlahSalah = 0;
+            $jumlahSkip = 0;
+
+            foreach ($questions as $q) {
+                $jawaban = $jawabanPeserta->get($q->id);
+
+                if (!$jawaban) {
+                    $jumlahSkip++;
+                    continue;
+                }
+                $correctAnswerIds = $q->answers->pluck('id')->toArray();
+                $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
+
+                if ($isCorrect) {
+                    $jumlahBenar++;
+                } else {
+                    $jumlahSalah++;
+                }
+            }
+
+            $totalSoal = $questions->count();
+            $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : '0.00';
+            $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
+            $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
+
+            $durasi = '';
+            if ($start && $end) {
+                $durasi = $start->diff($end)->format('%H:%I:%S');
+            }
+
+            $startFormatted = $start ? $start->format('d-M-Y H:i:s') : '';
+            $endFormatted = $end ? $end->format('d-M-Y H:i:s') : '';
+            $mainDealer = ($pc->peserta->maindealer->kodemd ?? '') . ' - ' . ($pc->peserta->maindealer->nama_md ?? '');
+
+            $sheet->setCellValue("A{$row}", $index + 1);
+            $sheet->setCellValueExplicit("B{$row}", $pc->peserta->honda_id, DataType::TYPE_STRING);
+            $sheet->setCellValue("C{$row}", $pc->peserta->nama);
+            $sheet->setCellValue("D{$row}", $mainDealer);
+            $sheet->setCellValue("E{$row}", $pc->peserta->category->namacategory ?? '');
+            $sheet->setCellValue("F{$row}", $pc->course->namacourse ?? '');
+            $sheet->setCellValue("G{$row}", $totalSoal);
+            $sheet->setCellValue("H{$row}", (int)$jumlahBenar);
+            $sheet->setCellValue("I{$row}", (int)$jumlahSalah);
+            $sheet->setCellValue("J{$row}", (int)$jumlahSkip);
+            $sheet->setCellValue("K{$row}", $score);
+            $sheet->setCellValue("L{$row}", $durasi);
+            $sheet->setCellValue("M{$row}", $startFormatted);
+            $sheet->setCellValue("N{$row}", $endFormatted);
+
+            $row++;
+        }
+        foreach (range('A', 'N') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
+        $filePath = storage_path("app/public/{$filename}");
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
-    // Auto-size columns for better display
-    foreach(range('A','N') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+
+    public function downloadExamResults(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id'
+        ]);
+
+        $course = Course::with('questions')->find($request->course_id);
+        $pesertaCourses = PesertaCourse::with([
+            'peserta',
+            'peserta.category',
+            'peserta.maindealer',
+            'pesertaAnswers' => function($query) {
+                $query->with(['question', 'answer']);
+            }
+        ])->where('course_id', $course->id)
+          ->where('status_pengerjaan', 'selesai')
+          ->get();
+
+        // Create new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $headers = [
+            'Nama Quiz',
+            'Honda ID',
+            'Nama Peserta',
+            'Kategori',
+            'Kode MD'
+        ];
+
+        // Add question headers
+        foreach ($course->questions as $index => $question) {
+            $headers[] = 'Q'.($index+1).': '.$question->pertanyaan;
+        }
+
+        // Write headers
+        $sheet->fromArray([$headers], null, 'A1');
+
+        // Style headers
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1:'.$sheet->getHighestColumn().'1')->applyFromArray($headerStyle);
+
+        // Write data
+        $row = 2;
+        foreach ($pesertaCourses as $pc) {
+            $data = [
+                $course->namacourse,
+                $pc->peserta->honda_id,
+                $pc->peserta->nama,
+                $pc->peserta->category->name ?? '-',
+                $pc->peserta->maindealer->kode ?? '-'
+            ];
+
+            // Add answers for each question
+            foreach ($course->questions as $question) {
+                $answer = $pc->pesertaAnswers->where('question_id', $question->id)->first();
+                
+                if ($answer) {
+                    $data[] = $answer->is_correct ? 1 : 0;
+                } else {
+                    $data[] = '-';
+                }
+            }
+
+            $sheet->fromArray([$data], null, 'A'.$row);
+            $row++;
+        }
+
+        // Apply borders to all data
+        $sheet->getStyle('A1:'.$sheet->getHighestColumn().($row-1))
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+
+        // Auto size columns
+        foreach (range('A', $sheet->getHighestColumn()) as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Create file and download
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'hasil_ujian_'.str_replace(' ', '_', $course->namacourse).'_'.now()->format('Ymd_His').'.xlsx';
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
-
-    $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-    $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
-    $filePath = storage_path("app/public/{$filename}");
-    $writer = new Xlsx($spreadsheet);
-    $writer->save($filePath);
-
-    return response()->download($filePath)->deleteFileAfterSend(true);
-}
 }

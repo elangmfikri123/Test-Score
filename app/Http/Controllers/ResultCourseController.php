@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
@@ -256,4 +257,5 @@ class ResultCourseController extends Controller
             'status' => $pesertaCourse->status_pengerjaan,
         ]);
     }
+
 }

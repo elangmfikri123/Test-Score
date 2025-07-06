@@ -26,4 +26,9 @@ class PesertaAnswer extends Model
     {
         return $this->belongsTo(Answer::class);
     }
+
+    public function pesertaCourse()
+    {
+        return $this->belongsTo(PesertaCourse::class);
+    }
 }

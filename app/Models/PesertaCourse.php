@@ -24,4 +24,8 @@ class PesertaCourse extends Model
     {
         return $this->hasMany(PesertaAnswer::class, 'peserta_id');
     }
+    public function pesertaAnswers()
+    {
+        return $this->hasMany(PesertaAnswer::class, 'peserta_course_id');
+    }
 }

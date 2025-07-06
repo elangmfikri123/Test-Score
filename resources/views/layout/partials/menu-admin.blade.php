@@ -85,7 +85,12 @@
                                         </li>
                                         <li class=" ">
                                             <a href="{{ url('/admin/results') }}">
-                                                <span class="pcoded-mtext">Result</span>
+                                                <span class="pcoded-mtext">Result Course</span>
+                                            </a>
+                                        </li>
+                                        <li class=" ">
+                                            <a href="{{ url('/admin/results/details') }}">
+                                                <span class="pcoded-mtext">Result Answers</span>
                                             </a>
                                         </li>
                                     </ul>
