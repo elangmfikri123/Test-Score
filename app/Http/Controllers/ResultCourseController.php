@@ -112,7 +112,6 @@ class ResultCourseController extends Controller
                 $jumlahSkip++;
                 $categoryAnalysis[$categoryId]['skipped']++;
             } else {
-                // Check if participant's answer matches any of the correct answers
                 $correctAnswerIds = $question->answers->pluck('id')->toArray();
                 $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
 
@@ -146,8 +145,6 @@ class ResultCourseController extends Controller
 
         $totalSoal = $questions->count();
         $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-
-        // Durasi calculation
         $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
         $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
         $durasi = null;
@@ -180,19 +177,30 @@ class ResultCourseController extends Controller
     public function showDetailsAnswers($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
+
+        // Load questions with their answers and correct answers
         $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($pesertaCourse) {
             $query->where('peserta_id', $pesertaCourse->peserta_id)
                 ->where('peserta_course_id', $pesertaCourse->id);
         }])
             ->where('course_id', $pesertaCourse->course_id)
             ->get();
+
         $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
 
         foreach ($questions as $q) {
             $userAnswer = $q->pesertaAnswer->first();
+
             if (!$userAnswer) {
                 $jumlahSkip++;
-            } elseif ($userAnswer->is_correct) {
+                continue;
+            }
+
+            // Check if the answer is correct by comparing with correct answers
+            $correctAnswers = $q->answers->where('is_correct', true)->pluck('id')->toArray();
+            $isCorrect = in_array($userAnswer->answer_id, $correctAnswers);
+
+            if ($isCorrect) {
                 $jumlahBenar++;
             } else {
                 $jumlahSalah++;
@@ -202,6 +210,7 @@ class ResultCourseController extends Controller
         $totalSoal = $questions->count();
         $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
 
+        // Durasi calculation
         $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
         $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
         $durasi = null;
@@ -220,7 +229,7 @@ class ResultCourseController extends Controller
 
         $formattedQuestions = $questions->map(function ($q) use ($pesertaCourse) {
             $userAnswer = $q->pesertaAnswer->first();
-            $correctAnswer = $q->answers->firstWhere('is_correct', true);
+            $correctAnswers = $q->answers->where('is_correct', true);
 
             $options = [];
             foreach ($q->answers->values() as $i => $ans) {
@@ -233,13 +242,16 @@ class ResultCourseController extends Controller
             }
 
             $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
-            $correctLabel = collect($options)->search(fn($val) => $val['is_correct']);
+            $correctLabels = $correctAnswers->map(function ($ans) use ($options) {
+                return collect($options)->search(fn($val) => $val['id'] == $ans->id);
+            })->toArray();
 
             return [
                 'question' => $q->pertanyaan,
                 'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
-                'correct_answer' => $correctLabel,
+                'correct_answers' => $correctLabels,
                 'user_answer' => $userSelectedLabel,
+                'is_correct' => $userAnswer ? in_array($userAnswer->answer_id, $correctAnswers->pluck('id')->toArray()) : null,
                 'is_skipped' => is_null($userAnswer),
             ];
         });

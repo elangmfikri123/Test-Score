@@ -69,14 +69,17 @@ class ResultCourseController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+    //
     public function showDetails($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])
             ->findOrFail($id);
         $courseId = $pesertaCourse->course_id;
 
-        // Load questions with category
-        $questions = Question::with('categoryquestion')
+        // Load questions with category and their correct answers
+        $questions = Question::with(['categoryquestion', 'answers' => function ($query) {
+            $query->where('is_correct', true);
+        }])
             ->where('course_id', $courseId)
             ->get();
 
@@ -108,14 +111,19 @@ class ResultCourseController extends Controller
                 $status = 'Skip';
                 $jumlahSkip++;
                 $categoryAnalysis[$categoryId]['skipped']++;
-            } elseif ($jawaban->is_correct) {
-                $status = 'Benar';
-                $jumlahBenar++;
-                $categoryAnalysis[$categoryId]['correct']++;
             } else {
-                $status = 'Salah';
-                $jumlahSalah++;
-                $categoryAnalysis[$categoryId]['incorrect']++;
+                $correctAnswerIds = $question->answers->pluck('id')->toArray();
+                $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
+
+                if ($isCorrect) {
+                    $status = 'Benar';
+                    $jumlahBenar++;
+                    $categoryAnalysis[$categoryId]['correct']++;
+                } else {
+                    $status = 'Salah';
+                    $jumlahSalah++;
+                    $categoryAnalysis[$categoryId]['incorrect']++;
+                }
             }
 
             $categoryAnalysis[$categoryId]['total']++;
@@ -124,6 +132,7 @@ class ResultCourseController extends Controller
                 'nomor' => $index + 1,
                 'question' => $question,
                 'status' => $status,
+                'is_correct' => $isCorrect ?? null,
             ];
         }
 
@@ -136,8 +145,6 @@ class ResultCourseController extends Controller
 
         $totalSoal = $questions->count();
         $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-
-        // Durasi calculation
         $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
         $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
         $durasi = null;
