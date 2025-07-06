@@ -69,17 +69,14 @@ class ResultCourseController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
-    //
     public function showDetails($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])
             ->findOrFail($id);
         $courseId = $pesertaCourse->course_id;
 
-        // Load questions with category and their correct answers
-        $questions = Question::with(['categoryquestion', 'answers' => function ($query) {
-            $query->where('is_correct', true);
-        }])
+        // Load questions with category
+        $questions = Question::with('categoryquestion')
             ->where('course_id', $courseId)
             ->get();
 
@@ -111,20 +108,14 @@ class ResultCourseController extends Controller
                 $status = 'Skip';
                 $jumlahSkip++;
                 $categoryAnalysis[$categoryId]['skipped']++;
+            } elseif ($jawaban->is_correct) {
+                $status = 'Benar';
+                $jumlahBenar++;
+                $categoryAnalysis[$categoryId]['correct']++;
             } else {
-                // Check if participant's answer matches any of the correct answers
-                $correctAnswerIds = $question->answers->pluck('id')->toArray();
-                $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
-
-                if ($isCorrect) {
-                    $status = 'Benar';
-                    $jumlahBenar++;
-                    $categoryAnalysis[$categoryId]['correct']++;
-                } else {
-                    $status = 'Salah';
-                    $jumlahSalah++;
-                    $categoryAnalysis[$categoryId]['incorrect']++;
-                }
+                $status = 'Salah';
+                $jumlahSalah++;
+                $categoryAnalysis[$categoryId]['incorrect']++;
             }
 
             $categoryAnalysis[$categoryId]['total']++;
@@ -133,7 +124,6 @@ class ResultCourseController extends Controller
                 'nomor' => $index + 1,
                 'question' => $question,
                 'status' => $status,
-                'is_correct' => $isCorrect ?? null,
             ];
         }
 
