@@ -8,16 +8,14 @@
                 <div class="page-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Export Hasil Ujian</h5>
-                                </div>
+
+                            <div class="card mb-3">
                                 <div class="card-block">
-                                    <form id="exportForm" action="{{ route('admin.results.download') }}" method="GET">
+                                     <form id="exportForm" action="{{ route('admin.results.download') }}" method="GET">
                                         @csrf
-                                        <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label">Pilih Quiz</label>
-                                            <div class="col-sm-8">
+                                        <div class="row align-items-end">
+                                            <div class="col-md-8">
+                                                <label>Nama Quiz</label>
                                                 <select name="course_id" id="course_id" class="form-control" required>
                                                     <option value="">-- Pilih Quiz --</option>
                                                     @foreach($courses as $course)
@@ -25,15 +23,22 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-sm-2">
-                                                <button type="submit" class="btn btn-primary btn-block">
-                                                    <i class="fa fa-file-excel-o"></i> Export Excel
+                                            <div class="col-md-3 d-flex align-items-end" style="gap: 5px">
+                                                <button type="button" id="filterBtn" class="btn btn-secondary btn-sm px-3 mb-1">
+                                                    <i class="ion-funnel"></i> Filter
+                                                </button>
+                                                <button type="button" id="resetBtn" class="btn btn-warning btn-sm px-3 mb-1">
+                                                    <i class="ion-refresh"></i> Reset
+                                                </button>
+                                                <button type="submit" class="btn btn-primary btn-sm px-3 mb-1">
+                                                    <i class="ion-archive"></i> Download
                                                 </button>
                                             </div>
-                                        </div>
+                                        </div>                          
                                     </form>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -53,7 +58,6 @@
                 alert('Silakan pilih quiz terlebih dahulu');
                 return false;
             }
-            // Show loading indicator
             $('button[type="submit"]').html('<i class="fa fa-spinner fa-spin"></i> Processing...').prop('disabled', true);
         });
     });

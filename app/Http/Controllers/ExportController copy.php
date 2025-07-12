@@ -241,17 +241,16 @@ class ExportController extends Controller
             'Jumlah Benar',
             'Jumlah Salah',
             'Jumlah Terlewati',
-            'Total Scores', // Skor total berdasarkan +2/-1/0
-            'Persentase', // Persentase dari skor maksimal
+            'Total Scores',
             'Durasi',
             'Time Start Date',
             'Time Submit Date'
         ];
 
         $sheet->fromArray([$headers], null, 'A1');
-        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:O1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:O1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $row = 2;
         foreach ($pesertaCourses as $index => $pc) {
@@ -263,31 +262,26 @@ class ExportController extends Controller
             $jumlahBenar = 0;
             $jumlahSalah = 0;
             $jumlahSkip = 0;
-            $totalScore = 0; // Variabel untuk total skor
 
             foreach ($questions as $q) {
                 $jawaban = $jawabanPeserta->get($q->id);
 
                 if (!$jawaban) {
                     $jumlahSkip++;
-                    $questionScore = 0; // Terlewati = 0
-                } else {
-                    $correctAnswerIds = $q->answers->pluck('id')->toArray();
-                    $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
-
-                    if ($isCorrect) {
-                        $jumlahBenar++;
-                        $questionScore = 2; // Benar = +2
-                    } else {
-                        $jumlahSalah++;
-                        $questionScore = -1; // Salah = -1
-                    }
+                    continue;
                 }
-                $totalScore += $questionScore; // Tambahkan ke total skor
+                $correctAnswerIds = $q->answers->pluck('id')->toArray();
+                $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
+
+                if ($isCorrect) {
+                    $jumlahBenar++;
+                } else {
+                    $jumlahSalah++;
+                }
             }
 
             $totalSoal = $questions->count();
-            $scorePercentage = $totalSoal > 0 ? number_format(($totalScore / ($totalSoal * 2)) * 100, 2) : '0.00';
+            $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : '0.00';
             $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
             $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
 
@@ -310,20 +304,18 @@ class ExportController extends Controller
             $sheet->setCellValue("H{$row}", (int)$jumlahBenar);
             $sheet->setCellValue("I{$row}", (int)$jumlahSalah);
             $sheet->setCellValue("J{$row}", (int)$jumlahSkip);
-            $sheet->setCellValue("K{$row}", $totalScore); // Total skor (+2/-1/0)
-            $sheet->setCellValue("L{$row}", $scorePercentage); // Persentase dari skor maksimal
-            $sheet->setCellValue("M{$row}", $durasi);
-            $sheet->setCellValue("N{$row}", $startFormatted);
-            $sheet->setCellValue("O{$row}", $endFormatted);
+            $sheet->setCellValue("K{$row}", $score);
+            $sheet->setCellValue("L{$row}", $durasi);
+            $sheet->setCellValue("M{$row}", $startFormatted);
+            $sheet->setCellValue("N{$row}", $endFormatted);
 
             $row++;
         }
-
-        foreach (range('A', 'O') as $columnID) {
+        foreach (range('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        $sheet->getStyle("A1:O" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
         $filePath = storage_path("app/public/{$filename}");

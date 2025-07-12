@@ -85,8 +85,9 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/results/exams/download', [ExportController::class, 'downloadResultsExams'])->name('resultsExams.download');
 
     // Results Details
-Route::get('/admin/results/details', [ResultsAnswersController::class, 'showResultsDetails'])->name('admin.results.details');
-Route::get('/results/exams/download', [ResultsAnswersController::class, 'downloadExamResults'])->name('admin.results.download');
+    Route::get('/admin/results/details', [ResultCourseController::class, 'showResultsDetails'])->name('admin.results.details');
+    Route::get('/admin/results/detail/data', [ResultCourseController::class, 'getDetailData'])->name('admin.results.detail.data');
+    Route::get('/results/exams/downloadAnswers', [ExportController::class, 'downloadExamResults'])->name('admin.results.download');
     
     //ADD QUESTION
     Route::get('/admin/exams/{id}/questions', [CourseController::class, 'showquestionslist'])->name('admin.exams.questions');
