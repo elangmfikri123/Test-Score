@@ -9,7 +9,6 @@
                     <div class="card-block info-breadcrumb">
                         <div class="breadcrumb-header">
                             <h5>Selamat Datang Peserta</h5>
-                            <span>lorem ipsum dolor sit amet, consectetur adipisicing elit</span>
                         </div>
                         <div class="page-header-breadcrumb">
                             <ul class="breadcrumb-title">

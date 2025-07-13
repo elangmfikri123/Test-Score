@@ -8,32 +8,54 @@
                 <div class="page-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5><i class="feather icon-edit"></i> Detail Ujian</h5>
-                                </div>
-                                <hr class="m-0">
-                                <div class="card-block">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <th>Nama Ujian</th>
-                                                <td>{{ $course->namacourse }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Category</th>
-                                                <td>{{ $course->category->namacategory }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Jumlah Soal</th>
-                                                <td>{{ $course->questions_count ?? 0 }} Soal</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Durasi</th>
-                                                <td>{{ $course->duration_minutes }} Menit</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-file-text text-info" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Nama Ujian</div>
+                                                    <div class="font-weight-bold">{{ $course->namacourse }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-layers text-success" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Kategori</div>
+                                                    <div class="font-weight-bold">{{ $course->category->namacategory }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-list text-warning" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Jumlah Soal</div>
+                                                    <div class="font-weight-bold">{{ $course->questions_count ?? 0 }} Soal</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-clock text-danger" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Durasi</div>
+                                                    <div class="font-weight-bold">{{ $course->duration_minutes }} Menit</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -50,6 +72,10 @@
                                         <a href="{{ url('/admin/exams/' . $course->id . '/question-create') }}"
                                             class="btn btn-primary btn-sm ml-2">
                                             <i class="ion-plus-round"></i> Tambah
+                                        </a>
+                                        <a href="{{ url('/admin/exams/' . $course->id . '/question-upload') }}"
+                                            class="btn btn-warning btn-sm ml-2">
+                                            <i class="feather icon-upload"></i> Upload
                                         </a>
                                     </div>
                                 </div>

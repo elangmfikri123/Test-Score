@@ -13,67 +13,28 @@
                                         <h5>List Quiz</h5>
                                     </div>
                                     <div class="card-block">
-                                        <div class="table-responsive">
-                                            <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center" style="width: 20px;">No</th>
-                                                        <th class="text-center">Nama Quiz</th>
-                                                        <th class="text-center">Kategori</th>
-                                                        <th class="text-center">Start Date</th>
-                                                        <th class="text-center">End Date</th>
-                                                        <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-
-                                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                                            <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
-                                            <script>
-                                            $(document).ready(function() {
-                                                $('#myTable').DataTable({
-                                                    processing: true,
-                                                    serverSide: true,
-                                                    ajax: '{{ url("/quizlist/Json") }}',
-                                                    searching: true, 
-                                                    lengthChange: true,
-                                                    columns: [
-                                                        { data: 'DT_RowIndex', name: 'DT_RowIndex', className: 'text-center' },
-                                                        { data: 'nama', name: 'nama', className: 'text-center' },
-                                                        { data: 'categori', name: 'categori', className: 'text-center' },
-                                                        { data: 'start_date', name: 'start_date', className: 'text-center' },
-                                                        { data: 'end_date', name: 'end_date', className: 'text-center' },
-                                                        { 
-                                                            data: 'status_pengerjaan', 
-                                                            name: 'status_pengerjaan', 
-                                                            className: 'text-center',
-                                                            render: function(data, type, row) {
-                                                                if (data === 'selesai') {
-                                                                    return '<span class="badge badge-success">Selesai</span>';
-                                                                } else if (data === 'sedang_dikerjakan') {
-                                                                    return '<span class="badge badge-info">Sedang Dikerjakan</span>';
-                                                                } else {
-                                                                    return '<span class="badge badge-secondary">Belum Mulai</span>';
-                                                                }
-                                                            }
-                                                        },
-                                                        { 
-                                                            data: 'action', 
-                                                            name: 'action', 
-                                                            orderable: false, 
-                                                            searchable: false, 
-                                                            className: 'text-center',
-                                                            render: function(data, type, row) {
-                                                                return data; // Render HTML langsung dari controller
-                                                            }
-                                                        },
-                                                    ],
-                                                });
-                                            });
-                                            </script>
+                                        {{-- Search dan Show Entries --}}
+                                        <div class="row mb-3 justify-content-between">
+                                            <div class="col-md-1">
+                                                <select id="entries" class="form-control">
+                                                    <option value="5">5</option>
+                                                    <option value="10" selected>10</option>
+                                                    <option value="25">25</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 text-right">
+                                                <input type="text" id="searchInput" class="form-control"
+                                                    placeholder="Cari quiz...">
+                                            </div>
                                         </div>
+
+                                        {{-- Card Container --}}
+                                        <div id="quizContainer"></div>
+
+                                        {{-- Pagination --}}
+                                        <div class="mt-4 text-center" id="paginationContainer"></div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -82,4 +43,104 @@
             </div>
         </div>
     </div>
+
+    {{-- Scripts --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            let currentPage = 1;
+            let entriesPerPage = 10;
+            let searchTerm = "";
+
+            function fetchData() {
+                $.ajax({
+                    url: '{{ url('/quizlist/Json') }}',
+                    data: {
+                        length: entriesPerPage,
+                        start: (currentPage - 1) * entriesPerPage,
+                        search: {
+                            value: searchTerm
+                        }
+                    },
+                    success: function(response) {
+                        renderCards(response.data);
+                        renderPagination(response.recordsTotal);
+                    }
+                });
+            }
+
+            function renderCards(data) {
+                const container = $('#quizContainer');
+                container.empty();
+
+                if (data.length === 0) {
+                    container.append('<p class="text-center text-muted">Tidak ada quiz ditemukan.</p>');
+                    return;
+                }
+
+                data.forEach(item => {
+                    let statusLabel = '';
+                    if (item.status_pengerjaan === 'selesai') {
+                        statusLabel = '<label class="label label-success">Selesai</label>';
+                    } else if (item.status_pengerjaan === 'sedang_dikerjakan') {
+                        statusLabel = '<label class="label label-info">On Progress</label>';
+                    } else {
+                        statusLabel = '<label class="label label-warning">Belum Mulai</label>';
+                    }
+
+                    const card = `
+                    <div class="card mb-3">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="quiz-info">
+                                <h5 class="mb-1">${item.nama}</h5>
+                                <p class="mb-1"><strong>Kategori:</strong> ${item.categori}</p>
+                                <p class="mb-1"><strong>Waktu:</strong> ${item.start_date} - ${item.end_date}</p>
+                                ${statusLabel}
+                            </div>
+                            <div class="quiz-action text-right">
+                                ${item.action}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    container.append(card);
+                });
+            }
+
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / entriesPerPage);
+                const pagination = $('#paginationContainer');
+                pagination.empty();
+
+                for (let i = 1; i <= totalPages; i++) {
+                    pagination.append(`
+                    <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-light'} mx-1" data-page="${i}">
+                        ${i}
+                    </button>
+                `);
+                }
+            }
+
+            // Events
+            $('#searchInput').on('input', function() {
+                searchTerm = $(this).val();
+                currentPage = 1;
+                fetchData();
+            });
+
+            $('#entries').on('change', function() {
+                entriesPerPage = parseInt($(this).val());
+                currentPage = 1;
+                fetchData();
+            });
+
+            $('#paginationContainer').on('click', 'button', function() {
+                currentPage = parseInt($(this).data('page'));
+                fetchData();
+            });
+
+            fetchData();
+        });
+    </script>
 @endsection

@@ -22,6 +22,7 @@ use App\Http\Controllers\ResultCourseController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
 use App\Http\Controllers\EnrolledJuriPesertaController;
+use App\Http\Controllers\ImportQuestionController;
 use App\Http\Controllers\ResultsAnswersController;
 use App\Models\Peserta;
 
@@ -99,6 +100,10 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/exams/question-update/{id}', [CourseController::class, 'updatequestion']);
     Route::delete('/admin/exams/question-delete/{id}', [CourseController::class, 'deleteQuestion'])->name('question.delete');
 
+    //Upload Questions
+    Route::get('/admin/exams/{id}/question-upload', [ImportQuestionController::class, 'uploadQuestion']);
+    Route::get('/admin/exams/{id}/download-template', [ImportQuestionController::class, 'downloadTemplate']);
+    Route::post('/admin/exams/{id}/import-questions', [ImportQuestionController::class, 'importQuestions']);
 
     Route::get('/admin/manage-participants', [CourseController::class, 'showCourseParticipants']);
     Route::get('/datacourseparticipants/json', [CourseController::class, 'JsonParticipantsCourse']);

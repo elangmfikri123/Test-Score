@@ -41,17 +41,17 @@
                                         </div>
 
                                         <div class="form-group">
-    <label for="subcategories">Subkategori Soal</label>
-    <div id="subcategory-wrapper">
-        <div class="input-group mb-2">
-            <input type="text" name="subcategories[]" class="form-control" placeholder="Nama Subkategori" required>
-            <div class="input-group-append">
-                <button class="btn btn-danger btn-remove-subcat" type="button">&times;</button>
-            </div>
-        </div>
-    </div>
-    <button type="button" class="btn btn-primary btn-sm mt-2" id="btn-add-subcat">+ Tambah Subkategori</button>
-</div>
+                                            <label for="subcategories">Subkategori Soal</label>
+                                            <div id="subcategory-wrapper">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" name="subcategories[]" class="form-control" placeholder="Nama Subkategori" required>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-danger btn-remove-subcat" type="button">&times;</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary btn-sm mt-2" id="btn-add-subcat">+ Tambah Subkategori</button>
+                                        </div>
 
                                         <div class="row">
                                             <div class="col-md-6">

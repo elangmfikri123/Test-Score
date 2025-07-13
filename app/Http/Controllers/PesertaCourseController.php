@@ -56,7 +56,7 @@ class PesertaCourseController extends Controller
         foreach ($questions as $index => $q) {
             $jawaban = $allAnswersRaw->firstWhere('question_id', $q->id);
             if ($jawaban) {
-                $answeredNumbers[$index + 1] = $jawaban->answer_id; // index + 1 = question number
+                $answeredNumbers[$index + 1] = $jawaban->answer_id;
             }
         }
 
