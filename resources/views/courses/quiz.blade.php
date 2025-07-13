@@ -293,19 +293,15 @@
             muatSoal(number);
         });
     
-        // Event handler untuk tombol submit
         $(document).ready(function () {
             muatSoal(currentQuestion);
     
             $('.btn-primary.submit').on('click', function () {
-                // Periksa soal yang belum terjawab
                 const belumTerjawab = cekSoalBelumTerjawab();
                 
                 if (belumTerjawab.length > 0) {
-                    // Tampilkan peringatan jika ada yang belum dijawab
                     tampilkanPeringatanSoalTerlewat(belumTerjawab);
                 } else {
-                    // Jika semua sudah dijawab, langsung tampilkan konfirmasi akhir
                     tampilkanKonfirmasiAkhir();
                 }
             });

@@ -127,11 +127,11 @@
                                                             <div>
                                                                 <ul class="mb-0 pl-3 small">
                                                                     <strong class="d-block">Petunjuk Pengisian:</strong>
-                                                                    <li>Kolom <strong>Kategori</strong> harus dipilih dari dropdown</li>
-                                                                    <li>Gunakan <strong>1</strong> untuk jawaban benar dan <strong>0</strong> untuk jawaban salah</li>
-                                                                    <li>Setiap soal harus memiliki <strong>minimal 2 pilihan jawaban</strong></li>
-                                                                    <li>Hanya boleh ada <strong>satu jawaban benar</strong> per soal</li>
-                                                                    <li>Kolom C dan D bisa dikosongkan jika tidak digunakan</li>
+                                                                    <li>- Kolom <strong>Kategori</strong> harus dipilih dari dropdown</li>
+                                                                    <li>- Gunakan <strong>1</strong> untuk jawaban benar dan <strong>0</strong> untuk jawaban salah</li>
+                                                                    <li>- Setiap soal harus memiliki <strong>minimal 2 pilihan jawaban</strong></li>
+                                                                    <li>- Hanya boleh ada <strong>satu jawaban benar</strong> per soal</li>
+                                                                    <li>- Kolom C dan D bisa dikosongkan jika tidak digunakan</li>
                                                                 </ul>
                                                             </div>
                                                         </div>

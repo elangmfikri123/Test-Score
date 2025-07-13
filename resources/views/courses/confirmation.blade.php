@@ -4,89 +4,86 @@
     <div class="pcoded-wrapper">
         <div class="pcoded-content">
             <div class="pcoded-inner-content">
-                <!-- Main-body start -->
                 <div class="main-body">
                     <div class="page-wrapper">
                         <div class="page-header m-t-50"></div>
                         <div class="page-body">
-                            <div class="row justify-content-center">
-                                <div class="col-md">
-                                    <div class="card borderless-card">
-                                        <div class="card-block success-breadcrumb text-center py-4">
-                                            <h5>Selamat Mengerjakan Ujian !</h5>
-                                        </div>
+
+                            {{-- Banner Atas --}}
+
+                            <div class="card borderless-card shadow-sm mb-2">
+                                <div class="card-block bg-primary text-white rounded px-3 py-3 text-center">
+                                    <div class="d-flex justify-content-center align-items-center mb-1">
+                                        <i class="feather icon-edit mr-2" style="font-size: 20px;"></i>
+                                        <h6 class="mb-1">Selamat Mengerjakan Ujiani</h6>
                                     </div>
+                                    <small>Pastikan Anda membaca deskripsi ujian sebelum memulai.</small>
                                 </div>
                             </div>
-                            <div class="row">
-                                <!-- Bagian Kiri: Pertanyaan & Jawaban -->
+
+                            <div class="row justify-content-center">
+                                {{-- Kolom Deskripsi --}}
                                 <div class="col-md-4">
-                                    <div class="card">
-                                        <!-- Header dengan garis bawah -->
-                                        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-                                            <h5><i class="ion-navicon-round"></i> Deskripsi Quiz</h5>
-                                        </div>                                                                                
-                                        <hr class="m-0">
-                                        <div class="card-block">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-light d-flex align-items-center">
+                                            <i class="feather icon-info mr-2 text-primary"></i>
+                                            <strong>Deskripsi Quiz</strong>
+                                        </div>
+                                        <div class="card-body">
                                             {!! $pesertaCourse->course->description ?? '-' !!}
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <!-- Bagian Kanan: Detail Peserta -->
+
+                                {{-- Kolom Detail Peserta --}}
                                 <div class="col-md-8">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5><i class="ion-checkmark-round"></i> Detail Peserta</h5>    
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-light d-flex align-items-center">
+                                            <i class="feather icon-user-check mr-2 text-primary"></i>
+                                            <strong>Detail Peserta</strong>
                                         </div>
-                                        <hr class="m-0">
-                                        <div class="card-block">
-                                            <table class="table">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>ID Honda </th>
-                                                        <td>: {{ $pesertaCourse->peserta->honda_id ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Nama</th>
-                                                        <td>: {{ $pesertaCourse->peserta->nama ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Main Dealer</th>
-                                                        <td>: {{ $pesertaCourse->peserta->maindealer->nama_md ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Kategori</th>
-                                                        <td>: {{ $pesertaCourse->course->category->namacategory ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Exam</th>
-                                                        <td>: {{ $pesertaCourse->course->namacourse ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Durasi</th>
-                                                        <td>: {{ $pesertaCourse->course->duration_minutes ?? '-' }} Menit</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div class="card-body pt-3">
+
+                                            @php
+                                                $detailList = [
+                                                    'ID Honda' => $pesertaCourse->peserta->honda_id ?? '-',
+                                                    'Nama' => $pesertaCourse->peserta->nama ?? '-',
+                                                    'Main Dealer' =>
+                                                        $pesertaCourse->peserta->maindealer->nama_md ?? '-',
+                                                    'Kategori' => $pesertaCourse->course->category->namacategory ?? '-',
+                                                    'Exam' => $pesertaCourse->course->namacourse ?? '-',
+                                                    'Durasi' =>
+                                                        ($pesertaCourse->course->duration_minutes ?? '-') . ' Menit',
+                                                ];
+                                            @endphp
+
+                                            @foreach ($detailList as $label => $value)
+                                                <div class="row mb-2">
+                                                    <div class="col-sm-5 text-muted">{{ $label }}</div>
+                                                    <div class="col-sm-7 font-weight-bold">{{ $value }}</div>
+                                                </div>
+                                            @endforeach
+
                                         </div>
-                                        <hr class="m-0">
-                                        <!-- Card Footer untuk Mulai Ujian -->
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary mt-3" id="btnMulaiUjian">Mulai Mengerjakan</button>
+                                            <button class="btn btn-primary mt-2" id="btnMulaiUjian">
+                                                <i class="feather icon-play-circle"></i> Mulai Mengerjakan
+                                            </button>
                                         </div>
                                     </div>
-                                </div>                                
-                            </div>
+                                </div>
+                            </div> <!-- end row -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById('btnMulaiUjian').addEventListener('click', function (e) {
+        document.getElementById('btnMulaiUjian').addEventListener('click', function(e) {
             e.preventDefault();
             Swal.fire({
                 title: 'Yakin Untuk Memulai Ujian?',
@@ -94,7 +91,7 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Mulai',
-                cancelButtonText: 'Cancel'
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -105,12 +102,13 @@
                         },
                         success: function(response) {
                             if (response.status === 'success') {
-                                window.location.href = "{{ route('exam.start', ['id' => $pesertaCourse->id]) }}";
+                                window.location.href =
+                                    "{{ route('exam.start', ['id' => $pesertaCourse->id]) }}";
                             }
                         }
                     });
                 }
             });
         });
-    </script> 
+    </script>
 @endsection

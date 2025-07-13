@@ -22,9 +22,9 @@ use App\Http\Controllers\ResultCourseController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
 use App\Http\Controllers\EnrolledJuriPesertaController;
-use App\Http\Controllers\ImportQuestionController;
 use App\Http\Controllers\ResultsAnswersController;
 use App\Models\Peserta;
+use App\Http\Controllers\ImportQuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,6 +143,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/store/{form_id}/{juri_id}/peserta', [EnrolledJuriPesertaController::class, 'storePesertaToJuri'])->name('peserta.store');
     Route::delete('/admin/delete/{juri_id}/{form_id}', [EnrolledJuriPesertaController::class, 'deleteJuri'])->name('listjuri.delete');
     Route::get('/juripeserta/detail/{form_id}/{juri_id}', [EnrolledJuriPesertaController::class, 'getDetailPeserta'])->name('juripeserta.detail');
+    Route::delete('/juripeserta/delete/{form_id}/{juri_id}/{peserta_id}', [EnrolledJuriPesertaController::class, 'deletePesertaScorering'])->name('juripeserta.hapus');
+
 
 });
 

@@ -75,8 +75,6 @@
             text: "Scorecard: " + name,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#e3342f',
-            cancelButtonColor: '#6c757d',
             confirmButtonText: 'Ya, hapus!',
             cancelButtonText: 'Batal'
         }).then((result) => {

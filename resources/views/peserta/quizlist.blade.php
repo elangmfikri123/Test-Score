@@ -8,6 +8,24 @@
                     <div class="page-body">
                         <div class="row">
                             <div class="col-sm-12">
+
+                                <div class="page-header mb-3">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                        <div>
+                                            <h5 class="mb-1">Daftar Ujian Peserta</h5>
+                                            <small class="text-muted">Lihat daftar ujian yang tersedia dan mulai kerjakan</small>
+                                        </div>
+                                        <nav aria-label="breadcrumb">
+                                            <ol class="breadcrumb bg-transparent p-0 mb-0 small">
+                                                <li class="breadcrumb-item">
+                                                    <a href="{{ url('/peserta/index') }}"><i class="feather icon-home"></i></a>
+                                                </li>
+                                                <li class="breadcrumb-item">Tes Online</li>
+                                                <li class="breadcrumb-item active" aria-current="page">Daftar Ujian</li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                </div>
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5>List Quiz</h5>

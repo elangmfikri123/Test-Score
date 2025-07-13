@@ -14,7 +14,7 @@ class EnrolledJuriPesertaController extends Controller
     {
         $data = FormPenilaian::findOrFail($id);
         return view('admin.admin-jurilistscorecard', compact('data'));
-    } 
+    }
 
     public function getEnrolledJuriTable($id)
     {
@@ -162,7 +162,8 @@ class EnrolledJuriPesertaController extends Controller
             'status' => 'success',
             'data' => $peserta->map(function ($item, $index) {
                 return [
-                    'no' => $index + 1,
+                    'no' => $index + 1, // hanya untuk tampilan
+                    'peserta_id' => $item->peserta_id, // ini penting untuk delete
                     'nama' => $item->peserta->nama ?? '-',
                     'honda_id' => $item->peserta->honda_id ?? '-',
                     'namacategory' => $item->peserta->category->namacategory ?? '-',
@@ -194,6 +195,47 @@ class EnrolledJuriPesertaController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal menghapus juri. ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function deletePesertaScorering($form_id, $juri_id, $peserta_id)
+    {
+        try {
+            // Validasi input
+            if (!$form_id || !$juri_id || !$peserta_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'pesan' => 'Parameter tidak valid'
+                ], 400);
+            }
+
+            // Cari dan hapus relasi juri-peserta
+            $terhapus = JuriPeserta::where('formpenilaian_id', $form_id)
+                ->where('juri_id', $juri_id)
+                ->where('peserta_id', $peserta_id)
+                ->delete();
+
+            if ($terhapus === 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'pesan' => 'Data peserta tidak ditemukan atau sudah dihapus.'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'pesan' => 'Peserta berhasil dihapus dari juri.',
+                'data' => [
+                    'form_id' => $form_id,
+                    'juri_id' => $juri_id,
+                    'peserta_id' => $peserta_id
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Gagal menghapus peserta. ' . $e->getMessage(),
             ], 500);
         }
     }

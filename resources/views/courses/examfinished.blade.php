@@ -4,74 +4,84 @@
     <div class="pcoded-wrapper">
         <div class="pcoded-content">
             <div class="pcoded-inner-content">
-                <!-- Main-body start -->
                 <div class="main-body">
                     <div class="page-wrapper">
                         <div class="page-header m-t-50"></div>
                         <div class="page-body">
-                            <!-- Container dengan justify-content-center untuk pusat horizontal -->
                             <div class="d-flex justify-content-center">
                                 <div class="col-md-7">
-                                    
-                                    <div class="row justify-content-center">
-                                        <div class="col-md">
-                                            <div class="card borderless-card">
-                                                <div class="card-block success-breadcrumb text-center py-4">
-                                                    <h5>Selamat Anda Telah Menyelesaikan Ujian !</h5>
+
+                                    {{-- Banner Selesai --}}
+                                    <div class="card borderless-card shadow-sm mb-2">
+                                        <div class="card-block bg-primary text-white rounded px-3 py-3 text-center">
+                                            <div class="d-flex justify-content-center align-items-center mb-1">
+                                                <i class="feather icon-check-circle mr-2" style="font-size: 20px;"></i>
+                                                <h6 class="mb-0">Ujian Telah Selesai</h6>
+                                            </div>
+                                            <small>Selamat! Anda telah menyelesaikan ujian ini dengan baik.</small>
+                                        </div>
+                                    </div>
+
+                                    {{-- Detail Hasil Ujian --}}
+                                    <div class="card shadow-sm mt-0">
+                                        <div class="card-header bg-light">
+                                            <h5 class="mb-0">
+                                                <i class="feather icon-clipboard text-primary"></i> Ringkasan Ujian
+                                            </h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">ID Honda</div>
+                                                <div class="col-sm-7 font-weight-bold">
+                                                    {{ $pesertaCourse->peserta->honda_id ?? '-' }}</div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Nama</div>
+                                                <div class="col-sm-7 font-weight-bold">
+                                                    {{ $pesertaCourse->peserta->nama ?? '-' }}</div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Main Dealer</div>
+                                                <div class="col-sm-7 font-weight-bold">
+                                                    {{ $pesertaCourse->peserta->maindealer->nama_md ?? '-' }}</div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Kategori</div>
+                                                <div class="col-sm-7 font-weight-bold">
+                                                    {{ $pesertaCourse->course->category->namacategory ?? '-' }}</div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Exam</div>
+                                                <div class="col-sm-7 font-weight-bold">
+                                                    {{ $pesertaCourse->course->namacourse ?? '-' }}</div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Waktu Mulai</div>
+                                                <div class="col-sm-7 font-weight-bold">{{ $pesertaCourse->start_exam }}
                                                 </div>
                                             </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-sm-5 text-muted">Waktu Selesai</div>
+                                                <div class="col-sm-7 font-weight-bold">{{ $pesertaCourse->end_exam }}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Card Detail Peserta -->
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5><i class="ion-checkmark-round"></i> Ujian Selesai</h5>    
-                                        </div>
-                                        <hr class="m-0">
-                                        <div class="card-block">
-                                            <table class="table">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>ID Honda</th>
-                                                        <td>: {{ $pesertaCourse->peserta->honda_id ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Nama</th>
-                                                        <td>: {{ $pesertaCourse->peserta->nama ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Main Dealer</th>
-                                                        <td>: {{ $pesertaCourse->peserta->maindealer->nama_md ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Kategori</th>
-                                                        <td>: {{ $pesertaCourse->course->category->namacategory ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Exam</th>
-                                                        <td>: {{ $pesertaCourse->course->namacourse ?? '-' }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Start Exam</th>
-                                                        <td>: {{ $pesertaCourse->start_exam }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>End Exam</th>
-                                                        <td>: {{ $pesertaCourse->end_exam }}</td>
-                                                    </tr>
-                                                    
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <hr class="m-0">
-                                        <!-- Card Footer untuk Mulai Ujian -->
+
                                         <div class="card-footer text-center">
-                                            <a href="{{ route('participants.quizlist') }}" class="btn btn-warning mt-3">Kembali</a>
+                                            <a href="{{ route('participants.quizlist') }}"
+                                                class="btn btn-warning btn-sm mt-2">
+                                                <i class="feather icon-arrow-left"></i> Kembali
+                                            </a>
                                         </div>
                                     </div>
+
                                 </div>
-                            </div>
+                            </div> <!-- d-flex -->
                         </div>
                     </div>
                 </div>

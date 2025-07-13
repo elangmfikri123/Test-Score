@@ -17,10 +17,6 @@
                                         <i class="icofont icofont-home"></i>
                                     </a>
                                 </li>
-                                <li class="breadcrumb-item"><a href="#!">Breadcrumb</a>
-                                </li>
-                                <li class="breadcrumb-item"><a href="#!">Caption Breadcrumb</a>
-                                </li>
                             </ul>
                         </div>
                     </div>
