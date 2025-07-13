@@ -18,7 +18,7 @@
                                         </div>                                                                               
                                         <hr class="m-0">
                                         {{-- Konten Soal --}}
-                                        <div class="card-block">
+                                        <div class="card-block" style="overflow-y: auto; max-height: 400px;">
                                             <p id="question-text">Memuat data dari server...</p>
                                             <form id="quiz-form">
                                                 <div id="answer-options"></div>
@@ -26,8 +26,8 @@
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer d-flex justify-content-between">
-                                            <button id="btn-prev" class="btn btn-secondary"><i class="ion-chevron-left"></i>Sebelumnya</button>
-                                            <button id="btn-next" class="btn btn-warning">Selanjutnya <i class="ion-chevron-right"></i></button>
+                                            <button id="btn-prev" class="btn btn-secondary btn-sm"><i class="ion-chevron-left"></i>Previous</button>
+                                            <button id="btn-next" class="btn btn-warning btn-sm">Next <i class="ion-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -50,7 +50,7 @@
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary submit">Submit <i class="fa fa-save"></i></button>
+                                            <button class="btn btn-primary btn-sm submit">Submit <i class="fa fa-save"></i></button>
                                         </div>
                                     </div>
                                 </div>
