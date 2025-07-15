@@ -31,9 +31,18 @@ class PesertaCourseController extends Controller
             'start_time' => now()->timestamp,
         ]);
     }
+
     public function showQuiz($id)
     {
-        $pesertaCourse = PesertaCourse::with(['peserta', 'course'])->findOrFail($id);
+        $pesertaCourse = PesertaCourse::findOrFail($id);
+        if ($pesertaCourse->status_pengerjaan === 'selesai') {
+            return redirect()->route('exam.finished', ['id' => $id]);
+        }
+
+        if ($pesertaCourse->status_pengerjaan !== 'sedang_dikerjakan') {
+            return redirect()->back()->with('error', 'Silahkan mulai ujian terlebih dahulu');
+        }
+
         return view('courses.quiz', compact('pesertaCourse'));
     }
 

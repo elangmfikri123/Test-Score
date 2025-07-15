@@ -74,4 +74,8 @@ class User extends Authenticatable
 
         return substr($initials, 0, 2); // pastikan maksimal 2 huruf
     }
+    public function sessions()
+    {
+        return $this->hasMany(\Illuminate\Session\DatabaseSessionHandler::class, 'user_id');
+    }
 }
