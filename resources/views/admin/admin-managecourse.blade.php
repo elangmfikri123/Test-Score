@@ -24,7 +24,7 @@
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Course</th>
-                                                        <th class="text-center">Category</th>
+                                                        <th class="text-center">Kategori</th>
                                                         <th class="text-center">Total Questions</th>
                                                         <th class="text-center">Durations (Menit)</th>
                                                         <th class="text-center">Action</th>

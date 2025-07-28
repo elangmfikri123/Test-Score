@@ -8,30 +8,17 @@
                 <div class="page-body">
                     <div class="row">
                         <div class="col-sm-12">
-                            
+
                             <div class="card mb-3">
                                 <div class="card-block">
                                     <form id="filterForm">
                                         <div class="row align-items-end">
-                                            <div class="col-md-2">
-                                                <label>Nama Quiz</label>
-                                                <select name="course_id" id="course_id" class="form-control form-control">
-                                                    <option value="">-- Semua --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label>Kategori Peserta</label>
-                                                <select name="category_id" id="category_id" class="form-control form-control">
-                                                    <option value="">-- Semua --</option>
-                                                </select>
-                                            </div>
                                             <div class="col-md-3">
-                                                <label>Main Dealer</label>
-                                                <select name="maindealer_id" id="maindealer_id" class="form-control form-control">
-                                                    <option value="">-- Semua --</option>
+                                                <label>Nama Scorecard</label>
+                                                <select name="namaform" id="namaform_id" class="form-control form-control" required>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 d-flex align-items-end" style="gap: 3px">
+                                            <div class="col-md-3 d-flex align-items-end" style="gap: 5px">
                                                 <button type="button" id="filterBtn" class="btn btn-secondary btn-sm px-3 mb-1">
                                                     <i class="ion-funnel"></i> Filter
                                                 </button>
@@ -40,9 +27,6 @@
                                                 </button>
                                                 <button id="downloadBtn" class="btn btn-primary btn-sm px-3 mb-1">
                                                     <i class="ion-archive"></i> Download
-                                                </button>
-                                                <button id="downloadBtnDtl" class="btn btn-primary btn-sm px-3 mb-1">
-                                                    <i class="ion-archive"></i> Download Details
                                                 </button>
                                             </div>
                                         </div>                          
@@ -58,13 +42,12 @@
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" style="width: 50px;">No</th>
-                                                    <th class="text-center">Nama Quiz</th>
+                                                    <th class="text-center">Nama Scorecard</th>
+                                                    <th class="text-center">Nama Juri</th>
                                                     <th class="text-center">Honda ID</th>
                                                     <th class="text-center">Nama Peserta</th>
                                                     <th class="text-center">Kategori Peserta</th>
                                                     <th class="text-center">Main Dealer</th>
-                                                    <th class="text-center">Score</th>
-                                                    <th class="text-center">Status</th>
                                                     <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -74,7 +57,7 @@
                                         <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
                                         <script>
                                             let dataTable;
-                                            function loadTable(courseId = '',categoryId = '', maindealerId = '') {
+                                            function loadTable(namaformId = '') {
                                                 if (dataTable) {
                                                     dataTable.destroy();
                                                 }
@@ -82,22 +65,19 @@
                                                     processing: true,
                                                     serverSide: true,
                                                     ajax: {
-                                                        url: '{{ url("/dataresults/json") }}',
+                                                        url: '{{ url("/admin/resultscorecard/data") }}',
                                                         data: {
-                                                            course_id: courseId,
-                                                            category_id: categoryId,
-                                                            maindealer_id: maindealerId
+                                                            namaform_id: namaformId,
                                                         }
                                                     },
                                                     columns: [
                                                         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
-                                                        { data: 'namacourse', name: 'namacourse' },
+                                                        { data: 'namaform', name: 'namaform' },
+                                                        { data: 'namajuri', name: 'namajuri' },
                                                         { data: 'honda_id', name: 'honda_id' },
                                                         { data: 'nama', name: 'nama' },
                                                         { data: 'category', name: 'category' },
                                                         { data: 'maindealer', name: 'maindealer', className: 'text-center' },
-                                                        { data: 'score', name: 'score', className: 'text-center' },
-                                                        { data: 'status', name: 'status', className: 'text-center' },
                                                         { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
                                                     ],
                                                     searching: true,
@@ -106,27 +86,12 @@
                                             }
                                         
                                             function loadDropdowns() {
-                                                $.get('{{ url("/api/course") }}', function(data) {
-                                                    let options = '<option value="">-- Semua --</option>';
+                                                $.get('{{ url("/api/scorecard") }}', function(data) {
+                                                    let options = '<option value="">-- Pilih Scorecard --</option>';
                                                     data.forEach(item => {
-                                                        options += `<option value="${item.id}">${item.namacourse}</option>`;
+                                                        options += `<option value="${item.id}">${item.namaform}</option>`;
                                                     });
-                                                    $('#course_id').html(options);
-                                                });
-                                                $.get('{{ url("/api/category") }}', function(data) {
-                                                    let options = '<option value="">-- Semua --</option>';
-                                                    data.forEach(item => {
-                                                        options += `<option value="${item.id}">${item.namacategory}</option>`;
-                                                    });
-                                                    $('#category_id').html(options);
-                                                });
-                                        
-                                                $.get('{{ url("/api/maindealer") }}', function(data) {
-                                                    let options = '<option value="">-- Semua --</option>';
-                                                    data.forEach(item => {
-                                                        options += `<option value="${item.id}">${item.kodemd}-${item.nama_md}</option>`;
-                                                    });
-                                                    $('#maindealer_id').html(options);
+                                                    $('#namaform_id').html(options);
                                                 });
                                             }
                                         
@@ -135,40 +100,30 @@
                                                 loadTable();
                                         
                                                 $('#filterBtn').on('click', function () {
-                                                    const corId = $('#course_id').val();
-                                                    const catId = $('#category_id').val();
-                                                    const mdId = $('#maindealer_id').val();
-                                                    loadTable(corId, catId, mdId);
+                                                    const formID = $('#namaform_id').val();
+                                                    loadTable(formID);
                                                 });
                                         
                                                 $('#resetBtn').on('click', function () {
-                                                    $('#course_id, #category_id, #maindealer_id').val('');
+                                                    $('#namaform_id').val('');
                                                     loadTable();
                                                 });
                                         
                                                 $('#downloadBtn').on('click', function (e) {
                                                     e.preventDefault();
-                                                    const corId = $('#course_id').val();
-                                                    const catId = $('#category_id').val();
-                                                    const mdId = $('#maindealer_id').val();
-                                                    let url = '{{ url("/results/exams/download") }}' + `?course_id=${corId}&category_id=${catId}&maindealer_id=${mdId}`;
-                                                    window.location.href = url;
-                                                });
-
-                                                $('#downloadBtnDtl').on('click', function (e) {
-                                                    e.preventDefault();
-                                                    const corId = $('#course_id').val();
+                                                    const formID = $('#namaform_id').val();
                                                     
-                                                    if (!corId) {
+                                                    if (!formID) {
                                                         Swal.fire({
                                                             icon: 'error',
-                                                            title: 'Gagal Download',
-                                                            text: 'Silakan pilih Nama Quiz terlebih dahulu untuk Download Details!',
+                                                            title: 'Oops...',
+                                                            text: 'Silakan pilih quiz terlebih dahulu!',
+                                                            confirmButtonColor: '#3085d6',
                                                         });
                                                         return false;
                                                     }
                                                     
-                                                    let url = '{{ url("/results/exams/downloadAnswers") }}' + `?course_id=${corId}`;
+                                                    let url = '{{ url("/results/exams/downloadAnswers") }}' + `?namaform_id=${formID}`;
                                                     window.location.href = url;
                                                 });
                                             });

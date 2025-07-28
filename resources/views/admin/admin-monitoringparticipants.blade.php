@@ -10,30 +10,34 @@
                             <div class="col-sm-12">
 
                                 {{-- DETAIL UJIAN --}}
-                                <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5><i class="feather icon-edit"></i> Detail Ujian</h5>
-                                    </div>
-                                    <hr class="m-0">
-                                    <div class="card-block">
-                                        <table class="table table-bordered">
-                                            <tbody>
-                                                <tr>
-                                                    <th>Nama Ujian</th>
-                                                    <td>{{ $course->namacourse }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Category</th>
-                                                    <td>{{ $course->category->namacategory ?? '-' }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Durasi</th>
-                                                    <td>{{ $course->duration_minutes }} Menit</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-file-text text-info" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Nama Ujian</div>
+                                                    <div class="font-weight-bold">{{ $course->namacourse }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex align-items-center bg-light p-3 rounded">
+                                                <div class="mr-3">
+                                                    <i class="feather icon-layers text-success" style="font-size: 32px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Kategori</div>
+                                                    <div class="font-weight-bold">{{ $course->category->namacategory }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
                                 {{-- TABEL PESERTA --}}
                                 <div class="card">
@@ -137,23 +141,41 @@
                                         // DELETE peserta
                                         $('#myTable').on('click', '.btn-delete', function () {
                                             const id = $(this).data('id');
-                                            if (confirm('Yakin ingin menghapus peserta ini?')) {
-                                                $.ajax({
-                                                    url: '{{ url("/monitoring/delete") }}/' + id,
-                                                    type: 'DELETE',
-                                                    data: {
-                                                        _token: '{{ csrf_token() }}'
-                                                    },
-                                                    success: function (res) {
-                                                        if (res.status === 'success') {
-                                                            table.ajax.reload(null, false);
+                                            Swal.fire({
+                                                title: 'Yakin ingin menghapus peserta ini?',
+                                                text: "Data peserta ini akan dihapus dari ujian.",
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Ya, hapus!',
+                                                cancelButtonText: 'Batal'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    $.ajax({
+                                                        url: '{{ url("/monitoring/delete") }}/' + id,
+                                                        type: 'DELETE',
+                                                        data: {
+                                                            _token: '{{ csrf_token() }}'
+                                                        },
+                                                        success: function (res) {
+                                                            if (res.status === 'success') {
+                                                                Swal.fire({
+                                                                    icon: 'success',
+                                                                    title: 'Berhasil Dihapus!',
+                                                                    text: res.message || 'Data berhasil dihapus.',
+                                                                    timer: 1500,
+                                                                    showConfirmButton: false
+                                                                });
+                                                                table.ajax.reload(null, false);
+                                                            } else {
+                                                                Swal.fire('Gagal', 'Gagal menghapus data', 'error');
+                                                            }
+                                                        },
+                                                        error: function () {
+                                                            Swal.fire('Error', 'Terjadi kesalahan server', 'error');
                                                         }
-                                                    },
-                                                    error: function () {
-                                                        alert('Terjadi kesalahan saat menghapus data.');
-                                                    }
-                                                });
-                                            }
+                                                    });
+                                                }
+                                            });
                                         });
                                     });
                                 </script>

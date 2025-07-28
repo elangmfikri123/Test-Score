@@ -9,6 +9,7 @@ use App\Models\Admin;
 use App\Models\Peserta;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\FormPenilaian;
 use App\Models\MainDealer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -282,6 +283,11 @@ class AdminController extends Controller
             $query->where('id', $admin->maindealer_id);
         }
         return response()->json($query->get());
+    }
+    public function apiScorecard()
+    {
+        $data = FormPenilaian::select('id', 'namaform')->get();
+        return response()->json($data);
     }
 
     public function getpesertatable(Request $request)

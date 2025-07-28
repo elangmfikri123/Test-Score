@@ -15,7 +15,7 @@
                                 <div class="card-block bg-primary text-white rounded px-3 py-3 text-center">
                                     <div class="d-flex justify-content-center align-items-center mb-1">
                                         <i class="feather icon-edit mr-2" style="font-size: 20px;"></i>
-                                        <h6 class="mb-1">Selamat Mengerjakan Ujiani</h6>
+                                        <h6 class="mb-1">Selamat Mengerjakan Ujian</h6>
                                     </div>
                                     <small>Pastikan Anda membaca deskripsi ujian sebelum memulai.</small>
                                 </div>

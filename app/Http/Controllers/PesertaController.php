@@ -21,16 +21,16 @@ class PesertaController extends Controller
     // }
 
     public function index()
-{
-    $peserta = Peserta::where('user_id', Auth::id())->first();
+    {
+        $peserta = Peserta::where('user_id', Auth::id())->first();
 
-    $loginSessions = Session::where('user_id', Auth::id())
-        ->orderBy('last_activity', 'desc')
-        ->take(10)
-        ->get();
+        $loginSessions = Session::where('user_id', Auth::id())
+            ->orderBy('last_activity', 'desc')
+            ->take(10)
+            ->get();
 
-    return view('peserta.indexpeserta', compact('peserta', 'loginSessions'));
-}
+        return view('peserta.indexpeserta', compact('peserta', 'loginSessions'));
+    }
 
     public function showlistquiz()
     {

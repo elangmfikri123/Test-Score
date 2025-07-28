@@ -89,8 +89,8 @@
             <li class="{{ request()->is('admin/scorecardlist') ? 'active' : '' }}">
                 <a href="{{ url('/admin/scorecardlist') }}"><span class="pcoded-mtext">Manage Score Card</span></a>
             </li>
-            <li>
-                <a href="form-elements-add-on.htm"><span class="pcoded-mtext">Results Scoring</span></a>
+            <li class="{{ request()->is('admin/resultscorecard') ? 'active' : '' }}">
+                <a href="/admin/resultscorecard"><span class="pcoded-mtext">Results Scoring</span></a>
             </li>
         </ul>
     </li>

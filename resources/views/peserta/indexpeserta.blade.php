@@ -112,6 +112,7 @@
                                             @if($session->id === session()->getId())
                                                 <span class="text-success">- Current Device</span>
                                             @endif
+                                            <small class="d-block text-muted">IP: {{ $session->ip_address }}</small>
                                         </div>
                                     @empty
                                         <p class="text-muted">Belum ada riwayat login.</p>

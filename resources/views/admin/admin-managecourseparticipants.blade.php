@@ -22,7 +22,7 @@
                                                     <tr>
                                                         <th class="text-center" style="width: 50px;">No</th>
                                                         <th class="text-center">Course</th>
-                                                        <th class="text-center">Category</th>
+                                                        <th class="text-center">Kategori</th>
                                                         <th class="text-center">Participants</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
@@ -41,10 +41,8 @@
                                                         ajax: '{{ url("/datacourseparticipants/json") }}',
                                                         searching: true, 
                                                         lengthChange: true,
-                                                        columns: [{
-                                                                data: 'id',
-                                                                name: 'id'
-                                                            },
+                                                        columns: [
+                                                            { data: 'DT_RowIndex', name: 'DT_RowIndex', class: 'text-center', orderable: false, searchable: false },
                                                             {
                                                                 data: 'namacourse',
                                                                 name: 'namacourse'

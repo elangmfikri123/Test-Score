@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
 use App\Models\CategoryQuestion;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -157,8 +158,6 @@ class CourseController extends Controller
             ->addIndexColumn()
             ->addColumn('questions_answer', function ($question) {
                 $html = '<div style="word-break: break-word; white-space: normal;">' . $question->pertanyaan . '</div>';
-
-                // Tambahkan kategori soal
                 $html .= '<div class="badge badge-info mb-2">';
                 $html .= $question->categoryquestion ? $question->categoryquestion->vnamacategory : 'Uncategorized';
                 $html .= '</div>';
@@ -289,8 +288,6 @@ class CourseController extends Controller
                 $existingAnswerIds[] = $answer->id;
             }
         }
-
-        // Hapus jawaban yang tidak lagi digunakan (jika ada)
         if (!empty($existingAnswerIds)) {
             Answer::where('question_id', $question->id)
                 ->whereNotIn('id', $existingAnswerIds)
@@ -405,13 +402,14 @@ class CourseController extends Controller
 
     public function getNonEnrolledParticipantsJson($id)
     {
-        $enrolledPesertaIds = PesertaCourse::where('course_id', $id)->pluck('peserta_id')->toArray();
+        $enrolledPesertaIds = PesertaCourse::where('course_id', $id)
+            ->pluck('peserta_id')
+            ->toArray();
 
-        $peserta = Peserta::with(['category', 'maindealer'])
-            ->whereNotIn('id', $enrolledPesertaIds)
-            ->get();
+        $query = Peserta::with(['category', 'maindealer'])
+            ->whereNotIn('id', $enrolledPesertaIds);
 
-        return datatables()->of($peserta)
+        return DataTables::eloquent($query)
             ->addIndexColumn()
             ->addColumn('namacategory', function ($row) {
                 return $row->category->namacategory ?? '-';
@@ -419,7 +417,9 @@ class CourseController extends Controller
             ->addColumn('kodemd', function ($row) {
                 return $row->maindealer->kodemd ?? '-';
             })
-            ->addColumn('action', fn($row) => '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">')
+            ->addColumn('action', function ($row) {
+                return '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">';
+            })
             ->rawColumns(['action'])
             ->make(true);
     }

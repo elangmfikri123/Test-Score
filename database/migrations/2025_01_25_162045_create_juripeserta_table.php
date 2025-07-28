@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('formpenilaian_id')->constrained('formpenilaian')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('juri_id')->nullable()->constrained('juri')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('peserta_id')->nullable()->constrained('peserta')->onUpdate('cascade')->onDelete('cascade'); 
+            $table->foreignId('peserta_id')->nullable()->constrained('peserta')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

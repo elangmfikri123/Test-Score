@@ -22,8 +22,7 @@ class ResultCourseController extends Controller
             'peserta.user',
             'peserta.maindealer',
             'peserta',
-            'peserta.category',
-            'course'
+            'course.category'
         ])
             ->where('status_pengerjaan', 'selesai')
             ->when($request->status_pengerjaan, function ($q) use ($request) {
@@ -33,7 +32,7 @@ class ResultCourseController extends Controller
                 $q->where('course_id', $request->course_id);
             })
             ->when($request->category_id, function ($q) use ($request) {
-                $q->whereHas('peserta', function ($c) use ($request) {
+                $q->whereHas('course', function ($c) use ($request) {
                     $c->where('category_id', $request->category_id);
                 });
             })
@@ -54,42 +53,13 @@ class ResultCourseController extends Controller
                 return $row->peserta->nama ?? '-';
             })
             ->addColumn('category', function ($row) {
-                return $row->peserta->category->namacategory ?? '-';
+                return $row->course->category->namacategory ?? '-';
             })
             ->addColumn('maindealer', function ($row) {
                 return $row->peserta->maindealer->nama_md ?? '-';
             })
-            ->addColumn('score', function ($row) {
-                $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($row) {
-                    $query->where('peserta_id', $row->peserta_id)
-                        ->where('peserta_course_id', $row->id);
-                }])
-                    ->where('course_id', $row->course_id)
-                    ->get();
-
-                $jumlahBenar = 0;
-                foreach ($questions as $q) {
-                    $userAnswer = $q->pesertaAnswer->first();
-                    $correctAnswer = $q->answers->firstWhere('is_correct', true);
-                    if ($userAnswer && $correctAnswer && $userAnswer->answer_id == $correctAnswer->id) {
-                        $jumlahBenar++;
-                    }
-                }
-
-                $totalSoal = $questions->count();
-                $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-
-                return $score;
-            })
             ->addColumn('status', function ($row) {
-                $status = $row->status_pengerjaan ?? '-';
-                $badge = match ($status) {
-                    'belum_mulai' => '<label class="label label-warning">Belum Mulai</label>',
-                    'sedang_dikerjakan' => '<label class="label label-info">On Progress</label>',
-                    'selesai' => '<label class="label label-success">Selesai</label>',
-                    default => '<label class="label label-default">-</label>',
-                };
-                return $badge;
+                return ucfirst(str_replace('_', ' ', $row->status_pengerjaan));
             })
             ->addColumn('createdtime', function ($row) {
                 return $row->created_at ? $row->created_at->format('d/m/Y H:i') : '-';
@@ -97,10 +67,10 @@ class ResultCourseController extends Controller
             ->addColumn('action', function ($row) {
                 return '<a href="' . route('course.details', $row->id) . '" class="btn btn-sm btn-info">Detail</a>';
             })
-            ->rawColumns(['action', 'status'])
+            ->rawColumns(['action'])
             ->make(true);
     }
-
+    
     public function showDetails($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);
@@ -118,6 +88,7 @@ class ResultCourseController extends Controller
         $resultDetails = [];
         $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
         $categoryAnalysis = [];
+        $totalScore = 0; // Tambahkan variabel untuk total skor
 
         foreach ($questions as $index => $question) {
             $jawaban = $jawabanPeserta->get($question->id);
@@ -130,7 +101,8 @@ class ResultCourseController extends Controller
                     'correct' => 0,
                     'incorrect' => 0,
                     'skipped' => 0,
-                    'total' => 0
+                    'total' => 0,
+                    'score' => 0 // Tambahkan score per kategori
                 ];
             }
 
@@ -138,6 +110,7 @@ class ResultCourseController extends Controller
                 $status = 'Skip';
                 $jumlahSkip++;
                 $categoryAnalysis[$categoryId]['skipped']++;
+                $questionScore = 0; // Skip bernilai 0
             } else {
                 $correctAnswerIds = $question->answers->pluck('id')->toArray();
                 $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
@@ -146,13 +119,17 @@ class ResultCourseController extends Controller
                     $status = 'Benar';
                     $jumlahBenar++;
                     $categoryAnalysis[$categoryId]['correct']++;
+                    $questionScore = 2; // Benar bernilai +2
                 } else {
                     $status = 'Salah';
                     $jumlahSalah++;
                     $categoryAnalysis[$categoryId]['incorrect']++;
+                    $questionScore = -1; // Salah bernilai -1
                 }
             }
 
+            $totalScore += $questionScore; // Tambahkan skor pertanyaan ke total skor
+            $categoryAnalysis[$categoryId]['score'] += $questionScore; // Tambahkan skor ke kategori
             $categoryAnalysis[$categoryId]['total']++;
 
             $resultDetails[] = [
@@ -160,17 +137,19 @@ class ResultCourseController extends Controller
                 'question' => $question,
                 'status' => $status,
                 'is_correct' => $isCorrect ?? null,
+                'score' => $questionScore // Tambahkan skor per pertanyaan
             ];
         }
 
         foreach ($categoryAnalysis as &$category) {
-            $category['score'] = $category['total'] > 0
+            // Hitung persentase benar per kategori (opsional)
+            $category['percentage'] = $category['total'] > 0
                 ? round(($category['correct'] / $category['total']) * 100, 2)
                 : 0;
         }
 
         $totalSoal = $questions->count();
-        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $scorePercentage = $totalSoal > 0 ? round(($totalScore / ($totalSoal * 2)) * 100, 2) : 0; // Hitung persentase dari skor maksimal
         $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
         $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
         $durasi = null;
@@ -191,7 +170,8 @@ class ResultCourseController extends Controller
             'jumlahBenar' => $jumlahBenar,
             'jumlahSalah' => $jumlahSalah,
             'jumlahSkip' => $jumlahSkip,
-            'score' => $score,
+            'score' => $totalScore, // Gunakan total skor
+            'scorePercentage' => $scorePercentage, // Tambahkan persentase skor
             'durasi' => $durasi,
             'waktuUjian' => $start,
             'status' => $pesertaCourse->status_pengerjaan,
@@ -211,12 +191,15 @@ class ResultCourseController extends Controller
             ->get();
 
         $jumlahBenar = $jumlahSalah = $jumlahSkip = 0;
+        $totalScore = 0; // Tambahkan variabel untuk total skor
 
         foreach ($questions as $q) {
             $userAnswer = $q->pesertaAnswer->first();
 
             if (!$userAnswer) {
                 $jumlahSkip++;
+                $questionScore = 0; // Skip bernilai 0
+                $totalScore += $questionScore;
                 continue;
             }
 
@@ -225,13 +208,16 @@ class ResultCourseController extends Controller
 
             if ($isCorrect) {
                 $jumlahBenar++;
+                $questionScore = 2; // Benar bernilai +2
             } else {
                 $jumlahSalah++;
+                $questionScore = -1; // Salah bernilai -1
             }
+            $totalScore += $questionScore;
         }
 
         $totalSoal = $questions->count();
-        $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+        $scorePercentage = $totalSoal > 0 ? round(($totalScore / ($totalSoal * 2)) * 100, 2) : 0; // Hitung persentase dari skor maksimal
         $start = $pesertaCourse->start_exam ? Carbon::parse($pesertaCourse->start_exam) : null;
         $end = $pesertaCourse->end_exam ? Carbon::parse($pesertaCourse->end_exam) : null;
         $durasi = null;
@@ -265,6 +251,12 @@ class ResultCourseController extends Controller
             $userSelectedLabel = collect($options)->search(fn($val) => $val['id'] == optional($userAnswer)->answer_id);
             $correctLabel = $correctAnswer ? collect($options)->search(fn($val) => $val['id'] == $correctAnswer->id) : null;
 
+            // Hitung skor per pertanyaan
+            $questionScore = 0;
+            if ($userAnswer) {
+                $questionScore = ($userAnswer->answer_id == optional($correctAnswer)->id) ? 2 : -1;
+            }
+
             return [
                 'question' => $q->pertanyaan,
                 'options' => collect($options)->mapWithKeys(fn($opt, $key) => [$key => $opt['text']])->toArray(),
@@ -272,6 +264,7 @@ class ResultCourseController extends Controller
                 'user_answer' => $userSelectedLabel,
                 'is_correct' => $userAnswer && $correctAnswer ? ($userAnswer->answer_id == $correctAnswer->id) : null,
                 'is_skipped' => is_null($userAnswer),
+                'score' => $questionScore // Tambahkan skor per pertanyaan
             ];
         });
 
@@ -281,7 +274,8 @@ class ResultCourseController extends Controller
             'jumlahBenar' => $jumlahBenar,
             'jumlahSalah' => $jumlahSalah,
             'jumlahSkip' => $jumlahSkip,
-            'score' => $score,
+            'score' => $totalScore, // Gunakan total skor
+            'scorePercentage' => $scorePercentage, // Tambahkan persentase skor
             'durasi' => $durasi,
             'waktuUjian' => $start,
             'status' => $pesertaCourse->status_pengerjaan,

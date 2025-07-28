@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\AdminMD;
+use App\Models\Peserta;
 use App\Models\Category;
 use App\Models\MainDealer;
 use App\Models\FormPenilaian;
@@ -21,10 +22,10 @@ use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\ResultCourseController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PesertaCourseController;
-use App\Http\Controllers\EnrolledJuriPesertaController;
-use App\Http\Controllers\ResultsAnswersController;
-use App\Models\Peserta;
 use App\Http\Controllers\ImportQuestionController;
+use App\Http\Controllers\ResultsAnswersController;
+use App\Http\Controllers\ResultScoreCardController;
+use App\Http\Controllers\EnrolledJuriPesertaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,7 +146,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/juripeserta/detail/{form_id}/{juri_id}', [EnrolledJuriPesertaController::class, 'getDetailPeserta'])->name('juripeserta.detail');
     Route::delete('/juripeserta/delete/{form_id}/{juri_id}/{peserta_id}', [EnrolledJuriPesertaController::class, 'deletePesertaScorering'])->name('juripeserta.hapus');
 
-
+    Route::get('/admin/resultscorecard', [ResultScoreCardController::class, 'showResultsScoring'])->name('admin.resultscorecard');
+    Route::get('/admin/resultscorecard/data', [ResultScoreCardController::class, 'dataResultsScoringJson'])->name('admin.resultscorecard.data');
 });
 
 // ADMIN MAIN DEALERS
@@ -158,6 +160,7 @@ Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
     Route::get('/api/course', [AdminController::class, 'apiCourse']);
     Route::get('/api/category', [AdminController::class, 'apiCategory']);
     Route::get('/api/maindealer', [AdminController::class, 'apiMaindealer']);
+    Route::get('/api/scorecard', [AdminController::class, 'apiScorecard']);
     Route::get('/get-peserta/download', [ExportController::class, 'downloadPeserta'])->name('peserta.download');
 
     Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
