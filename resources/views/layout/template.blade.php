@@ -69,7 +69,8 @@
 
                     <div class="navbar-logo d-flex align-items-center">
                         <a class="mobile-menu me-auto" id="mobile-collapse" href="#!">
-                            <i class="feather icon-menu"></i>
+                            {{-- <i class="feather icon-menu"></i> --}}
+                            <i class="fa fa-bars"></i>
                         </a>
                         <a href="index-1.htm" class="mx-auto">
                             <img class="img-fluid" src="{{ asset('files/assets/images/Logo-100.png') }}" alt="Theme-Logo" style="max-height: 40px; width: auto;">

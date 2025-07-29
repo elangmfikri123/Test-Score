@@ -5,19 +5,17 @@
         <div class="pcoded-content">
             <div class="pcoded-inner-content">
                 <div class="main-body">
-                    <div class="page-wrapper">
+                    <div class="page-wrapper px-1"> {{-- Tambah padding kecil kanan-kiri --}}
                         <div class="page-header m-t-50"></div>
                         <div class="page-body">
-                            <div class="row">
-                                <div class="col-md-9">
+                            <div class="row gx-1"> {{-- Hapus jarak gutter default --}}
+                                <div class="col-12 col-md-9 mb-2"> {{-- Full width di mobile --}}
                                     <div class="card">
                                         <div class="card-header border-bottom d-flex justify-content-between align-items-center">
-                                            {{-- Nomor Soal --}}
                                             <h5 id="question-number">Soal Nomor. </h5>
                                             <label id="timer" class="label label-inverse-warning fw-bold px-4 py-2 text-dark" style="font-size: 1rem;"></label>
                                         </div>                                                                               
                                         <hr class="m-0">
-                                        {{-- Konten Soal --}}
                                         <div class="card-block" style="overflow-y: auto; max-height: 400px;">
                                             <p id="question-text">Memuat data dari server...</p>
                                             <form id="quiz-form">
@@ -32,7 +30,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-12 col-md-3 mb-2"> {{-- Full width di mobile --}}
                                     <div class="card">
                                         <div class="card-header">
                                             <div class="d-flex justify-content-between">
@@ -55,9 +53,9 @@
                                     </div>
                                 </div>
 
-                            </div>
-                        </div>
-                    </div>
+                            </div> {{-- row --}}
+                        </div> {{-- page-body --}}
+                    </div> {{-- page-wrapper --}}
                 </div>
             </div>
         </div>

@@ -18,16 +18,16 @@
                                         </div>                                                                               
                                         <hr class="m-0">
                                         {{-- Konten Soal --}}
-                                        <div class="card-block">
-                                            <p id="question-text">Loading Data Server...</p>
+                                        <div class="card-block" style="overflow-y: auto; max-height: 400px;">
+                                            <p id="question-text">Memuat data dari server...</p>
                                             <form id="quiz-form">
                                                 <div id="answer-options"></div>
                                             </form>
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer d-flex justify-content-between">
-                                            <button id="btn-prev" class="btn btn-secondary"><i class="ion-chevron-left"></i>Previous</button>
-                                            <button id="btn-next" class="btn btn-warning">Next <i class="ion-chevron-right"></i></button>
+                                            <button id="btn-prev" class="btn btn-secondary btn-sm"><i class="ion-chevron-left"></i>Previous</button>
+                                            <button id="btn-next" class="btn btn-warning btn-sm">Next <i class="ion-chevron-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -50,7 +50,7 @@
                                         </div>
                                         <hr class="m-0">
                                         <div class="card-footer text-center">
-                                            <button class="btn btn-primary submit">Submit <i class="fa fa-save"></i></button>
+                                            <button class="btn btn-primary btn-sm submit">Submit <i class="fa fa-save"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -64,13 +64,14 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- <script>
+    <script>
         let currentQuestion = 1;
         const pesertaCourseId = {{ $pesertaCourse->id }};
         const durationMinutes = {{ $pesertaCourse->course->duration_minutes }};
         const timerKey = `quiz_end_time_${pesertaCourseId}`;
         let answeredQuestions = {}; 
         let endTime;
+        let totalQuestions = 0;
     
         // TIMER START
         if (localStorage.getItem(timerKey)) {
@@ -80,11 +81,13 @@
             localStorage.setItem(timerKey, endTime);
         }
     
+        // Fungsi untuk menghitung sisa waktu
         function getRemainingTime() {
             const now = new Date().getTime();
             return Math.max(0, endTime - now);
         }
     
+        // Format waktu menjadi HH:MM:SS
         function formatTime(ms) {
             const hours = Math.floor(ms / (1000 * 60 * 60));
             const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
@@ -92,6 +95,7 @@
             return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
     
+        // Update timer setiap detik
         function updateTimer() {
             const remaining = getRemainingTime();
             if (remaining <= 0) {
@@ -104,7 +108,7 @@
                     icon: 'warning',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    finishExam();
+                    selesaikanUjian();
                 });
             } else {
                 $('#timer').text(formatTime(remaining));
@@ -114,7 +118,8 @@
         const timerInterval = setInterval(updateTimer, 1000);
         updateTimer();
 
-        function submitAnswer(answerId, btnElement) {
+        // Fungsi untuk menyimpan jawaban
+        function simpanJawaban(answerId, btnElement) {
             $('#answer-options .btn').removeClass('btn-primary text-white').addClass('btn-outline-primary');
             $(btnElement).removeClass('btn-outline-primary').addClass('btn-primary text-white');
             answeredQuestions[currentQuestion] = answerId;
@@ -133,12 +138,16 @@
             $(`.question-btn[data-number="${currentQuestion}"]`)
                 .removeClass('btn-light')
                 .addClass('btn-success');
+                
+            updateAnsweredCount();
         }
     
-        function loadQuestion(questionNumber) {
+        // Fungsi untuk memuat soal
+        function muatSoal(questionNumber) {
             $.get(`/exam/${pesertaCourseId}/${questionNumber}`, function (response) {
                 if (response.status === 'success') {
                     answeredQuestions = response.answered_questions || {};
+                    totalQuestions = response.total_questions;
                     $('#question-number').text('Soal Nomor. ' + response.question_number);
                     $('#question-text').html(response.pertanyaan);
     
@@ -149,7 +158,7 @@
                             <div class="d-flex align-items-center mb-2" style="min-height: 40px;">
                                 <button type="button" class="btn ${isAnswered ? 'btn-primary text-white' : 'btn-outline-primary'} me-2" 
                                     style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" 
-                                    onclick="submitAnswer(${answer.id}, this)">
+                                    onclick="simpanJawaban(${answer.id}, this)">
                                     ${answer.label}
                                 </button>
                                 <label class="form-check-label" for="option${answer.id}" style="cursor:pointer;">${answer.text}</label>
@@ -161,15 +170,22 @@
                     $('#btn-prev').prop('disabled', questionNumber === 1);
                     $('#btn-next').prop('disabled', questionNumber === response.total_questions);
                     $('#total-questions').text(response.total_questions);
-                    $('#answered-count').text(Object.keys(answeredQuestions).length);
-                    renderQuestionButtons(response.total_questions);
+                    updateAnsweredCount();
+                    renderTombolSoal(response.total_questions);
                 } else {
                     alert('Error: ' + response.message);
                 }
             });
         }
     
-        function renderQuestionButtons(total) {
+        // Fungsi untuk memperbarui jumlah jawaban yang sudah diisi
+        function updateAnsweredCount() {
+            const answeredCount = Object.keys(answeredQuestions).length;
+            $('#answered-count').text(answeredCount);
+        }
+    
+        // Fungsi untuk menampilkan tombol navigasi soal
+        function renderTombolSoal(total) {
             const container = $('#question-buttons');
             container.empty();
     
@@ -190,7 +206,9 @@
                 `);
             }
         }
-        function finishExam() {
+        
+        // Fungsi untuk menyelesaikan ujian
+        function selesaikanUjian() {
             const remainingTime = getRemainingTime();
             const sisa_waktu = formatTime(remainingTime); 
 
@@ -214,41 +232,79 @@
                 }
             });
         }
-        $(document).on('click', '#btn-prev', function () {
-            if (currentQuestion > 1) {
-                currentQuestion--;
-                loadQuestion(currentQuestion);
+        
+        // Fungsi untuk memeriksa soal yang belum dijawab
+        function cekSoalBelumTerjawab() {
+            const belumTerjawab = [];
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (!answeredQuestions[i]) {
+                    belumTerjawab.push(i);
+                }
             }
-        });
-    
-        $(document).on('click', '#btn-next', function () {
-            currentQuestion++;
-            loadQuestion(currentQuestion);
-        });
-    
-        $(document).on('click', '.question-btn', function () {
-            const number = parseInt($(this).data('number'));
-            currentQuestion = number;
-            loadQuestion(number);
-        });
-    
-        $(document).ready(function () {
-            loadQuestion(currentQuestion);
-    
-            // Tombol Akhiri Ujian Manual
-            $('.btn-primary.submit').on('click', function () {
-                Swal.fire({
+            return belumTerjawab;
+        }
+        
+        // Fungsi untuk menampilkan peringatan soal yang terlewat
+        function tampilkanPeringatanSoalTerlewat(belumTerjawab) {
+            Swal.fire({
+                    title: 'Ada Soal Yang Belum Terjawab',
+                    text: 'Anda masih memiliki soal yang belum dijawab: ' + belumTerjawab.join(', '),
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Submit!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    tampilkanKonfirmasiAkhir();
+                }
+            });
+        }
+        
+        // Fungsi untuk menampilkan konfirmasi akhir
+        function tampilkanKonfirmasiAkhir() {
+            Swal.fire({
                     title: 'Apakah Anda yakin ?',
                     text: 'Apakah Anda yakin ingin mengakhiri ujian ini? Semua jawaban akan disimpan.',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Submit!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        finishExam();
-                    }
-                });
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    selesaikanUjian();
+                }
+            });
+        }
+
+        // Event handler untuk tombol navigasi
+        $(document).on('click', '#btn-prev', function () {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                muatSoal(currentQuestion);
+            }
+        });
+    
+        $(document).on('click', '#btn-next', function () {
+            currentQuestion++;
+            muatSoal(currentQuestion);
+        });
+    
+        $(document).on('click', '.question-btn', function () {
+            const number = parseInt($(this).data('number'));
+            currentQuestion = number;
+            muatSoal(number);
+        });
+    
+        $(document).ready(function () {
+            muatSoal(currentQuestion);
+    
+            $('.btn-primary.submit').on('click', function () {
+                const belumTerjawab = cekSoalBelumTerjawab();
+                
+                if (belumTerjawab.length > 0) {
+                    tampilkanPeringatanSoalTerlewat(belumTerjawab);
+                } else {
+                    tampilkanKonfirmasiAkhir();
+                }
             });
         });
-    </script> -->
+    </script>
 @endsection

@@ -56,7 +56,8 @@
 
                     <div class="navbar-logo">
                         <a class="mobile-menu" id="mobile-collapse" href="#!">
-                            <i class="feather icon-menu"></i>
+                            {{-- <i class="feather icon-menu"></i> --}}
+                            <i class="fa fa-bars"></i>
                         </a>
                         {{-- <a href="index-1.htm">
                             <img class="img-fluid" src="..\files\assets\images\logo.png" alt="Theme-Logo" width = "75%">
