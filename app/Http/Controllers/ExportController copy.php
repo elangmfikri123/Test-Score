@@ -233,25 +233,24 @@ class ExportController extends Controller
         $headers = [
             'No',
             'Honda ID',
-            'Nama',
+            'Nama Peserta',
             'Main Dealer',
-            'Kategori',
-            'Nama Course',
+            'Kategori Peserta',
+            'Nama Quiz',
             'Jumlah Soal',
             'Jumlah Benar',
             'Jumlah Salah',
             'Jumlah Terlewati',
-            'Total Scores', // Skor total berdasarkan +2/-1/0
-            'Persentase', // Persentase dari skor maksimal
+            'Nilai (Skala 100)', // Nilai dalam skala 0-100
             'Durasi',
             'Time Start Date',
             'Time Submit Date'
         ];
 
         $sheet->fromArray([$headers], null, 'A1');
-        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:O1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:O1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:N1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:N1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $row = 2;
         foreach ($pesertaCourses as $index => $pc) {
@@ -263,31 +262,25 @@ class ExportController extends Controller
             $jumlahBenar = 0;
             $jumlahSalah = 0;
             $jumlahSkip = 0;
-            $totalScore = 0; // Variabel untuk total skor
 
             foreach ($questions as $q) {
                 $jawaban = $jawabanPeserta->get($q->id);
 
                 if (!$jawaban) {
                     $jumlahSkip++;
-                    $questionScore = 0; // Terlewati = 0
                 } else {
                     $correctAnswerIds = $q->answers->pluck('id')->toArray();
-                    $isCorrect = in_array($jawaban->answer_id, $correctAnswerIds);
-
-                    if ($isCorrect) {
+                    if (in_array($jawaban->answer_id, $correctAnswerIds)) {
                         $jumlahBenar++;
-                        $questionScore = 2; // Benar = +2
                     } else {
                         $jumlahSalah++;
-                        $questionScore = -1; // Salah = -1
                     }
                 }
-                $totalScore += $questionScore; // Tambahkan ke total skor
             }
 
             $totalSoal = $questions->count();
-            $scorePercentage = $totalSoal > 0 ? number_format(($totalScore / ($totalSoal * 2)) * 100, 2) : '0.00';
+            $nilai = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+
             $start = $pc->start_exam ? Carbon::parse($pc->start_exam) : null;
             $end = $pc->end_exam ? Carbon::parse($pc->end_exam) : null;
 
@@ -310,20 +303,19 @@ class ExportController extends Controller
             $sheet->setCellValue("H{$row}", (int)$jumlahBenar);
             $sheet->setCellValue("I{$row}", (int)$jumlahSalah);
             $sheet->setCellValue("J{$row}", (int)$jumlahSkip);
-            $sheet->setCellValue("K{$row}", $totalScore); // Total skor (+2/-1/0)
-            $sheet->setCellValue("L{$row}", $scorePercentage); // Persentase dari skor maksimal
-            $sheet->setCellValue("M{$row}", $durasi);
-            $sheet->setCellValue("N{$row}", $startFormatted);
-            $sheet->setCellValue("O{$row}", $endFormatted);
+            $sheet->setCellValue("K{$row}", $nilai);
+            $sheet->setCellValue("L{$row}", $durasi);
+            $sheet->setCellValue("M{$row}", $startFormatted);
+            $sheet->setCellValue("N{$row}", $endFormatted);
 
             $row++;
         }
 
-        foreach (range('A', 'O') as $columnID) {
+        foreach (range('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        $sheet->getStyle("A1:O" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        $sheet->getStyle("A1:N" . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         $filename = 'hasil_ujian_' . now()->format('Ymd_His') . '.xlsx';
         $filePath = storage_path("app/public/{$filename}");
@@ -355,8 +347,8 @@ class ExportController extends Controller
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-
         $headers = [
+            'No',
             'Nama Quiz',
             'Honda ID',
             'Nama Peserta',
@@ -388,25 +380,27 @@ class ExportController extends Controller
         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
 
         $row = 2;
+        $nomorUrut = 1;
         foreach ($pesertaCourses as $pc) {
+            $mainDealer = ($pc->peserta->maindealer->kodemd ?? '-') . ' - ' . ($pc->peserta->maindealer->nama_md ?? '-');
+
             $data = [
+                $nomorUrut++,
                 $course->namacourse,
                 $pc->peserta->honda_id,
                 $pc->peserta->nama,
                 $pc->peserta->category->namacategory ?? '-',
-                $pc->peserta->maindealer->kodemd ?? '-'
+                $mainDealer
             ];
 
             foreach ($course->questions as $question) {
                 $pesertaAnswer = $pc->pesertaAnswers->where('question_id', $question->id)->first();
-                $status = '-';
+                $status = '0'; 
 
                 if ($pesertaAnswer && $pesertaAnswer->answer_id) {
                     $correctAnswerIds = $question->answers->pluck('id')->toArray();
                     if (in_array($pesertaAnswer->answer_id, $correctAnswerIds)) {
                         $status = '1';
-                    } else {
-                        $status = '0';
                     }
                 }
 
@@ -418,23 +412,23 @@ class ExportController extends Controller
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $row . ':' . $sheet->getHighestColumn() . $row)
+                ->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
             $row++;
         }
 
-        $sheet->getColumnDimension('A')->setWidth(20);
-        $sheet->getColumnDimension('B')->setWidth(15);
-        $sheet->getColumnDimension('C')->setWidth(25);
-        $sheet->getColumnDimension('D')->setWidth(20);
-        $sheet->getColumnDimension('E')->setWidth(15);
-        foreach (range('F', $sheet->getHighestColumn()) as $column) {
+        $sheet->getColumnDimension('A')->setWidth(5);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(25);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(30);
+        foreach (range('G', $sheet->getHighestColumn()) as $column) {
             $sheet->getColumnDimension($column)->setWidth(15);
-            $sheet->getStyle($column . '1:' . $column . $sheet->getHighestRow())
-                ->getAlignment()
-                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
-        // Freeze header row
         $sheet->freezePane('A2');
         $writer = new Xlsx($spreadsheet);
         $fileName = 'Hasil_Ujian_' . str_replace(' ', '_', $course->namacourse) . '_' . now()->format('Ymd_His') . '.xlsx';

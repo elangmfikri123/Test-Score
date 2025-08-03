@@ -331,15 +331,19 @@ class ExportController extends Controller
             'course_id' => 'required|exists:course,id'
         ]);
 
-        $course = Course::with(['questions.answers' => function ($query) {
-            $query->where('is_correct', true);
-        }])->find($request->course_id);
+        $course = Course::with([
+            'questions.answers' => function ($query) {
+                $query->where('is_correct', true);
+            },
+            'questions.categoryquestion'
+        ])->find($request->course_id);
+
         $pesertaCourses = PesertaCourse::with([
             'peserta',
             'peserta.category',
             'peserta.maindealer',
             'pesertaAnswers' => function ($query) {
-                $query->with(['question', 'answer']);
+                $query->with(['question.categoryquestion', 'answer']);
             }
         ])->where('course_id', $course->id)
             ->where('status_pengerjaan', 'selesai')
@@ -347,6 +351,7 @@ class ExportController extends Controller
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+
         $headers = [
             'No',
             'Nama Quiz',
@@ -355,6 +360,23 @@ class ExportController extends Controller
             'Kategori Peserta',
             'Main Dealer'
         ];
+
+        $categories = $course->questions->groupBy('categoryquestion_id')->map(function ($questions, $catId) {
+            return [
+                'id' => $catId,
+                'name' => $questions->first()->categoryquestion->vnamacategory ?? 'No Kategori',
+                'count' => $questions->count()
+            ];
+        })->values();
+
+        foreach ($categories as $category) {
+            $headers[] = $category['name'] . ' (Benar)';
+            $headers[] = $category['name'] . ' (%)';
+        }
+
+        $headers[] = 'Total Benar';
+        $headers[] = 'Total (%)';
+
         foreach ($course->questions as $index => $question) {
             $cleanQuestion = $this->cleanQuestionText($question->pertanyaan);
             $headers[] = 'Q' . ($index + 1) . ': ' . $cleanQuestion;
@@ -393,19 +415,40 @@ class ExportController extends Controller
                 $mainDealer
             ];
 
+            $correctByCategory = [];
+            foreach ($categories as $category) {
+                $correctByCategory[$category['id']] = 0;
+            }
+
+            $totalCorrect = 0;
+            $questionAnswers = []; 
             foreach ($course->questions as $question) {
                 $pesertaAnswer = $pc->pesertaAnswers->where('question_id', $question->id)->first();
-                $status = '0'; 
-
+                $status = '0';
                 if ($pesertaAnswer && $pesertaAnswer->answer_id) {
                     $correctAnswerIds = $question->answers->pluck('id')->toArray();
                     if (in_array($pesertaAnswer->answer_id, $correctAnswerIds)) {
                         $status = '1';
+                        $correctByCategory[$question->categoryquestion_id]++;
+                        $totalCorrect++;
                     }
                 }
-
-                $data[] = $status;
+                $questionAnswers[] = $status; 
             }
+
+            foreach ($categories as $category) {
+                $correctCount = $correctByCategory[$category['id']] ?? 0;
+                $percentage = $category['count'] > 0 ? round(($correctCount / $category['count']) * 100, 2) : 0;
+
+                $data[] = $correctCount;
+                $data[] = $percentage . '%';
+            }
+
+            $totalPercentage = count($course->questions) > 0 ? round(($totalCorrect / count($course->questions)) * 100, 2) : 0;
+            $data[] = $totalCorrect;
+            $data[] = $totalPercentage . '%';
+
+            $data = array_merge($data, $questionAnswers);
 
             $sheet->fromArray([$data], null, 'A' . $row);
             $sheet->getStyle('A' . $row . ':' . $sheet->getHighestColumn() . $row)
@@ -425,8 +468,15 @@ class ExportController extends Controller
         $sheet->getColumnDimension('D')->setWidth(25);
         $sheet->getColumnDimension('E')->setWidth(20);
         $sheet->getColumnDimension('F')->setWidth(30);
-        foreach (range('G', $sheet->getHighestColumn()) as $column) {
+
+        $categoryColumnsCount = 6 + (count($categories) * 2) + 2;
+        foreach (range('G', \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($categoryColumnsCount)) as $column) {
             $sheet->getColumnDimension($column)->setWidth(15);
+        }
+
+        $firstQuestionCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($categoryColumnsCount + 1);
+        foreach (range($firstQuestionCol, $sheet->getHighestColumn()) as $column) {
+            $sheet->getColumnDimension($column)->setWidth(10);
         }
 
         $sheet->freezePane('A2');
