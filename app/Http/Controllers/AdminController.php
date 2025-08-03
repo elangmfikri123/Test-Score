@@ -13,6 +13,7 @@ use App\Models\FormPenilaian;
 use App\Models\MainDealer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -43,9 +44,10 @@ class AdminController extends Controller
         $mainDealers = MainDealer::select('id', 'kodemd', 'nama_md')->get();
         return view('admin.adminuserlist', compact('mainDealers'));
     }
-    public function getusertable(Request $request)
+
+        public function getusertable(Request $request)
     {
-        $data = User::query()
+        $data = DB::table('users')
             ->leftJoin('peserta', 'users.id', '=', 'peserta.user_id')
             ->leftJoin('juri', 'users.id', '=', 'juri.user_id')
             ->leftJoin('admin', 'users.id', '=', 'admin.user_id')
@@ -67,50 +69,44 @@ class AdminController extends Controller
                 'md_peserta.kodemd as peserta_kodemd'
             );
 
-        if ($request->has('search') && !empty($request->search['value'])) {
-            $search = $request->search['value'];
-            $data->where(function ($query) use ($search) {
-                $query->where('users.username', 'like', '%' . $search . '%')
-                    ->orWhere('users.role', 'like', '%' . $search . '%')
-                    ->orWhere('peserta.nama', 'like', '%' . $search . '%')
-                    ->orWhere('peserta.email', 'like', '%' . $search . '%')
-                    ->orWhere('juri.namajuri', 'like', '%' . $search . '%')
-                    ->orWhere('juri.email', 'like', '%' . $search . '%')
-                    ->orWhere('admin.nama_lengkap', 'like', '%' . $search . '%')
-                    ->orWhere('admin.email', 'like', '%' . $search . '%')
-                    ->orWhere('md_admin.kodemd', 'like', '%' . $search . '%')
-                    ->orWhere('md_peserta.kodemd', 'like', '%' . $search . '%')
-                    ->orWhere('users.login_token', 'like', '%' . $search . '%');
-            });
-        }
-
-        $result = DataTables()->of($data)
+        return DataTables::of($data)
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $search = $request->get('search')['value']) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('users.username', 'like', "%{$search}%")
+                            ->orWhere('users.role', 'like', "%{$search}%")
+                            ->orWhere('peserta.nama', 'like', "%{$search}%")
+                            ->orWhere('peserta.email', 'like', "%{$search}%")
+                            ->orWhere('juri.namajuri', 'like', "%{$search}%")
+                            ->orWhere('juri.email', 'like', "%{$search}%")
+                            ->orWhere('admin.nama_lengkap', 'like', "%{$search}%")
+                            ->orWhere('admin.email', 'like', "%{$search}%")
+                            ->orWhere('md_admin.kodemd', 'like', "%{$search}%")
+                            ->orWhere('md_peserta.kodemd', 'like', "%{$search}%")
+                            ->orWhere('users.login_token', 'like', "%{$search}%");
+                    });
+                }
+            })
             ->addIndexColumn()
             ->addColumn('nama', function ($row) {
-                return $row->peserta_nama
-                    ?? $row->juri_nama
-                    ?? $row->admin_nama
-                    ?? '-';
+                return $row->peserta_nama ?? $row->juri_nama ?? $row->admin_nama ?? '-';
             })
             ->addColumn('email', function ($row) {
-                return $row->peserta_email
-                    ?? $row->juri_email
-                    ?? $row->admin_email
-                    ?? '-';
+                return $row->peserta_email ?? $row->juri_email ?? $row->admin_email ?? '-';
             })
             ->addColumn('maindealer', function ($row) {
-                if ($row->role == 'AdminMD' && $row->admin_kodemd) {
+                if ($row->role === 'AdminMD' && $row->admin_kodemd) {
                     return $row->admin_kodemd;
-                } elseif ($row->role == 'Peserta' && $row->peserta_kodemd) {
+                } elseif ($row->role === 'Peserta' && $row->peserta_kodemd) {
                     return $row->peserta_kodemd;
                 } else {
                     return '-';
                 }
             })
             ->addColumn('status', function ($row) {
-                $status = $row->login_token ? '<span class="badge bg-success" style="cursor:pointer" onclick="handleStatusClick(' . $row->id . ', this)">Online</span>'
+                return $row->login_token
+                    ? '<span class="badge bg-success" style="cursor:pointer" onclick="handleStatusClick(' . $row->id . ', this)">Online</span>'
                     : '<span class="badge bg-secondary">Offline</span>';
-                return $status;
             })
             ->addColumn('action', function ($row) {
                 $detail = '<button class="btn btn-sm btn-primary" onclick="showUserDetail(' . $row->id . ')">Detail</button>';
@@ -119,8 +115,6 @@ class AdminController extends Controller
             })
             ->rawColumns(['status', 'action'])
             ->toJson();
-
-        return $result;
     }
 
     public function store(Request $request)

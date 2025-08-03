@@ -40,51 +40,17 @@
                                                     $('#myTable').DataTable({
                                                         processing: true,
                                                         serverSide: true,
-                                                        ajax: '{{ url('get-user/data') }}',
-                                                        searching: true,
-                                                        lengthChange: true,
-                                                        columns: [{
-                                                                data: 'DT_RowIndex',
-                                                                name: 'DT_RowIndex',
-                                                                orderable: false,
-                                                                searchable: false,
-                                                                className: 'text-center'
-                                                            },
-                                                            {
-                                                                data: 'nama',
-                                                                name: 'nama'
-                                                            },
-                                                            {
-                                                                data: 'username',
-                                                                name: 'username'
-                                                            },
-                                                            {
-                                                                data: 'email',
-                                                                name: 'email'
-                                                            },
-                                                            {
-                                                                data: 'maindealer',
-                                                                name: 'maindealer',
-                                                                className: 'text-center'
-                                                            },
-                                                            {
-                                                                data: 'role',
-                                                                name: 'role',
-                                                                className: 'text-center'
-                                                            },
-                                                            {
-                                                                data: 'status',
-                                                                name: 'status',
-                                                                className: 'text-center'
-                                                            },
-                                                            {
-                                                                data: 'action',
-                                                                name: 'action',
-                                                                orderable: false,
-                                                                searchable: false,
-                                                                className: 'text-center'
-                                                            },
-                                                        ],
+                                                        ajax: '/get-user/data',
+                                                        columns: [
+                                                            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                                                            { data: 'nama', name: 'nama' },
+                                                            { data: 'username', name: 'username' },
+                                                            { data: 'email', name: 'email' },
+                                                            { data: 'maindealer', name: 'maindealer' },
+                                                            { data: 'role', name: 'role' },
+                                                            { data: 'status', name: 'status' },
+                                                            { data: 'action', name: 'action', orderable: false, searchable: false },
+                                                        ]
                                                     });
                                                 });
                                             </script>

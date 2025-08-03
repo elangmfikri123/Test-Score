@@ -7,7 +7,6 @@ use App\Models\Answer;
 use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
 use App\Models\PesertaCourse;
-use Illuminate\Support\Facades\Cache;
 use Vinkla\Hashids\Facades\Hashids;
 
 class PesertaCourseController extends Controller
@@ -25,10 +24,6 @@ class PesertaCourseController extends Controller
             'status_pengerjaan' => 'sedang_dikerjakan',
             'start_exam' => now(),
         ]);
-
-        if ($pesertaCourse->course->randomquestion === 'Ya') {
-            $this->generateQuestionOrder($pesertaCourse);
-        }
 
         return response()->json([
             'status' => 'success',
@@ -53,16 +48,13 @@ class PesertaCourseController extends Controller
 
     public function loadQuestion($id, $numberQuestion)
     {
-        $pesertaCourse = PesertaCourse::with('course')->findOrFail($id);
-        
-        $questions = $this->getQuestionsOrder($pesertaCourse);
+        $pesertaCourse = PesertaCourse::with('course.questions.answers')->findOrFail($id);
+        $questions = $pesertaCourse->course->questions()->with('answers')->get();
         $question = $questions[$numberQuestion - 1] ?? null;
 
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
-
-        $question->load('answers');
         $answer = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)
             ->where('question_id', $question->id)
             ->first();
@@ -102,16 +94,13 @@ class PesertaCourseController extends Controller
             'question_number' => 'required|integer',
             'answer_id' => 'required|integer',
         ]);
-        
-        $pesertaCourse = PesertaCourse::with('course')->findOrFail($validated['peserta_course_id']);
-        
-        $questions = $this->getQuestionsOrder($pesertaCourse);
+        $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
+        $questions = $pesertaCourse->course->questions()->get();
         $question = $questions[$validated['question_number'] - 1] ?? null;
 
         if (!$question) {
             return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
         }
-
         $isCorrect = $this->checkIfAnswerIsCorrect($question->id, $validated['answer_id']);
         $answer = PesertaAnswer::updateOrCreate(
             [
@@ -131,7 +120,6 @@ class PesertaCourseController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan jawaban']);
         }
     }
-
     private function checkIfAnswerIsCorrect($questionId, $answerId)
     {
         $correctAnswer = Answer::where('question_id', $questionId)
@@ -146,7 +134,6 @@ class PesertaCourseController extends Controller
             ->findOrFail($id);
         return view('courses.examfinished', compact('pesertaCourse'));
     }
-
     public function finishExam(Request $request, $id)
     {
         $pesertaCourse = PesertaCourse::find($id);
@@ -154,9 +141,6 @@ class PesertaCourseController extends Controller
         if (!$pesertaCourse) {
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.']);
         }
-
-        Cache::forget('question_order_'.$id);
-
         $pesertaCourse->update([
             'sisa_waktu' => $request->sisa_waktu ?? 0,
             'end_exam' => Carbon::now(),
@@ -167,36 +151,5 @@ class PesertaCourseController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Ujian berhasil diakhiri.']);
         }
         return redirect()->route('exam.finished');
-    }
-
-    private function getQuestionsOrder($pesertaCourse)
-    {
-
-        if ($pesertaCourse->course->randomquestion !== 'Ya') {
-            return $pesertaCourse->course->questions()->orderBy('id')->get();
-        }
-
-        return Cache::remember('question_order_'.$pesertaCourse->id, now()->addHours(2), function() use ($pesertaCourse) {
-            return $this->generateShuffledQuestions($pesertaCourse);
-        });
-    }
-
-    private function generateShuffledQuestions($pesertaCourse)
-    {
-        $questions = $pesertaCourse->course->questions()->get();
-        
-        $version = $pesertaCourse->peserta_id % 5;
-        $questions = $questions->shuffle($version);
-        
-        return $questions;
-    }
-
-
-    private function generateQuestionOrder($pesertaCourse)
-    {
-        if ($pesertaCourse->course->randomquestion === 'Ya') {
-            $questions = $this->generateShuffledQuestions($pesertaCourse);
-            Cache::put('question_order_'.$pesertaCourse->id, $questions, now()->addHours(2));
-        }
     }
 }

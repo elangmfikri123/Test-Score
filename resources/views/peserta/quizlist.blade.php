@@ -8,7 +8,6 @@
                     <div class="page-body">
                         <div class="row">
                             <div class="col-sm-12">
-
                                 <div class="page-header mb-3">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
                                         <div>
@@ -31,7 +30,6 @@
                                         <h5>List Quiz</h5>
                                     </div>
                                     <div class="card-block">
-                                        {{-- Search dan Show Entries --}}
                                         <div class="row mb-3 justify-content-between">
                                             <div class="col-md-1">
                                                 <select id="entries" class="form-control">
@@ -46,13 +44,10 @@
                                             </div>
                                         </div>
 
-                                        {{-- Card Container --}}
                                         <div id="quizContainer"></div>
 
-                                        {{-- Pagination --}}
                                         <div class="mt-4 text-center" id="paginationContainer"></div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -62,9 +57,8 @@
         </div>
     </div>
 
-    {{-- Scripts --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             let currentPage = 1;
@@ -84,6 +78,7 @@
                     success: function(response) {
                         renderCards(response.data);
                         renderPagination(response.recordsTotal);
+                        setupExamButtonHandlers();
                     }
                 });
             }
@@ -138,6 +133,35 @@
                     </button>
                 `);
                 }
+            }
+
+            function setupExamButtonHandlers() {
+                $('.start-exam-btn').on('click', function(e) {
+                    e.preventDefault();
+                    
+                    const startDate = new Date($(this).data('start'));
+                    const endDate = new Date($(this).data('end'));
+                    const now = new Date();
+                    const url = $(this).attr('href');
+
+                    if (now < startDate) {
+                        Swal.fire({
+                            title: 'Ujian Belum Dapat Dimulai',
+                            text: 'Waktu ujian belum tiba. Silahkan tunggu sampai waktu yang ditentukan.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if (now > endDate) {
+                        Swal.fire({
+                            title: 'Ujian Sudah Berakhir',
+                            text: 'Waktu ujian telah habis. Anda tidak dapat memulai ujian ini.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        window.location.href = url;
+                    }
+                });
             }
 
             // Events

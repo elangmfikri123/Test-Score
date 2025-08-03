@@ -6,6 +6,7 @@ use App\Models\Peserta;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use App\Models\PesertaCourse;
+use Carbon\Carbon;
 use Vinkla\Hashids\Facades\Hashids;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PesertaController extends Controller
 {
-    // public function index()
-    // {
-    //     $peserta = Peserta::where('user_id', Auth::id())->first();
-    //     return view('peserta.indexpeserta', compact('peserta'));
-    // }
-
     public function index()
     {
         $peserta = Peserta::where('user_id', Auth::id())->first();
@@ -36,6 +31,7 @@ class PesertaController extends Controller
     {
         return view('peserta.quizlist');
     }
+
     public function listJson()
     {
         $peserta = Peserta::where('user_id', Auth::id())->first();
@@ -65,12 +61,20 @@ class PesertaController extends Controller
                 return $row->status_pengerjaan ?? 'belum_mulai';
             })
             ->addColumn('action', function ($row) {
+                $now = Carbon::now();
+                $startDate = Carbon::parse($row->course->start_date);
+                $endDate = Carbon::parse($row->course->end_date);
+
                 if ($row->status_pengerjaan === 'selesai') {
                     return '<a href="' . route('exam.finished', $row->id) . '" class="btn btn-sm btn-success">Selesai</a>';
                 } elseif ($row->status_pengerjaan === 'sedang_dikerjakan') {
                     return '<a href="' . url('/exam/' . $row->id) . '" class="btn btn-sm btn-info">Lanjutkan</a>';
                 } else {
-                    return '<a href="' . url('/exam/confirmation/' . $row->id) . '" class="btn btn-sm btn-primary">Mulai</a>';
+                    // Tambahkan data attributes untuk validasi waktu
+                    return '<a href="' . url('/exam/confirmation/' . $row->id) . '" 
+                            class="btn btn-sm btn-primary start-exam-btn"
+                            data-start="' . $row->course->start_date . '"
+                            data-end="' . $row->course->end_date . '">Mulai</a>';
                 }
             })
             ->filter(function ($query) {
