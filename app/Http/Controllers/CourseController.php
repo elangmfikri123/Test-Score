@@ -4,152 +4,439 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Answer;
+use App\Models\Course;
+use App\Models\Peserta;
+use App\Models\Category;
+use App\Models\Question;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\PesertaAnswer;
 use App\Models\PesertaCourse;
-use Vinkla\Hashids\Facades\Hashids;
+use App\Models\CategoryQuestion;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
-class PesertaCourseController extends Controller
+class CourseController extends Controller
 {
-    public function showConfirmation($id)
+    public function managecourselist()
     {
-        $pesertaCourse = PesertaCourse::with('course.category')->findOrFail($id);
-        return view('courses.confirmation', compact('pesertaCourse', 'id'));
+        return view('admin.admin-managecourse');
     }
-
-    public function startExam(Request $request, $id)
+    public function addnewcourse()
     {
-        $pesertaCourse = PesertaCourse::with('course')->findOrFail($id);
-        $pesertaCourse->update([
-            'status_pengerjaan' => 'sedang_dikerjakan',
-            'start_exam' => now(),
+        $categories = Category::all();
+        return view('admin.admin-addnewcourse', compact('categories'));
+    }
+    public function showcourselist(Request $request)
+    {
+        $data = Course::with('category')
+            ->withCount('questions');
+
+        if ($request->has('search') && !empty($request->search['value'])) {
+            $search = $request->search['value'];
+            $data->where(function ($query) use ($search) {
+                $query->where('namacourse', 'like', '%' . $search . '%');
+            });
+        }
+
+        $result = DataTables()->of($data)
+            ->addIndexColumn()
+            ->addColumn('categoryname', function ($row) {
+                return $row->category ? $row->category->namacategory : '-';
+            })
+            ->addColumn('totalquestion', function ($row) {
+                return $row->questions_count ?? 0;
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <a href="' . url('/admin/exams/' . $row->id . '/questions') . '" class="btn btn-sm btn-info">Add</a>
+                    <a href="' . url('/admin/exams/' . $row->id . '/edit') . '" class="btn btn-sm btn-warning">Edit</a>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCourse(' . $row->id . ')">Hapus</button>
+                ';
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+
+        return $result;
+    }
+    public function store(Request $request)
+    {
+        $course = Course::create([
+            'category_id' => $request->category_id,
+            'namacourse' => $request->namacourse,
+            'description' => $request->description,
+            'randomanswer' => $request->randomanswer,
+            'randomquestion' => $request->randomquestion,
+            'showscore' => $request->showscore,
+            'duration_minutes' => $request->duration_minutes,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'created_by' => auth()->user()->username ?? 'SystemAdmin'
         ]);
-
-        return response()->json([
-            'status' => 'success',
-            'duration_minutes' => $pesertaCourse->course->duration_minutes,
-            'start_time' => now()->timestamp,
-        ]);
-    }
-
-    public function showQuiz($id)
-    {
-        $pesertaCourse = PesertaCourse::findOrFail($id);
-        if ($pesertaCourse->status_pengerjaan === 'selesai') {
-            return redirect()->route('exam.finished', ['id' => $id]);
-        }
-
-        if ($pesertaCourse->status_pengerjaan !== 'sedang_dikerjakan') {
-            return redirect()->back()->with('error', 'Silahkan mulai ujian terlebih dahulu');
-        }
-
-        return view('courses.quiz', compact('pesertaCourse'));
-    }
-
-    public function loadQuestion($id, $numberQuestion)
-    {
-        $pesertaCourse = PesertaCourse::with('course.questions.answers')->findOrFail($id);
-        $questions = $pesertaCourse->course->questions()->with('answers')->get();
-        $question = $questions[$numberQuestion - 1] ?? null;
-
-        if (!$question) {
-            return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
-        }
-        $answer = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)
-            ->where('question_id', $question->id)
-            ->first();
-
-        $allAnswersRaw = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)->get();
-        $answeredNumbers = [];
-
-        foreach ($questions as $index => $q) {
-            $jawaban = $allAnswersRaw->firstWhere('question_id', $q->id);
-            if ($jawaban) {
-                $answeredNumbers[$index + 1] = $jawaban->answer_id;
+        $subcategories = $request->input('subcategories', []);
+        foreach ($subcategories as $subcat) {
+            if (!empty($subcat)) {
+                CategoryQuestion::create([
+                    'course_id' => $course->id,
+                    'vnamacategory' => $subcat
+                ]);
             }
         }
 
+        return redirect('/admin/exams')->with('success', 'Course dan Subkategori berhasil ditambahkan!');
+    }
+
+    public function edit($id)
+    {
+        $course = Course::findOrFail($id);
+        $categories = Category::all();
+        $subcategories = CategoryQuestion::where('course_id', $id)->get();
+
+        return view('admin.admin-editcourse', compact('course', 'categories', 'subcategories'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+
+        $course->update([
+            'category_id' => $request->category_id,
+            'namacourse' => $request->namacourse,
+            'description' => $request->description,
+            'randomanswer' => $request->randomanswer,
+            'randomquestion' => $request->randomquestion,
+            'showscore' => $request->showscore,
+            'duration_minutes' => $request->duration_minutes,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ]);
+
+        CategoryQuestion::where('course_id', $course->id)->delete();
+        foreach ($request->subcategories ?? [] as $subcat) {
+            if (!empty($subcat)) {
+                CategoryQuestion::create([
+                    'course_id' => $course->id,
+                    'vnamacategory' => $subcat,
+                ]);
+            }
+        }
+
+        return redirect('/admin/exams')->with('success', 'Course dan Subkategori berhasil diperbarui!');
+    }
+    public function deleteCourse($id)
+    {
+        $course = Course::with('questions.answers')->findOrFail($id);
+        foreach ($course->questions as $question) {
+            $question->answers()->delete();
+        }
+        $course->questions()->delete();
+        $course->delete();
+
+        return response()->json(['success' => true, 'message' => 'Course berhasil dihapus']);
+    }
+
+    public function showquestionslist($id)
+    {
+        $course = Course::withCount('questions')->findOrFail($id);
+        $categories = CategoryQuestion::where('course_id', $id)->get();
+        return view('admin.admin-questionslist', compact('course', 'categories'));
+    }
+
+    public function dataquestionAnswerJson($id)
+    {
+        $categoryId = request()->get('category_id');
+
+        $questions = Question::with(['answers', 'categoryquestion'])
+            ->where('course_id', $id)
+            ->when($categoryId, function ($query) use ($categoryId) {
+                return $query->where('categoryquestion_id', $categoryId);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return datatables()->of($questions)
+            ->addIndexColumn()
+            ->addColumn('questions_answer', function ($question) {
+                $html = '<div style="word-break: break-word; white-space: normal;">' . $question->pertanyaan . '</div>';
+                $html .= '<div class="badge badge-info mb-2">';
+                $html .= $question->categoryquestion ? $question->categoryquestion->vnamacategory : 'Uncategorized';
+                $html .= '</div>';
+
+                $html .= '<table style="width: 100%;">';
+
+                foreach ($question->answers as $index => $answer) {
+                    $label = chr(65 + $index);
+                    $isCorrect = $answer->is_correct;
+                    $textColor = $isCorrect ? 'green' : 'black';
+                    $fontWeight = $isCorrect ? 'bold' : 'normal';
+                    $check = $isCorrect ? '<i class="ion-checkmark" style="color: green;"></i>' : '';
+                    $bgColor = $isCorrect ? 'background-color: #D4EDDA;' : '';
+
+                    $html .= "<tr style='$bgColor'>
+                <td style='width: 30px; color: $textColor; font-weight: $fontWeight;'>$label.</td>
+                <td style='color: $textColor; font-weight: $fontWeight; word-break: break-word; white-space: normal; max-width: 600px;'>{$answer->jawaban}</td>
+                <td style='width: 30px;'>$check</td>
+              </tr>";
+                }
+
+                $html .= '</table>';
+                return $html;
+            })
+            ->addColumn('action', function ($question) {
+                $editUrl = url("/admin/exams/question-edit/" . $question->id);
+                return '
+                <a href="' . $editUrl . '" class="btn btn-sm btn-warning"><i class="ion-edit"></i> Edit</a>
+                <button class="btn btn-sm btn-danger" onclick="deleteQuestion(' . $question->id . ')"><i class="ion-trash-b"></i> Hapus</button>
+            ';
+            })
+            ->rawColumns(['questions_answer', 'action'])
+            ->make(true);
+    }
+
+    public function createquestion($id)
+    {
+        $course = Course::withCount('questions')->findOrFail($id);
+        $categories = CategoryQuestion::where('course_id', $id)->get();
+        return view('admin.admin-addnewquestions', compact('course', 'categories'));
+    }
+
+    public function storequestion(Request $request, $id)
+    {
+        $request->validate([
+            'deskripsi' => 'required|string',
+            'jawaban' => 'required|array|min:1',
+            'is_correct' => 'required|array',
+            'categoryquestion_id' => 'nullable|exists:categoryquestion,id'
+        ]);
+
+        $question = new Question();
+        $question->course_id = $id;
+        $question->pertanyaan = $request->deskripsi;
+        $question->categoryquestion_id = $request->categoryquestion_id;
+        $question->save();
+
+        foreach ($request->jawaban as $index => $jawabanText) {
+            $answer = new Answer();
+            $answer->question_id = $question->id;
+            $answer->jawaban = $jawabanText;
+            $answer->is_correct = isset($request->is_correct[$index]) && $request->is_correct[$index] == 1 ? 1 : 0;
+            $answer->save();
+        }
+
+        return redirect()->back()->with('success', 'Soal berhasil ditambahkan.');
+    }
+
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = 'img_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalName();
+            $path = $file->storeAs('uploadcourse', $filename, 'public');
+            $url = asset('storage/uploadcourse/' . $filename);
+            return response()->json(['location' => $url]);
+        }
+
+        return response()->json(['error' => 'Tidak ada file diunggah'], 400);
+    }
+
+    public function editquestion($id)
+    {
+        $question = Question::with('answers', 'course.category', 'categoryquestion')->findOrFail($id);
+        $course = $question->course;
+        $categories = CategoryQuestion::where('course_id', $course->id)->get(); // Tambahkan ini
+        return view('admin.admin-editquestions', compact('question', 'course', 'categories')); // Tambahkan categories
+    }
+
+    public function updatequestion(Request $request, $id)
+    {
+        $request->validate([
+            'deskripsi' => 'required|string',
+            'jawaban' => 'required|array|min:1',
+            'is_correct' => 'required|array',
+            'categoryquestion_id' => 'nullable|exists:categoryquestion,id',
+            'answer_ids' => 'sometimes|array'
+        ]);
+
+        // Update pertanyaan utama
+        $question = Question::findOrFail($id);
+        $question->pertanyaan = $request->deskripsi;
+        $question->categoryquestion_id = $request->categoryquestion_id;
+        $question->save();
+
+        // Proses jawaban
+        $existingAnswerIds = [];
+        $correctAnswerIndex = array_search('1', $request->is_correct); // Cari index jawaban yang benar
+
+        foreach ($request->jawaban as $index => $jawabanText) {
+            // Cek apakah jawaban sudah ada atau baru
+            $answerId = $request->answer_ids[$index] ?? null;
+
+            if ($answerId) {
+                // Update jawaban yang sudah ada
+                $answer = Answer::find($answerId);
+                $answer->jawaban = $jawabanText;
+                $answer->is_correct = ($index == $correctAnswerIndex) ? 1 : 0;
+                $answer->save();
+                $existingAnswerIds[] = $answer->id;
+            } else {
+                // Buat jawaban baru
+                $answer = new Answer();
+                $answer->question_id = $question->id;
+                $answer->jawaban = $jawabanText;
+                $answer->is_correct = ($index == $correctAnswerIndex) ? 1 : 0;
+                $answer->save();
+                $existingAnswerIds[] = $answer->id;
+            }
+        }
+        if (!empty($existingAnswerIds)) {
+            Answer::where('question_id', $question->id)
+                ->whereNotIn('id', $existingAnswerIds)
+                ->delete();
+        }
+
+        return redirect()
+            ->route('admin.exams.questions', ['id' => $question->course_id])
+            ->with('success', 'Soal berhasil diperbarui.');
+    }
+
+    public function deleteQuestion($id)
+    {
+        $question = Question::with('answers')->findOrFail($id);
+        $question->answers()->delete();
+        $question->delete();
+
         return response()->json([
-            'status' => 'success',
-            'question_number' => $numberQuestion,
-            'question_id' => $question->id,
-            'pertanyaan' => $question->pertanyaan,
-            'answers' => $question->answers->map(function ($a, $index) {
-                return [
-                    'id' => $a->id,
-                    'text' => $a->jawaban,
-                    'label' => chr(65 + $index)
-                ];
-            }),
-            'answered_questions' => $answeredNumbers,
-            'selected_answer' => $answer ? $answer->answer_id : null,
-            'total_questions' => count($questions),
+            'success' => true,
+            'message' => 'Data Berhasil Dihapus'
         ]);
     }
-
-    public function storeAnswer(Request $request)
+    public function showCourseParticipants()
     {
-        $validated = $request->validate([
-            'peserta_course_id' => 'required|integer',
-            'question_number' => 'required|integer',
-            'answer_id' => 'required|integer',
+        return view('admin.admin-managecourseparticipants');
+    }
+
+    public function JsonParticipantsCourse(Request $request)
+    {
+        $data = Course::with('category')
+            ->select('id', 'category_id', 'namacourse', 'start_date', 'end_date');
+
+        return datatables()->of($data)
+            ->addIndexColumn()
+            ->addColumn('categoryname', function ($row) {
+                return $row->category->namacategory ?? '-';
+            })
+            ->addColumn('participant', function ($row) {
+                return PesertaCourse::where('course_id', $row->id)->count();
+            })
+            ->addColumn('action', function ($row) {
+                $url = url('/admin/manage-participants/' . $row->id);
+                return '<a href="' . $url . '" class="btn btn-sm btn-primary">Manage</a>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function listParticipanstCourse($id)
+    {
+        $course = Course::findOrFail($id);
+        return view('admin.admin-monitoringparticipants', compact('course'));
+    }
+
+    public function addParticipants($id)
+    {
+        $course = Course::findOrFail($id);
+        return view('admin.admin-enrolledparticipants', compact('course'));
+    }
+
+    public function getEnrolledParticipantsJson($id)
+    {
+        $pesertaCourses = PesertaCourse::with(['peserta', 'course'])
+            ->where('course_id', $id)
+            ->get();
+
+        return datatables()->of($pesertaCourses)
+            ->addIndexColumn()
+            ->addColumn('nama', fn($row) => $row->peserta->nama)
+            ->addColumn('honda_id', fn($row) => $row->peserta->honda_id)
+            ->addColumn('namacategory', fn($row) => $row->peserta->category->namacategory ?? '-')
+            ->addColumn('duration_minutes', function ($row) {
+                if ($row->status_pengerjaan === 'sedang_dikerjakan') {
+                    $endTime = Carbon::parse($row->selesai_ujian);
+                    $remaining = $endTime->diffInSeconds(now(), false);
+                    return $remaining > 0 ? $remaining : 0;
+                }
+                if ($row->status_pengerjaan === 'belum_mulai') {
+                    return $row->course->duration_minutes * 60;
+                }
+                if ($row->status_pengerjaan === 'selesai' && $row->sisa_waktu) {
+                    $parts = explode(':', $row->sisa_waktu);
+                    $seconds = ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
+                    return $seconds;
+                }
+
+                return 0;
+            })
+            ->addColumn('status_pengerjaan', function ($row) {
+                $status = $row->status_pengerjaan ?? '-';
+                $badge = match ($status) {
+                    'belum_mulai' => '<label class="label label-warning">Belum Mulai</label>',
+                    'sedang_dikerjakan' => '<label class="label label-info">On Progress</label>',
+                    'selesai' => '<label class="label label-success">Selesai</label>',
+                    default => '<label class="label label-default">-</label>',
+                };
+                return $badge;
+            })
+            ->addColumn('action', function ($row) {
+                return '<button class="btn btn-danger btn-sm btn-delete" data-id="' . $row->id . '">Hapus</button>';
+            })
+            ->rawColumns(['status_pengerjaan', 'action'])
+            ->make(true);
+    }
+
+    public function deletePeserta($id)
+    {
+        $peserta = PesertaCourse::findOrFail($id);
+        $peserta->delete();
+        return response()->json(['status' => 'success']);
+    }
+
+    public function getNonEnrolledParticipantsJson($id)
+    {
+        $enrolledPesertaIds = PesertaCourse::where('course_id', $id)
+            ->pluck('peserta_id')
+            ->toArray();
+
+        $query = Peserta::with(['category', 'maindealer'])
+            ->whereNotIn('id', $enrolledPesertaIds);
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('namacategory', function ($row) {
+                return $row->category->namacategory ?? '-';
+            })
+            ->addColumn('kodemd', function ($row) {
+                return $row->maindealer->kodemd ?? '-';
+            })
+            ->addColumn('action', function ($row) {
+                return '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function storeParticipants(Request $request, $id)
+    {
+        $request->validate([
+            'peserta_ids' => 'required|array',
         ]);
-        $pesertaCourse = PesertaCourse::findOrFail($validated['peserta_course_id']);
-        $questions = $pesertaCourse->course->questions()->get();
-        $question = $questions[$validated['question_number'] - 1] ?? null;
 
-        if (!$question) {
-            return response()->json(['status' => 'error', 'message' => 'Soal tidak ditemukan'], 404);
+        foreach ($request->peserta_ids as $pesertaId) {
+            PesertaCourse::firstOrCreate([
+                'course_id' => $id,
+                'peserta_id' => $pesertaId,
+            ]);
         }
-        $isCorrect = $this->checkIfAnswerIsCorrect($question->id, $validated['answer_id']);
-        $answer = PesertaAnswer::updateOrCreate(
-            [
-                'peserta_course_id' => $pesertaCourse->id,
-                'peserta_id' => $pesertaCourse->peserta_id,
-                'question_id' => $question->id,
-            ],
-            [
-                'answer_id' => $validated['answer_id'],
-                'is_correct' => $isCorrect,
-            ]
-        );
 
-        if ($answer) {
-            return response()->json(['status' => 'success', 'message' => 'Jawaban disimpan']);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan jawaban']);
-        }
-    }
-    private function checkIfAnswerIsCorrect($questionId, $answerId)
-    {
-        $correctAnswer = Answer::where('question_id', $questionId)
-            ->where('is_correct', true)
-            ->first();
-        return $correctAnswer && $correctAnswer->id == $answerId;
-    }
-
-    public function finished($id)
-    {
-        $pesertaCourse = PesertaCourse::with(['peserta', 'course', 'peserta.mainDealer'])
-            ->findOrFail($id);
-        return view('courses.examfinished', compact('pesertaCourse'));
-    }
-    public function finishExam(Request $request, $id)
-    {
-        $pesertaCourse = PesertaCourse::find($id);
-
-        if (!$pesertaCourse) {
-            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan.']);
-        }
-        $pesertaCourse->update([
-            'sisa_waktu' => $request->sisa_waktu ?? 0,
-            'end_exam' => Carbon::now(),
-            'status_pengerjaan' => 'selesai',
-        ]);
-
-        if ($request->ajax()) {
-            return response()->json(['status' => 'success', 'message' => 'Ujian berhasil diakhiri.']);
-        }
-        return redirect()->route('exam.finished');
+        return redirect()->route('participants.monitoring', $id)->with('success', 'Peserta berhasil ditambahkan');
     }
 }
