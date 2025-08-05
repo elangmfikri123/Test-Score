@@ -259,8 +259,8 @@ class CourseController extends Controller
     {
         $question = Question::with('answers', 'course.category', 'categoryquestion')->findOrFail($id);
         $course = $question->course;
-        $categories = CategoryQuestion::where('course_id', $course->id)->get(); 
-        return view('admin.admin-editquestions', compact('question', 'course', 'categories')); 
+        $categories = CategoryQuestion::where('course_id', $course->id)->get();
+        return view('admin.admin-editquestions', compact('question', 'course', 'categories'));
     }
 
     public function updatequestion(Request $request, $id)
@@ -279,7 +279,7 @@ class CourseController extends Controller
         $question->save();
 
         $existingAnswerIds = [];
-        $correctAnswerIndex = array_search('1', $request->is_correct); 
+        $correctAnswerIndex = array_search('1', $request->is_correct);
 
         foreach ($request->jawaban as $index => $jawabanText) {
             $answerId = $request->answer_ids[$index] ?? null;
@@ -429,7 +429,7 @@ class CourseController extends Controller
                 return $row->maindealer->kodemd ?? '-';
             })
             ->addColumn('action', function ($row) {
-                return '<input type="checkbox" class="rowCheckbox" value="' . $row->id . '">';
+                return '<input type="checkbox" class="rowCheckbox" name="peserta_ids[]" value="' . $row->id . '">';
             })
             ->rawColumns(['action'])
             ->make(true);
