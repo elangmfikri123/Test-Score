@@ -37,62 +37,6 @@
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('files\assets\css\jquery.mCustomScrollbar.css') }}">
-    
-    <!-- Custom CSS for responsive logout -->
-    <style>
-        /* Responsive logout styles */
-        .desktop-logout {
-            display: block;
-        }
-        .mobile-logout {
-            display: none;
-            margin-top: auto; /* Pushes to bottom */
-            padding: 15px 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .mobile-logout .logout-btn {
-            display: flex;
-            align-items: center;
-            color: #fff;
-            width: 100%;
-            background: none;
-            border: none;
-            text-align: left;
-            padding: 8px 0;
-        }
-        .mobile-logout .logout-btn i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-        
-        @media (max-width: 992px) {
-            .desktop-logout {
-                display: none !important;
-            }
-            .mobile-logout {
-                display: block;
-            }
-        }
-        
-        /* Adjust header for better mobile view */
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .navbar-logo .mobile-menu {
-            order: 1;
-        }
-        .navbar-logo .logo-img {
-            order: 2;
-            margin: 0 auto;
-        }
-        .navbar-logo .spacer {
-            order: 3;
-            width: 40px;
-        }
-    </style>
 </head>
 
 <body>
@@ -113,14 +57,25 @@
 
             <nav class="navbar header-navbar pcoded-header">
                 <div class="navbar-wrapper">
-                    <div class="navbar-logo">
+
+                    {{-- <div class="navbar-logo">
                         <a class="mobile-menu" id="mobile-collapse" href="#!">
+                            <i class="feather icon-menu"></i>
+                        </a>
+                        <a href="index-1.htm">
+                            <img class="img-fluid" src="{{ asset('files\assets\images\Logo-100.png') }}" alt="Theme-Logo" width = "75%">
+                        </a>
+                    </div> --}}
+
+                    <div class="navbar-logo d-flex align-items-center">
+                        <a class="mobile-menu me-auto" id="mobile-collapse" href="#!">
+                            {{-- <i class="feather icon-menu"></i> --}}
                             <i class="fa fa-bars"></i>
                         </a>
-                        <a href="index-1.htm" class="logo-img">
+                        <a href="index-1.htm" class="mx-auto">
                             <img class="img-fluid" src="{{ asset('files/assets/images/Logo-100.png') }}" alt="Theme-Logo" style="max-height: 40px; width: auto;">
                         </a>
-                        <div class="spacer"></div>
+                        <div class="ms-auto" style="width: 40px;"></div> <!-- Balance untuk menu icon -->
                     </div>
 
                     <div class="navbar-container container-fluid">
@@ -131,7 +86,23 @@
                                 </a>
                             </li>
                         </ul>
-                        <ul class="nav-right desktop-logout">
+                        <ul class="nav-right">
+                            <!--<li class="header-notification">
+                                <div class="dropdown-primary dropdown">
+                                    <div class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="feather icon-bell"></i>
+                                        <span class="badge bg-c-pink">5</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="header-notification">
+                                <div class="dropdown-primary dropdown">
+                                    <div class="displayChatbox dropdown-toggle" data-toggle="dropdown">
+                                        <i class="feather icon-message-square"></i>
+                                        <span class="badge bg-c-green">3</span>
+                                    </div>
+                                </div>
+                            </li>-->
                             <li class="user-profile header-notification">
                                 <div class="dropdown-primary dropdown">
                                     <div class="dropdown-toggle" data-toggle="dropdown" style="display: flex; align-items: center; gap: 8px;">
@@ -167,31 +138,22 @@
                     </div>
                 </div>
             </nav>
-            
             <div class="pcoded-main-container">
                 <div class="pcoded-wrapper">
                     <nav class="pcoded-navbar">
                         <div class="pcoded-inner-navbar main-menu">
                             @if (Auth::user()->role == 'Admin')
                                 @include('layout.partials.menu-admin')
+
                             @elseif(Auth::user()->role == 'AdminMD')
                                 @include('layout.partials.menu-adminmd')
+
                             @elseif(Auth::user()->role == 'Juri')
                                 @include('layout.partials.menu-juri')
+                                
                             @elseif(Auth::user()->role == 'Peserta')
                                 @include('layout.partials.menu-peserta')
                             @endif
-                            
-                            <!-- Mobile Logout Button -->
-                            <div class="mobile-logout">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="logout-btn">
-                                        <i class="feather icon-log-out"></i> 
-                                        <span>Logout</span>
-                                    </button>
-                                </form>
-                            </div>
                         </div>
                     </nav>
                     @yield('content')
@@ -199,7 +161,6 @@
             </div>
         </div>
     </div>
-    
     <!-- Tambahkan ini sebelum </body> -->
     <script type="text/javascript" src="{{ asset('files\assets\js\sweetalert2@11.js') }}"></script>
     <script>
@@ -236,12 +197,6 @@
                 }
             });
         }, 60000);
-        
-        // Make sure mobile menu toggle works
-        document.getElementById('mobile-collapse').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('pcoded').classList.toggle('mob-open');
-        });
     </script>   
 
     <!-- Warning Section Ends -->
@@ -282,6 +237,9 @@
     <script type="text/javascript" src="{{ asset('files\assets\js\script.min.js') }}"></script>
     <!-- Select 2 js -->
     <script type="text/javascript" src="{{ asset('files\bower_components\select2\js\select2.full.min.js') }}"></script>
+
+    {{-- <script type="text/javascript" src="..\files\bower_components\sweetalert\js\sweetalert.min.js"></script>
+    <script type="text/javascript" src="..\files\assets\js\modal.js"></script> --}}
     <!-- Multiselect js -->
     <script type="text/javascript" src="{{ asset('files\bower_components\bootstrap-multiselect\js\bootstrap-multiselect.js') }}"></script>
     <script type="text/javascript" src="{{ asset('files\bower_components\multiselect\js\jquery.multi-select.js') }}"></script>
@@ -292,6 +250,8 @@
     <script src="{{ asset('files\assets\pages\form-masking\autoNumeric.js') }}"></script>
     <script src="{{ asset('files\assets\pages\form-masking\form-mask.js') }}"></script>
 
+    <!-- ck editor -->
+    {{-- <script src="{{ asset('files\assets\pages\ckeditor\ckeditor.js') }}"></script> --}}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>
@@ -302,4 +262,5 @@
   gtag('config', 'UA-23581568-13');
 </script>
 </body>
+
 </html>

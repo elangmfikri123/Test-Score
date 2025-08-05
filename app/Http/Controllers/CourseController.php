@@ -111,17 +111,33 @@ class CourseController extends Controller
             'end_date' => $request->end_date,
         ]);
 
-        CategoryQuestion::where('course_id', $course->id)->delete();
-        foreach ($request->subcategories ?? [] as $subcat) {
+        $existingSubcategories = CategoryQuestion::where('course_id', $course->id)->get();
+        foreach ($request->subcategories ?? [] as $index => $subcat) {
             if (!empty($subcat)) {
-                CategoryQuestion::create([
-                    'course_id' => $course->id,
-                    'vnamacategory' => $subcat,
-                ]);
+                if (isset($existingSubcategories[$index])) {
+                    $existingSubcategories[$index]->update([
+                        'vnamacategory' => $subcat
+                    ]);
+                } else {
+                    CategoryQuestion::create([
+                        'course_id' => $course->id,
+                        'vnamacategory' => $subcat,
+                    ]);
+                }
             }
         }
 
-        return redirect('/admin/exams')->with('success', 'Course dan Subkategori berhasil diperbarui!');
+        if (count($existingSubcategories) > count($request->subcategories ?? [])) {
+            $idsToKeep = $existingSubcategories->take(count($request->subcategories ?? []))->pluck('id');
+            CategoryQuestion::where('course_id', $course->id)
+                ->whereNotIn('id', $idsToKeep)
+                ->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course berhasil diperbarui!'
+        ]);
     }
     public function deleteCourse($id)
     {
@@ -243,8 +259,8 @@ class CourseController extends Controller
     {
         $question = Question::with('answers', 'course.category', 'categoryquestion')->findOrFail($id);
         $course = $question->course;
-        $categories = CategoryQuestion::where('course_id', $course->id)->get(); // Tambahkan ini
-        return view('admin.admin-editquestions', compact('question', 'course', 'categories')); // Tambahkan categories
+        $categories = CategoryQuestion::where('course_id', $course->id)->get(); 
+        return view('admin.admin-editquestions', compact('question', 'course', 'categories')); 
     }
 
     public function updatequestion(Request $request, $id)
@@ -257,29 +273,24 @@ class CourseController extends Controller
             'answer_ids' => 'sometimes|array'
         ]);
 
-        // Update pertanyaan utama
         $question = Question::findOrFail($id);
         $question->pertanyaan = $request->deskripsi;
         $question->categoryquestion_id = $request->categoryquestion_id;
         $question->save();
 
-        // Proses jawaban
         $existingAnswerIds = [];
-        $correctAnswerIndex = array_search('1', $request->is_correct); // Cari index jawaban yang benar
+        $correctAnswerIndex = array_search('1', $request->is_correct); 
 
         foreach ($request->jawaban as $index => $jawabanText) {
-            // Cek apakah jawaban sudah ada atau baru
             $answerId = $request->answer_ids[$index] ?? null;
 
             if ($answerId) {
-                // Update jawaban yang sudah ada
                 $answer = Answer::find($answerId);
                 $answer->jawaban = $jawabanText;
                 $answer->is_correct = ($index == $correctAnswerIndex) ? 1 : 0;
                 $answer->save();
                 $existingAnswerIds[] = $answer->id;
             } else {
-                // Buat jawaban baru
                 $answer = new Answer();
                 $answer->question_id = $question->id;
                 $answer->jawaban = $jawabanText;
