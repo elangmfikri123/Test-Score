@@ -447,7 +447,6 @@ class CourseController extends Controller
                 'peserta_id' => $pesertaId,
             ]);
         }
-
         return redirect()->route('participants.monitoring', $id)->with('success', 'Peserta berhasil ditambahkan');
     }
 }

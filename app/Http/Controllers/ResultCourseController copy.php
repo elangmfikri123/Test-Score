@@ -22,7 +22,8 @@ class ResultCourseController extends Controller
             'peserta.user',
             'peserta.maindealer',
             'peserta',
-            'course.category'
+            'peserta.category',
+            'course'
         ])
             ->where('status_pengerjaan', 'selesai')
             ->when($request->status_pengerjaan, function ($q) use ($request) {
@@ -32,7 +33,7 @@ class ResultCourseController extends Controller
                 $q->where('course_id', $request->course_id);
             })
             ->when($request->category_id, function ($q) use ($request) {
-                $q->whereHas('course', function ($c) use ($request) {
+                $q->whereHas('peserta', function ($c) use ($request) {
                     $c->where('category_id', $request->category_id);
                 });
             })
@@ -53,13 +54,42 @@ class ResultCourseController extends Controller
                 return $row->peserta->nama ?? '-';
             })
             ->addColumn('category', function ($row) {
-                return $row->course->category->namacategory ?? '-';
+                return $row->peserta->category->namacategory ?? '-';
             })
             ->addColumn('maindealer', function ($row) {
                 return $row->peserta->maindealer->nama_md ?? '-';
             })
+            ->addColumn('score', function ($row) {
+                $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($row) {
+                    $query->where('peserta_id', $row->peserta_id)
+                        ->where('peserta_course_id', $row->id);
+                }])
+                    ->where('course_id', $row->course_id)
+                    ->get();
+
+                $jumlahBenar = 0;
+                foreach ($questions as $q) {
+                    $userAnswer = $q->pesertaAnswer->first();
+                    $correctAnswer = $q->answers->firstWhere('is_correct', true);
+                    if ($userAnswer && $correctAnswer && $userAnswer->answer_id == $correctAnswer->id) {
+                        $jumlahBenar++;
+                    }
+                }
+
+                $totalSoal = $questions->count();
+                $score = $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : 0;
+
+                return $score;
+            })
             ->addColumn('status', function ($row) {
-                return ucfirst(str_replace('_', ' ', $row->status_pengerjaan));
+                $status = $row->status_pengerjaan ?? '-';
+                $badge = match ($status) {
+                    'belum_mulai' => '<label class="label label-warning">Belum Mulai</label>',
+                    'sedang_dikerjakan' => '<label class="label label-info">On Progress</label>',
+                    'selesai' => '<label class="label label-success">Selesai</label>',
+                    default => '<label class="label label-default">-</label>',
+                };
+                return $badge;
             })
             ->addColumn('createdtime', function ($row) {
                 return $row->created_at ? $row->created_at->format('d/m/Y H:i') : '-';
@@ -67,10 +97,10 @@ class ResultCourseController extends Controller
             ->addColumn('action', function ($row) {
                 return '<a href="' . route('course.details', $row->id) . '" class="btn btn-sm btn-info">Detail</a>';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'status'])
             ->make(true);
     }
-    
+
     public function showDetails($id)
     {
         $pesertaCourse = PesertaCourse::with(['peserta.maindealer', 'course'])->findOrFail($id);

@@ -31,6 +31,18 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row align-items-center">
+                                        {{-- Gambar Profil --}}
+                                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                                            @if ($peserta->filesPeserta && $peserta->filesPeserta->foto_profil)
+                                                <img src="{{ asset('storage/' . $peserta->filesPeserta->foto_profil) }}"
+                                                    class="img-thumbnail rounded" alt="Foto Profil"
+                                                    style="width: 200px; height: 200px; object-fit: cover;">
+                                            @else
+                                                <img src="https://via.placeholder.com/180x180?text=No+Image"
+                                                    class="img-thumbnail rounded" alt="Default Foto">
+                                            @endif
+                                        </div>
+
                                         {{-- Informasi Detail --}}
                                         <div class="col-md-8">
                                             <div class="mb-3 d-flex">

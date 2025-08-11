@@ -375,7 +375,7 @@ class ExportController extends Controller
         }
 
         $headers[] = 'Total Benar';
-        $headers[] = 'Total (%)';
+        $headers[] = 'Total Nilai (%)';
 
         foreach ($course->questions as $index => $question) {
             $cleanQuestion = $this->cleanQuestionText($question->pertanyaan);
@@ -421,7 +421,7 @@ class ExportController extends Controller
             }
 
             $totalCorrect = 0;
-            $questionAnswers = []; 
+            $questionAnswers = [];
             foreach ($course->questions as $question) {
                 $pesertaAnswer = $pc->pesertaAnswers->where('question_id', $question->id)->first();
                 $status = '0';
@@ -433,7 +433,7 @@ class ExportController extends Controller
                         $totalCorrect++;
                     }
                 }
-                $questionAnswers[] = $status; 
+                $questionAnswers[] = $status;
             }
 
             foreach ($categories as $category) {

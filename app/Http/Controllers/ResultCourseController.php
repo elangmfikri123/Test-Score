@@ -23,7 +23,8 @@ class ResultCourseController extends Controller
             'peserta.maindealer',
             'peserta',
             'peserta.category',
-            'course'
+            'course.questions.answers', // Eager load questions and answers
+            'pesertaAnswers' // Eager load peserta answers
         ])
             ->where('status_pengerjaan', 'selesai')
             ->when($request->status_pengerjaan, function ($q) use ($request) {
@@ -42,6 +43,7 @@ class ResultCourseController extends Controller
                     $p->where('maindealer_id', $request->maindealer_id);
                 });
             });
+
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('namacourse', function ($row) {
@@ -60,26 +62,22 @@ class ResultCourseController extends Controller
                 return $row->peserta->maindealer->nama_md ?? '-';
             })
             ->addColumn('score', function ($row) {
-                $questions = Question::with(['answers', 'pesertaAnswer' => function ($query) use ($row) {
-                    $query->where('peserta_id', $row->peserta_id)
-                        ->where('peserta_course_id', $row->id);
-                }])
-                    ->where('course_id', $row->course_id)
-                    ->get();
+                // Gunakan data yang sudah di eager load
+                $questions = $row->course->questions ?? collect();
+                $pesertaAnswers = $row->pesertaAnswers->keyBy('question_id');
 
                 $jumlahBenar = 0;
-                foreach ($questions as $q) {
-                    $userAnswer = $q->pesertaAnswer->first();
-                    $correctAnswer = $q->answers->firstWhere('is_correct', true);
+                foreach ($questions as $question) {
+                    $userAnswer = $pesertaAnswers->get($question->id);
+                    $correctAnswer = $question->answers->firstWhere('is_correct', true);
+
                     if ($userAnswer && $correctAnswer && $userAnswer->answer_id == $correctAnswer->id) {
                         $jumlahBenar++;
                     }
                 }
 
                 $totalSoal = $questions->count();
-                $score = $totalSoal > 0 ? round(($jumlahBenar / $totalSoal) * 100, 2) : 0;
-
-                return $score;
+                return $totalSoal > 0 ? number_format(($jumlahBenar / $totalSoal) * 100, 2) : 0;
             })
             ->addColumn('status', function ($row) {
                 $status = $row->status_pengerjaan ?? '-';
