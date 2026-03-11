@@ -11,7 +11,7 @@
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card w-100">
                                     <div class="card-header text-center">
-                                        <h3><strong>Registrasi Peserta KLHN 2025</strong></h3>
+                                        <h3><strong>Registrasi Peserta KLHN 2026</strong></h3>
                                     </div>
                                     <div class="card-block">
                                         <!-- Progress Bar -->

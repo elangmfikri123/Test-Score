@@ -45,7 +45,7 @@ class AdminController extends Controller
         return view('admin.adminuserlist', compact('mainDealers'));
     }
 
-        public function getusertable(Request $request)
+    public function getusertable(Request $request)
     {
         $data = DB::table('users')
             ->leftJoin('peserta', 'users.id', '=', 'peserta.user_id')

@@ -48,7 +48,7 @@ class AdminMDController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+            $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }
@@ -532,7 +532,7 @@ class AdminMDController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+            $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }

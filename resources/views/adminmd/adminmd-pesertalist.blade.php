@@ -52,7 +52,7 @@
                                 
                                     $user = Auth::user();
                                     $now = Carbon::now();
-                                    $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+                                    $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
                                 @endphp
                                 
                                 @if($user->role === 'AdminMD' && $now->lessThanOrEqualTo($deadline))
@@ -195,7 +195,7 @@
         Swal.fire({
             icon: 'warning',
             title: 'Pendaftaran Ditutup',
-            text: 'Maaf, pendaftaran sudah ditutup pada 19 Mei 2025 pukul 23:59.',
+            text: 'Maaf, pendaftaran sudah ditutup pada 8 April 2026 pukul 23:59.',
             confirmButtonText: 'OK'
         });
     }
@@ -203,7 +203,7 @@
         Swal.fire({
             icon: 'warning',
             title: 'Edit Ditutup',
-            text: 'Maaf, fitur edit sudah ditutup pada 19 Mei 2025 pukul 23:59.',
+            text: 'Maaf, fitur edit sudah ditutup pada 8 April 2026 pukul 23:59.',
             confirmButtonText: 'OK'
         });
     }
