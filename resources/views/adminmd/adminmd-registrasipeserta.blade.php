@@ -8,7 +8,6 @@
                     <div class="page-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <!-- Ajax data source (Arrays) table start -->
                                 <div class="card w-100">
                                     <div class="card-header text-center">
                                         <h3><strong>Registrasi Peserta KLHN 2026</strong></h3>
@@ -26,6 +25,7 @@
                                         <form id="step4Form" method="POST" enctype="multipart/form-data"
                                             action="{{ route('registrasi.store') }}">
                                             @csrf
+                                            <input type="hidden" name="peserta_id" id="peserta_id" value="">
                                             <div id="registrationForm" class="step-form" data-step="1">
                                                 @include('partials.step1')
                                                 <div class="text-right mt-4">
@@ -56,10 +56,13 @@
                                                 @include('partials.step4')
 
                                                 <!-- Konten step 4 -->
-                                                <div class="text-right mt-4">
+                                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                                    <small id="draft-status" class="text-muted">Draft belum disimpan</small>
+                                                    <div>
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
                                                     <button type="submit" class="btn btn-success">Submit</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
@@ -79,9 +82,10 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-function checkHondaIdEmail() {
+    function checkHondaIdEmail() {
         const hondaId = $('input[name="honda_id"]').val();
         const email = $('input[name="email"]').val();
+        const pesertaId = $('#peserta_id').val();
 
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -90,7 +94,8 @@ function checkHondaIdEmail() {
                 data: {
                     _token: '{{ csrf_token() }}',
                     honda_id: hondaId,
-                    email: email
+                    email: email,
+                    peserta_id: pesertaId
                 },
                 success: function (response) {
                     if (response.honda_id_exists || response.email_exists) {
@@ -221,8 +226,8 @@ function checkHondaIdEmail() {
                     }
                 });
             }
-            setupFileSizeValidator('input[name="file_project"]', 20,
-                'Ukuran file project terlalu besar. Maksimum 20 MB.');
+            setupFileSizeValidator('input[name="file_project"]', 50,
+                'Ukuran file project terlalu besar. Maksimum 50 MB.');
             setupFileSizeValidator('input[name="foto_profil"]', 5,
                 'Ukuran file foto profil terlalu besar. Maksimum 5 MB.');
             setupFileSizeValidator('input[name="ktp"]', 5, 'Ukuran file KTP terlalu besar. Maksimum 5 MB.');
@@ -284,35 +289,29 @@ function checkHondaIdEmail() {
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', async function () {
+                button.addEventListener('click', function () {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
+                    forms.forEach(form => form.classList.add('d-none'));
 
-                    if (validateForm(currentForm)) {
-                        if (currentStep === 1) {
-                            const isValidHonda = await checkHondaIdEmail();
-                            if (!isValidHonda) return;
-                        }
-                        forms.forEach(form => form.classList.add('d-none'));
+                    const nextForm = document.querySelector(
+                        `.step-form[data-step="${nextStep}"]`);
+                    if (nextForm) {
+                        nextForm.classList.remove('d-none');
 
-                        const nextForm = document.querySelector(
-                            `.step-form[data-step="${nextStep}"]`);
-                        if (nextForm) {
-                            nextForm.classList.remove('d-none');
+                        const progressPercentage = (nextStep / 4) * 100;
+                        progressBar.style.width = `${progressPercentage}%`;
+                        progressBar.setAttribute('aria-valuenow', progressPercentage);
 
-                            const progressPercentage = (nextStep / 4) * 100;
-                            progressBar.style.width = `${progressPercentage}%`;
-                            progressBar.setAttribute('aria-valuenow', progressPercentage);
+                        stepIndicator.textContent = `Step ${nextStep} of 4`;
 
-                            stepIndicator.textContent = `Step ${nextStep} of 4`;
-
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                        }
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
                     }
+                    scheduleDraftSave(false);
                 });
             });
 
@@ -340,38 +339,12 @@ function checkHondaIdEmail() {
                             behavior: 'smooth'
                         });
                     }
+                    scheduleDraftSave(false);
                 });
             });
 
-            function validateForm(form) {
-                let isValid = true;
-                let firstInvalidInput = null;
-
-                form.querySelectorAll('.requiredform').forEach(input => {
-                    const value = input.value.trim();
-                    const messageEl = input.parentElement.querySelector('.messages');
-
-                    if (!value) {
-                        input.classList.add('is-invalid');
-                        if (messageEl) messageEl.textContent = 'Perlu diisi / Tidak boleh kosong.';
-                        if (!firstInvalidInput) firstInvalidInput = input;
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
-                        if (messageEl) messageEl.textContent = '';
-                    }
-                });
-                if (!isValid && firstInvalidInput) {
-                    firstInvalidInput.focus();
-                    window.scrollTo({
-                        top: firstInvalidInput.getBoundingClientRect().top + window.scrollY - 100,
-                        behavior: 'smooth'
-                    });
-                }
-                return isValid;
-            }
-
-            document.getElementById('step4Form').addEventListener('submit', function(e) {
+            document.getElementById('step4Form').addEventListener('submit', async function(e) {
+                e.preventDefault();
                 let isValid = true;
                 const requiredFields = this.querySelectorAll('.requiredform');
 
@@ -394,10 +367,76 @@ function checkHondaIdEmail() {
                 });
 
                 if (!isValid) {
-                    e.preventDefault(); 
+                    return;
                 }
+                const isValidHonda = await checkHondaIdEmail();
+                if (!isValidHonda) {
+                    return;
+                }
+                this.submit();
             });
 
+        });
+    </script>
+
+    <script>
+        const draftStatusEl = document.getElementById('draft-status');
+        let draftTimer = null;
+
+        function setDraftStatus(text, isError = false) {
+            if (!draftStatusEl) return;
+            draftStatusEl.textContent = text;
+            draftStatusEl.classList.toggle('text-danger', isError);
+            draftStatusEl.classList.toggle('text-muted', !isError);
+        }
+
+        function scheduleDraftSave(includeFiles) {
+            if (draftTimer) clearTimeout(draftTimer);
+            draftTimer = setTimeout(() => saveDraft(includeFiles), 1200);
+        }
+
+        function saveDraft(includeFiles) {
+            const form = document.getElementById('step4Form');
+            if (!form) return;
+
+            const formData = new FormData(form);
+            if (!includeFiles) {
+                form.querySelectorAll('input[type="file"]').forEach(input => {
+                    if (input.name) formData.delete(input.name);
+                });
+            }
+
+            setDraftStatus('Menyimpan draft...');
+
+            $.ajax({
+                url: '{{ route("registrasi.draft") }}',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response && response.peserta_id) {
+                        $('#peserta_id').val(response.peserta_id);
+                    }
+                    setDraftStatus('Draft tersimpan');
+                },
+                error: function () {
+                    setDraftStatus('Gagal menyimpan draft', true);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            const $form = $('#step4Form');
+            $form.on('input', 'input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"], textarea', function () {
+                scheduleDraftSave(false);
+            });
+            $form.on('change', 'select, input[type="checkbox"], input[type="radio"]', function () {
+                scheduleDraftSave(false);
+            });
+            $form.on('change', 'input[type="file"]', function () {
+                scheduleDraftSave(true);
+            });
         });
     </script>
 

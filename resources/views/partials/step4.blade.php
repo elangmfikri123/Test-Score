@@ -88,7 +88,7 @@
             <span class="messages text-danger" style="font-size: 0.7rem;"></span>
             <label class="form-check-label ml-2 text-justify" for="setuju" style="font-size: 0.85rem; text-align: justify;">
                 Dengan ini saya menyatakan bahwa data yang saya berikan adalah benar dan lengkap. 
-                Saya memberikan izin kepada PT <strong>[Astra Honda Motor]</strong> untuk mengumpulkan, menyimpan, dan memproses data pribadi peserta KLHN 2025, 
+                Saya memberikan izin kepada PT <strong>[Astra Honda Motor]</strong> untuk mengumpulkan, menyimpan, dan memproses data pribadi peserta KLHN 2026, 
                 serta membagikannya kepada pihak ketiga yang bekerja sama dengan perusahaan sesuai kebutuhan, dengan tetap menjaga kerahasiaannya.
             </label>
         </div>

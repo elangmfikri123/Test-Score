@@ -12,6 +12,7 @@ use Yajra\DataTables\Utilities\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminDeadlineController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\AdminMDController;
@@ -53,6 +54,8 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::get('/get-user/data', [AdminController::class, 'getusertable']);
     Route::post('/force-logout/{id}', [AuthController::class, 'forceLogout']);
     Route::post('/user/store', [AdminController::class, 'store'])->name('user.store');
+    Route::get('/admin/deadline-settings', [AdminDeadlineController::class, 'index'])->name('admin.deadline-settings');
+    Route::post('/admin/deadline-settings', [AdminDeadlineController::class, 'update'])->name('admin.deadline-settings.update');
 
     Route::post('/peserta/{id}/update-status', [AdminController::class, 'updateStatus'])->name('peserta.updateStatus');
     Route::get('/listjuri', [AdminController::class, 'jurilist']);
@@ -165,6 +168,7 @@ Route::middleware(['auth', 'role:Admin,AdminMD'])->group(function () {
 
     Route::get('/registrasi/create', [AdminMDController::class, 'registrasiPeserta']);
     Route::post('/store/registrasi', [AdminMDController::class, 'storeRegister'])->name('registrasi.store');
+    Route::post('/registrasi/draft', [AdminMDController::class, 'saveDraftRegister'])->name('registrasi.draft');
     Route::post('/check-hondaid-email', [AdminMDController::class, 'checkHondaIdEmail'])->name('check.hondaid.email');
     Route::get('/datapeserta/detail/{id}', [AdminMDController::class, 'detailPeserta']);
     Route::get('/registrasidata/edit/{id}', [AdminMDController::class, 'editPeserta']);

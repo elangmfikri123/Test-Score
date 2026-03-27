@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
+    private function isSingleLoginRole(?User $user): bool
+    {
+        return $user && in_array($user->role, ['Admin', 'Peserta', 'Juri'], true);
+    }
+
     public function login()
     {
         return view('login');
@@ -26,7 +31,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('username', 'password');
         $user = User::where('username', $credentials['username'])->first();
-        if ($user && $user->login_token) {
+        if ($this->isSingleLoginRole($user) && $user->login_token) {
             return back()->withErrors([
                 'username' => 'Akun sudah login di Browser lain.',
             ])->withInput();

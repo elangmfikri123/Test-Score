@@ -42,7 +42,7 @@
     </li>
 
     {{-- Other --}}
-    <li class="pcoded-hasmenu {{ request()->is('categorylist') || request()->is('maindealerlist') ? 'active pcoded-trigger' : '' }}">
+    <li class="pcoded-hasmenu {{ request()->is('categorylist') || request()->is('maindealerlist') || request()->is('admin/deadline-settings') ? 'active pcoded-trigger' : '' }}">
         <a href="javascript:void(0)">
             <span class="pcoded-micon"><i class="ion-android-settings"></i></span>
             <span class="pcoded-mtext">Other</span>
@@ -53,6 +53,9 @@
             </li>
             <li class="{{ request()->is('maindealerlist') ? 'active' : '' }}">
                 <a href="{{ url('/maindealerlist') }}"><span class="pcoded-mtext">Main Dealer</span></a>
+            </li>
+            <li class="{{ request()->is('admin/deadline-settings') ? 'active' : '' }}">
+                <a href="{{ url('/admin/deadline-settings') }}"><span class="pcoded-mtext">Deadline Registrasi</span></a>
             </li>
         </ul>
     </li>

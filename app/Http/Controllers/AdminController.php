@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\FormPenilaian;
 use App\Models\MainDealer;
+use App\Support\AppDeadlineSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -251,10 +252,12 @@ class AdminController extends Controller
 
     public function pesertalist()
     {
+        $pesertaDeadline = AppDeadlineSettings::pesertaRegistrationDeadline();
+
         if (auth()->user()->role === 'Admin') {
-            return view('adminmd.adminmd-pesertalist');
+            return view('adminmd.adminmd-pesertalist', compact('pesertaDeadline'));
         } elseif (auth()->user()->role === 'AdminMD') {
-            return view('adminmd.adminmd-pesertalist');
+            return view('adminmd.adminmd-pesertalist', compact('pesertaDeadline'));
         }
 
         abort(403, 'Unauthorized action.');
@@ -323,6 +326,7 @@ class AdminController extends Controller
             ->addColumn('status', function ($row) {
                 if (in_array(auth()->user()->role, ['Admin', 'AdminMD'])) {
                     return match ($row->status_lolos) {
+                        'Draft'     => '<label class="label label-default">Draft</label>',
                         'Terkirim'    => '<label class="label label-info">Terkirim</label>',
                         'Verified'  => '<label class="label label-warning">Verified</label>',
                         'Updated'  => '<label class="label label-warning">Updated</label>',
@@ -342,7 +346,7 @@ class AdminController extends Controller
 
                 $user = auth()->user();
                 $now = Carbon::now();
-                $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+                $deadline = AppDeadlineSettings::pesertaRegistrationDeadline();
 
                 if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
                     $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';

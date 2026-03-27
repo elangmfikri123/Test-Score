@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>KLHN 2025 | Login</title>
+    <title>KLHN 2026 | Login</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">

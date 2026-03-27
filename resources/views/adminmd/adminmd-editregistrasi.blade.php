@@ -11,7 +11,7 @@
                                 <!-- Ajax data source (Arrays) table start -->
                                 <div class="card w-100">
                                     <div class="card-header text-center">
-                                        <h3><strong>Update Peserta KLHN 2025</strong></h3>
+                                        <h3><strong>Update Peserta KLHN 2026</strong></h3>
                                     </div>
                                     <div class="card-block">
                                         <!-- Progress Bar -->
@@ -226,8 +226,8 @@ function checkHondaIdEmail() {
                     }
                 });
             }
-            setupFileSizeValidator('input[name="file_project"]', 20,
-                'Ukuran file project terlalu besar. Maksimum 20 MB.');
+            setupFileSizeValidator('input[name="file_project"]', 50,
+                'Ukuran file project terlalu besar. Maksimum 50 MB.');
             setupFileSizeValidator('input[name="foto_profil"]', 5,
                 'Ukuran file foto profil terlalu besar. Maksimum 5 MB.');
             setupFileSizeValidator('input[name="ktp"]', 5, 'Ukuran file KTP terlalu besar. Maksimum 5 MB.');

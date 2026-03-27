@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\MainDealer;
 use App\Models\RiwayatKlhn;
 use App\Models\FilesPeserta;
+use App\Support\AppDeadlineSettings;
 use Illuminate\Http\Request;
 use App\Models\SubmissionKlhr;
 use App\Models\IdentitasAtasan;
@@ -17,6 +18,7 @@ use App\Models\IdentitasDealer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class AdminMDController extends Controller
 {
@@ -40,7 +42,9 @@ class AdminMDController extends Controller
 
             $category->latest_created_at = $latestPeserta ? $latestPeserta->created_at->format('H:i:s') : 'Tidak ada data';
         }
-        return view('adminmd.adminmd-index', compact('categories'));
+        $pesertaDeadline = AppDeadlineSettings::pesertaRegistrationDeadline();
+
+        return view('adminmd.adminmd-index', compact('categories', 'pesertaDeadline'));
     }
 
     public function registrasiPeserta()
@@ -48,7 +52,7 @@ class AdminMDController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
+            $deadline = AppDeadlineSettings::pesertaRegistrationDeadline();
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }
@@ -65,19 +69,27 @@ class AdminMDController extends Controller
 
     public function storeRegister(Request $request)
     {
+        $pesertaId = $request->input('peserta_id');
+        $uniqueHondaRule = Rule::unique('peserta', 'honda_id');
+        $uniqueEmailRule = Rule::unique('peserta', 'email');
+        if ($pesertaId) {
+            $uniqueHondaRule->ignore($pesertaId);
+            $uniqueEmailRule->ignore($pesertaId);
+        }
+
         $request->validate([
             'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
             'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
             'foto_profil' => 'required|image|mimes:jpeg,png,jpg|max:5120',
             'ktp' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120',
-            'honda_id' => 'required|unique:peserta,honda_id',
-            'email' => 'required|email|unique:peserta,email',
+            'honda_id' => ['required', $uniqueHondaRule],
+            'email' => ['required', 'email', $uniqueEmailRule],
         ]);
 
         DB::beginTransaction();
 
         try {
-            $peserta = Peserta::create([
+            $pesertaData = [
                 'user_id' => null,
                 'category_id' => $request->category_id ?? null,
                 'maindealer_id' => $request->maindealer_id,
@@ -102,18 +114,29 @@ class AdminMDController extends Controller
                 'link_facebook' => $request->link_facebook ?? null,
                 'link_instagram' => $request->link_instagram ?? null,
                 'link_tiktok' => $request->link_tiktok ?? null,
-                'status_lolos' => 'Terkirim',
-                'created_by' => auth()->user()->username ?? 'system',
-            ]);
+                'status_lolos' => 'Verified',
+            ];
 
-            $user = User::create([
-                'username' => $request->honda_id,
-                'password' => bcrypt($request->honda_id . 'klhn2025'),
-                'role' => 'Peserta',
-                'login_token' => false,
-            ]);
+            if ($pesertaId) {
+                $peserta = Peserta::findOrFail($pesertaId);
+                $peserta->update($pesertaData);
+            } else {
+                $pesertaData['created_by'] = auth()->user()->username ?? 'system';
+                $peserta = Peserta::create($pesertaData);
+            }
+
+            if (!$peserta->user_id) {
+                $user = User::create([
+                    'username' => $request->honda_id,
+                    'password' => bcrypt($request->honda_id . 'klhn2026'),
+                    'role' => 'Peserta',
+                    'login_token' => false,
+                ]);
+                $peserta->update(['user_id' => $user->id]);
+            }
 
             if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
+                RiwayatKlhn::where('peserta_id', $peserta->id)->delete();
                 foreach ($request->riwayat_klhn as $riwayat) {
                     RiwayatKlhn::create([
                         'peserta_id' => $peserta->id,
@@ -124,37 +147,38 @@ class AdminMDController extends Controller
                 }
             }
 
-            $peserta->update(['user_id' => $user->id]);
-            IdentitasAtasan::create([
-                'peserta_id' => $peserta->id,
-                'nama_lengkap_atasan' => $request->nama_lengkap_atasan,
-                'jabatan' => $request->jabatan_atasan,
-                'no_hp' => $request->no_hp_atasan,
-                'no_hpalternatif' => $request->no_hpalternatif_atasan ?? null,
-                'email' => $request->email_atasan ?? null,
-            ]);
+            IdentitasAtasan::updateOrCreate(
+                ['peserta_id' => $peserta->id],
+                [
+                    'nama_lengkap_atasan' => $request->nama_lengkap_atasan,
+                    'jabatan' => $request->jabatan_atasan,
+                    'no_hp' => $request->no_hp_atasan,
+                    'no_hpalternatif' => $request->no_hpalternatif_atasan ?? null,
+                    'email' => $request->email_atasan ?? null,
+                ]
+            );
 
-            IdentitasDealer::create([
-                'peserta_id' => $peserta->id,
-                'kode_dealer' => $request->kode_dealer,
-                'nama_dealer' => $request->nama_dealer,
-                'link_google_business' => $request->link_google_business ?? null,
-                'kota' => $request->kota,
-                'provinsi' => $request->provinsi,
-                'tahun_menang_klhn' => $request->tahun_menang_klhn ?? null,
-                'keikutsertaan_klhn_sebelumnya' => $request->keikutsertaan_klhn_sebelumnya ?? null,
-                'no_telp_dealer' => $request->no_telp_dealer,
-                'link_facebook' => $request->link_facebook_dealer ?? null,
-                'link_instagram' => $request->link_instagram_dealer ?? null,
-                'link_tiktok' => $request->link_tiktok_dealer ?? null,
-            ]);
+            IdentitasDealer::updateOrCreate(
+                ['peserta_id' => $peserta->id],
+                [
+                    'kode_dealer' => $request->kode_dealer,
+                    'nama_dealer' => $request->nama_dealer,
+                    'link_google_business' => $request->link_google_business ?? null,
+                    'kota' => $request->kota,
+                    'provinsi' => $request->provinsi,
+                    'tahun_menang_klhn' => $request->tahun_menang_klhn ?? null,
+                    'keikutsertaan_klhn_sebelumnya' => $request->keikutsertaan_klhn_sebelumnya ?? null,
+                    'no_telp_dealer' => $request->no_telp_dealer,
+                    'link_facebook' => $request->link_facebook_dealer ?? null,
+                    'link_instagram' => $request->link_instagram_dealer ?? null,
+                    'link_tiktok' => $request->link_tiktok_dealer ?? null,
+                ]
+            );
 
-            $filesData = [
-                'peserta_id' => $peserta->id,
-                'judul_project' => $request->judul_project ?? null,
-                'tahun_pembuatan_project' => $request->tahun_pembuatan_project ?? null,
-                'validasi' => $request->validasi ?? null,
-            ];
+            $files = FilesPeserta::firstOrNew(['peserta_id' => $peserta->id]);
+            $files->judul_project = $request->judul_project ?? null;
+            $files->tahun_pembuatan_project = $request->tahun_pembuatan_project ?? null;
+            $files->validasi = $request->validasi ?? null;
 
             $timestamp = now()->format('Ymd_His');
 
@@ -164,7 +188,7 @@ class AdminMDController extends Controller
                 $extension = $file->getClientOriginalExtension();
                 $newFileName = $filename . '_' . $timestamp . '.' . $extension;
 
-                $filesData['file_lampiranklhn'] = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
+                $files->file_lampiranklhn = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
             }
 
             if ($request->hasFile('file_project')) {
@@ -173,7 +197,7 @@ class AdminMDController extends Controller
                 $extension = $file->getClientOriginalExtension();
                 $newFileName = $filename . '_' . $timestamp . '.' . $extension;
 
-                $filesData['file_project'] = $file->storeAs('files/project', $newFileName, 'public');
+                $files->file_project = $file->storeAs('files/project', $newFileName, 'public');
             }
 
             if ($request->hasFile('foto_profil')) {
@@ -182,7 +206,7 @@ class AdminMDController extends Controller
                 $extension = $file->getClientOriginalExtension();
                 $newFileName = $filename . '_' . $timestamp . '.' . $extension;
 
-                $filesData['foto_profil'] = $file->storeAs('files/foto_profil', $newFileName, 'public');
+                $files->foto_profil = $file->storeAs('files/foto_profil', $newFileName, 'public');
             }
 
             if ($request->hasFile('ktp')) {
@@ -191,10 +215,10 @@ class AdminMDController extends Controller
                 $extension = $file->getClientOriginalExtension();
                 $newFileName = $filename . '_' . $timestamp . '.' . $extension;
 
-                $filesData['ktp'] = $file->storeAs('files/ktp', $newFileName, 'public');
+                $files->ktp = $file->storeAs('files/ktp', $newFileName, 'public');
             }
 
-            FilesPeserta::create($filesData);
+            $files->save();
 
             DB::commit();
 
@@ -204,18 +228,198 @@ class AdminMDController extends Controller
                 ->with('action_type', 'create');
         } catch (\Exception $e) {
             DB::rollBack();
-            if (isset($filesData)) {
-                foreach ($filesData as $key => $file) {
-                    if (in_array($key, ['file_lampiranklhn', 'file_project', 'foto_profil', 'ktp']) && $file) {
-                        Storage::disk('public')->delete($file);
-                    }
-                }
-            }
-
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan data peserta',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function saveDraftRegister(Request $request)
+    {
+        $pesertaId = $request->input('peserta_id');
+        $uniqueHondaRule = Rule::unique('peserta', 'honda_id');
+        $uniqueEmailRule = Rule::unique('peserta', 'email');
+        if ($pesertaId) {
+            $uniqueHondaRule->ignore($pesertaId);
+            $uniqueEmailRule->ignore($pesertaId);
+        }
+
+        $request->validate([
+            'peserta_id' => 'nullable|exists:peserta,id',
+            'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
+            'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'ktp' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'honda_id' => ['nullable', $uniqueHondaRule],
+            'email' => ['nullable', 'email', $uniqueEmailRule],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $draftFields = [
+                'category_id',
+                'maindealer_id',
+                'jabatan',
+                'honda_id',
+                'nama',
+                'tanggal_hondaid',
+                'tanggal_awalbekerja',
+                'lamabekerja_honda',
+                'lamabekerja_dealer',
+                'jenis_kelamin',
+                'tempat_lahir',
+                'tanggal_lahir',
+                'agama',
+                'no_hp',
+                'no_hp_astrapay',
+                'pendidikan_terakhir',
+                'email',
+                'ukuran_baju',
+                'pantangan_makanan',
+                'riwayat_penyakit',
+                'link_facebook',
+                'link_instagram',
+                'link_tiktok',
+            ];
+
+            $pesertaData = [];
+            foreach ($draftFields as $field) {
+                $value = $request->input($field);
+                if ($value !== null && $value !== '') {
+                    $pesertaData[$field] = $value;
+                }
+            }
+
+            if ($pesertaId) {
+                $peserta = Peserta::findOrFail($pesertaId);
+                if (!in_array($peserta->status_lolos, ['Verified', 'Lolos', 'Tidak Lolos'], true)) {
+                    $pesertaData['status_lolos'] = 'Draft';
+                }
+                if (!empty($pesertaData)) {
+                    $peserta->update($pesertaData);
+                }
+            } else {
+                $pesertaData['status_lolos'] = 'Draft';
+                $pesertaData['created_by'] = auth()->user()->username ?? 'system';
+                $peserta = Peserta::create($pesertaData);
+            }
+
+            $atasanData = [
+                'nama_lengkap_atasan' => $request->input('nama_lengkap_atasan'),
+                'jabatan' => $request->input('jabatan_atasan'),
+                'no_hp' => $request->input('no_hp_atasan'),
+                'no_hpalternatif' => $request->input('no_hpalternatif_atasan'),
+                'email' => $request->input('email_atasan'),
+            ];
+            $atasanData = array_filter($atasanData, fn($value) => $value !== null && $value !== '');
+            if (!empty($atasanData)) {
+                IdentitasAtasan::updateOrCreate(
+                    ['peserta_id' => $peserta->id],
+                    $atasanData
+                );
+            }
+
+            $dealerData = [
+                'kode_dealer' => $request->input('kode_dealer'),
+                'nama_dealer' => $request->input('nama_dealer'),
+                'link_google_business' => $request->input('link_google_business'),
+                'kota' => $request->input('kota'),
+                'provinsi' => $request->input('provinsi'),
+                'tahun_menang_klhn' => $request->input('tahun_menang_klhn'),
+                'keikutsertaan_klhn_sebelumnya' => $request->input('keikutsertaan_klhn_sebelumnya'),
+                'no_telp_dealer' => $request->input('no_telp_dealer'),
+                'link_facebook' => $request->input('link_facebook_dealer'),
+                'link_instagram' => $request->input('link_instagram_dealer'),
+                'link_tiktok' => $request->input('link_tiktok_dealer'),
+            ];
+            $dealerData = array_filter($dealerData, fn($value) => $value !== null && $value !== '');
+            if (!empty($dealerData)) {
+                IdentitasDealer::updateOrCreate(
+                    ['peserta_id' => $peserta->id],
+                    $dealerData
+                );
+            }
+
+            if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
+                $hasRiwayatData = false;
+                foreach ($request->riwayat_klhn as $riwayat) {
+                    if (!empty(array_filter($riwayat, fn($value) => $value !== null && $value !== ''))) {
+                        $hasRiwayatData = true;
+                        break;
+                    }
+                }
+                if ($hasRiwayatData) {
+                    RiwayatKlhn::where('peserta_id', $peserta->id)->delete();
+                    foreach ($request->riwayat_klhn as $riwayat) {
+                        RiwayatKlhn::create([
+                            'peserta_id' => $peserta->id,
+                            'vcategory' => $riwayat['vcategory'] ?? null,
+                            'tahun_keikutsertaan' => $riwayat['tahun_keikutsertaan'] ?? null,
+                            'status_kepesertaan' => $riwayat['status_kepesertaan'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            $files = FilesPeserta::firstOrNew(['peserta_id' => $peserta->id]);
+            $filesData = [
+                'judul_project' => $request->input('judul_project'),
+                'tahun_pembuatan_project' => $request->input('tahun_pembuatan_project'),
+                'validasi' => $request->input('validasi'),
+            ];
+            $filesData = array_filter($filesData, fn($value) => $value !== null && $value !== '');
+            foreach ($filesData as $key => $value) {
+                $files->{$key} = $value;
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            if ($request->hasFile('file_lampiranklhn')) {
+                $file = $request->file('file_lampiranklhn');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $files->file_lampiranklhn = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
+            }
+            if ($request->hasFile('file_project')) {
+                $file = $request->file('file_project');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $files->file_project = $file->storeAs('files/project', $newFileName, 'public');
+            }
+            if ($request->hasFile('foto_profil')) {
+                $file = $request->file('foto_profil');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $files->foto_profil = $file->storeAs('files/foto_profil', $newFileName, 'public');
+            }
+            if ($request->hasFile('ktp')) {
+                $file = $request->file('ktp');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $files->ktp = $file->storeAs('files/ktp', $newFileName, 'public');
+            }
+
+            $files->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'peserta_id' => $peserta->id,
+                'message' => 'Draft tersimpan.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan draft',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -309,11 +513,11 @@ class AdminMDController extends Controller
         ])->findOrFail($id);
 
         $now = Carbon::now();
-        $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+        $deadline = AppDeadlineSettings::pesertaRegistrationDeadline();
 
         if (auth()->user()->role === 'AdminMD') {
             if ($now->greaterThan($deadline)) {
-                return redirect()->back()->with('error', 'Akses edit ditutup setelah 19 Mei 2025 pukul 23:59.');
+                return redirect()->back()->with('error', 'Akses edit ditutup setelah ' . $deadline->format('d M Y H:i') . '.');
             }
 
             $admin = Admin::where('user_id', auth()->id())->first();
@@ -479,7 +683,8 @@ class AdminMDController extends Controller
 
     public function showSubmission()
     {
-        return view('adminmd.adminmd-submissionklhr');
+        $klhrDeadline = AppDeadlineSettings::klhrRegistrationDeadline();
+        return view('adminmd.adminmd-submissionklhr', compact('klhrDeadline'));
     }
     public function submissionJson(Request $request)
     {
@@ -513,7 +718,7 @@ class AdminMDController extends Controller
 
                 $user = auth()->user();
                 $now = Carbon::now();
-                $deadline = Carbon::create(2025, 5, 20, 01, 30, 0);
+                $deadline = AppDeadlineSettings::klhrRegistrationDeadline();
 
                 if ($user->role === 'AdminMD' && $now->greaterThan($deadline)) {
                     $edit = '<button class="btn btn-sm btn-warning" onclick="alertEditDeadline()">Edit</button>';
@@ -532,7 +737,7 @@ class AdminMDController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'AdminMD') {
-            $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
+            $deadline = AppDeadlineSettings::klhrRegistrationDeadline();
             if (now()->greaterThanOrEqualTo($deadline)) {
                 return redirect()->back()->with('error', 'Waktu pendaftaran sudah ditutup.');
             }

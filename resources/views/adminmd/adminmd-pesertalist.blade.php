@@ -48,14 +48,13 @@
                                     <h5>Data Peserta</h5>
                                     @php
                                     use Illuminate\Support\Facades\Auth;
-                                    use Carbon\Carbon;
                                 
                                     $user = Auth::user();
-                                    $now = Carbon::now();
-                                    $deadline = Carbon::create(2026, 4, 8, 23, 59, 0);
+                                    $deadline = $pesertaDeadline ?? \App\Support\AppDeadlineSettings::pesertaRegistrationDeadline();
+                                    $deadlineText = $deadline->format('d M Y H:i');
                                 @endphp
                                 
-                                @if($user->role === 'AdminMD' && $now->lessThanOrEqualTo($deadline))
+                                @if($user->role === 'AdminMD' && now()->lessThanOrEqualTo($deadline))
                                 <a href="{{ url('/registrasi/create') }}" class="btn btn-primary btn-sm">
                                     <i class="ion-plus-round"></i> Tambah
                                 </a>
@@ -195,7 +194,7 @@
         Swal.fire({
             icon: 'warning',
             title: 'Pendaftaran Ditutup',
-            text: 'Maaf, pendaftaran sudah ditutup pada 8 April 2026 pukul 23:59.',
+            text: 'Maaf, pendaftaran sudah ditutup pada {{ $deadlineText }}.',
             confirmButtonText: 'OK'
         });
     }
@@ -203,7 +202,7 @@
         Swal.fire({
             icon: 'warning',
             title: 'Edit Ditutup',
-            text: 'Maaf, fitur edit sudah ditutup pada 8 April 2026 pukul 23:59.',
+            text: 'Maaf, fitur edit sudah ditutup pada {{ $deadlineText }}.',
             confirmButtonText: 'OK'
         });
     }
