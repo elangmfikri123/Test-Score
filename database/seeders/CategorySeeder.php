@@ -33,8 +33,8 @@ class CategorySeeder extends Seeder
                 'keterangan' => 'TEAM LEADER',
             ],
             [
-                'namacategory' => 'Pimpinan Jaringan',
-                'keterangan' => 'PINJAR',
+                'namacategory' => 'Dealer AHASS Head',
+                'keterangan' => 'Dealer AHASS Head',
             ],
             [
                 'namacategory' => 'Customer Relation Officer',

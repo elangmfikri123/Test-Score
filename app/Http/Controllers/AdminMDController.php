@@ -22,6 +22,61 @@ use Illuminate\Validation\Rule;
 
 class AdminMDController extends Controller
 {
+    private function shortPesertaName(?string $name): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $name));
+        $parts = array_values(array_filter($parts));
+
+        if (empty($parts)) {
+            return 'Peserta';
+        }
+
+        $firstName = $parts[0];
+        $initials = '';
+        foreach (array_slice($parts, 1) as $part) {
+            $initials .= mb_strtoupper(mb_substr($part, 0, 1)) . '.';
+        }
+
+        return trim($firstName . ' ' . $initials);
+    }
+
+    private function sanitizeFilePart(?string $value, string $fallback = 'Unknown'): string
+    {
+        $value = trim((string) $value);
+        $value = preg_replace('/\s+/', ' ', $value);
+        $value = preg_replace('/[^A-Za-z0-9\.\-\s]+/', '', $value);
+
+        return $value !== '' ? $value : $fallback;
+    }
+
+    private function buildPesertaFileName(string $prefix, ?string $hondaId, ?string $nama, ?int $maindealerId, ?int $categoryId, string $extension): string
+    {
+        $maindealerCode = MainDealer::where('id', $maindealerId)->value('kodemd') ?? 'MD';
+        $categoryName = Category::where('id', $categoryId)->value('namacategory') ?? 'Kategori';
+        $shortName = $this->shortPesertaName($nama);
+
+        $baseName = implode('_', [
+            $prefix,
+            $this->sanitizeFilePart($hondaId, 'HondaID'),
+            $this->sanitizeFilePart($shortName, 'Peserta'),
+            $this->sanitizeFilePart($maindealerCode, 'MD'),
+            $this->sanitizeFilePart($categoryName, 'Kategori'),
+        ]);
+
+        return $baseName . '.' . strtolower($extension);
+    }
+
+    private function buildKlhrFileName(string $prefix, ?int $maindealerId, string $extension): string
+    {
+        $maindealerCode = MainDealer::where('id', $maindealerId)->value('kodemd') ?? 'MD';
+        $baseName = implode('_', [
+            $this->sanitizeFilePart($prefix, 'File'),
+            $this->sanitizeFilePart($maindealerCode, 'MD'),
+        ]);
+
+        return $baseName . '.' . strtolower($extension);
+    }
+
     public function index()
     {
         $admin = Admin::where('user_id', auth()->id())->first();
@@ -180,40 +235,62 @@ class AdminMDController extends Controller
             $files->tahun_pembuatan_project = $request->tahun_pembuatan_project ?? null;
             $files->validasi = $request->validasi ?? null;
 
-            $timestamp = now()->format('Ymd_His');
-
             if ($request->hasFile('file_lampiranklhn')) {
                 $file = $request->file('file_lampiranklhn');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'File Lampiran',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $extension
+                );
 
                 $files->file_lampiranklhn = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
             }
 
             if ($request->hasFile('file_project')) {
                 $file = $request->file('file_project');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'File Project',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $extension
+                );
 
                 $files->file_project = $file->storeAs('files/project', $newFileName, 'public');
             }
 
             if ($request->hasFile('foto_profil')) {
                 $file = $request->file('foto_profil');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'Foto Profile',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $extension
+                );
 
                 $files->foto_profil = $file->storeAs('files/foto_profil', $newFileName, 'public');
             }
 
             if ($request->hasFile('ktp')) {
                 $file = $request->file('ktp');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'KTP',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $extension
+                );
 
                 $files->ktp = $file->storeAs('files/ktp', $newFileName, 'public');
             }
@@ -375,33 +452,56 @@ class AdminMDController extends Controller
                 $files->{$key} = $value;
             }
 
-            $timestamp = now()->format('Ymd_His');
             if ($request->hasFile('file_lampiranklhn')) {
                 $file = $request->file('file_lampiranklhn');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'File Lampiran',
+                    $request->input('honda_id', $peserta->honda_id ?? null),
+                    $request->input('nama', $peserta->nama ?? null),
+                    (int) $request->input('maindealer_id', $peserta->maindealer_id ?? 0),
+                    (int) $request->input('category_id', $peserta->category_id ?? 0),
+                    $extension
+                );
                 $files->file_lampiranklhn = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
             }
             if ($request->hasFile('file_project')) {
                 $file = $request->file('file_project');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'File Project',
+                    $request->input('honda_id', $peserta->honda_id ?? null),
+                    $request->input('nama', $peserta->nama ?? null),
+                    (int) $request->input('maindealer_id', $peserta->maindealer_id ?? 0),
+                    (int) $request->input('category_id', $peserta->category_id ?? 0),
+                    $extension
+                );
                 $files->file_project = $file->storeAs('files/project', $newFileName, 'public');
             }
             if ($request->hasFile('foto_profil')) {
                 $file = $request->file('foto_profil');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'Foto Profile',
+                    $request->input('honda_id', $peserta->honda_id ?? null),
+                    $request->input('nama', $peserta->nama ?? null),
+                    (int) $request->input('maindealer_id', $peserta->maindealer_id ?? 0),
+                    (int) $request->input('category_id', $peserta->category_id ?? 0),
+                    $extension
+                );
                 $files->foto_profil = $file->storeAs('files/foto_profil', $newFileName, 'public');
             }
             if ($request->hasFile('ktp')) {
                 $file = $request->file('ktp');
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $extension = $file->getClientOriginalExtension();
-                $newFileName = $filename . '_' . $timestamp . '.' . $extension;
+                $newFileName = $this->buildPesertaFileName(
+                    'KTP',
+                    $request->input('honda_id', $peserta->honda_id ?? null),
+                    $request->input('nama', $peserta->nama ?? null),
+                    (int) $request->input('maindealer_id', $peserta->maindealer_id ?? 0),
+                    (int) $request->input('category_id', $peserta->category_id ?? 0),
+                    $extension
+                );
                 $files->ktp = $file->storeAs('files/ktp', $newFileName, 'public');
             }
 
@@ -642,30 +742,58 @@ class AdminMDController extends Controller
 
             if ($request->hasFile('file_lampiranklhn')) {
                 Storage::disk('public')->delete($files->file_lampiranklhn);
-                $originalName = $request->file('file_lampiranklhn')->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
-                $files->file_lampiranklhn = $request->file('file_lampiranklhn')->storeAs('files/lampiran_klhn', $timestampedName, 'public');
+                $file = $request->file('file_lampiranklhn');
+                $newFileName = $this->buildPesertaFileName(
+                    'File Lampiran',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $file->getClientOriginalExtension()
+                );
+                $files->file_lampiranklhn = $file->storeAs('files/lampiran_klhn', $newFileName, 'public');
             }
 
             if ($request->hasFile('file_project')) {
                 Storage::disk('public')->delete($files->file_project);
-                $originalName = $request->file('file_project')->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
-                $files->file_project = $request->file('file_project')->storeAs('files/project', $timestampedName, 'public');
+                $file = $request->file('file_project');
+                $newFileName = $this->buildPesertaFileName(
+                    'File Project',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $file->getClientOriginalExtension()
+                );
+                $files->file_project = $file->storeAs('files/project', $newFileName, 'public');
             }
 
             if ($request->hasFile('foto_profil')) {
                 Storage::disk('public')->delete($files->foto_profil);
-                $originalName = $request->file('foto_profil')->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
-                $files->foto_profil = $request->file('foto_profil')->storeAs('files/foto_profil', $timestampedName, 'public');
+                $file = $request->file('foto_profil');
+                $newFileName = $this->buildPesertaFileName(
+                    'Foto Profile',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $file->getClientOriginalExtension()
+                );
+                $files->foto_profil = $file->storeAs('files/foto_profil', $newFileName, 'public');
             }
 
             if ($request->hasFile('ktp')) {
                 Storage::disk('public')->delete($files->ktp);
-                $originalName = $request->file('ktp')->getClientOriginalName();
-                $timestampedName = time() . '_' . $originalName;
-                $files->ktp = $request->file('ktp')->storeAs('files/ktp', $timestampedName, 'public');
+                $file = $request->file('ktp');
+                $newFileName = $this->buildPesertaFileName(
+                    'KTP',
+                    $request->honda_id,
+                    $request->nama,
+                    (int) $request->maindealer_id,
+                    (int) $request->category_id,
+                    $file->getClientOriginalExtension()
+                );
+                $files->ktp = $file->storeAs('files/ktp', $newFileName, 'public');
             }
 
             $files->save();
@@ -762,19 +890,34 @@ class AdminMDController extends Controller
             'file_dokumpelaksanaan' => 'required|file|mimes:pdf|max:15360',
         ]);
 
+        $fileSubmissionName = $this->buildKlhrFileName(
+            'File Submision',
+            (int) $request->maindealer_id,
+            $request->file('file_submission')->getClientOriginalExtension()
+        );
         $fileSubmission = $request->file('file_submission')->storeAs(
             'submissions',
-            $request->file('file_submission')->getClientOriginalName(),
+            $fileSubmissionName,
             'public'
+        );
+        $fileTtdName = $this->buildKlhrFileName(
+            'File Submission Tanda Tangan',
+            (int) $request->maindealer_id,
+            $request->file('file_ttdkanwil')->getClientOriginalExtension()
         );
         $fileTtd = $request->file('file_ttdkanwil')->storeAs(
             'ttd',
-            $request->file('file_ttdkanwil')->getClientOriginalName(),
+            $fileTtdName,
             'public'
+        );
+        $fileEvidenceName = $this->buildKlhrFileName(
+            'Evidence KLHR',
+            (int) $request->maindealer_id,
+            $request->file('file_dokumpelaksanaan')->getClientOriginalExtension()
         );
         $fileEvidence = $request->file('file_dokumpelaksanaan')->storeAs(
             'evidence',
-            $request->file('file_dokumpelaksanaan')->getClientOriginalName(),
+            $fileEvidenceName,
             'public'
         );
         SubmissionKlhr::create([
@@ -836,25 +979,40 @@ class AdminMDController extends Controller
             'link_klhr3' => $request->link_klhr3,
         ];
         if ($request->hasFile('file_submission')) {
+            $file = $request->file('file_submission');
             $data['file_submission'] = $request->file('file_submission')->storeAs(
                 'submissions',
-                $request->file('file_submission')->getClientOriginalName(),
+                $this->buildKlhrFileName(
+                    'File Submision',
+                    (int) $request->maindealer_id,
+                    $file->getClientOriginalExtension()
+                ),
                 'public'
             );
         }
 
         if ($request->hasFile('file_ttdkanwil')) {
+            $file = $request->file('file_ttdkanwil');
             $data['file_ttdkanwil'] = $request->file('file_ttdkanwil')->storeAs(
                 'ttd',
-                $request->file('file_ttdkanwil')->getClientOriginalName(),
+                $this->buildKlhrFileName(
+                    'File Submission Tanda Tangan',
+                    (int) $request->maindealer_id,
+                    $file->getClientOriginalExtension()
+                ),
                 'public'
             );
         }
 
         if ($request->hasFile('file_dokumpelaksanaan')) {
+            $file = $request->file('file_dokumpelaksanaan');
             $data['file_dokumpelaksanaan'] = $request->file('file_dokumpelaksanaan')->storeAs(
                 'evidence',
-                $request->file('file_dokumpelaksanaan')->getClientOriginalName(),
+                $this->buildKlhrFileName(
+                    'Evidence KLHR',
+                    (int) $request->maindealer_id,
+                    $file->getClientOriginalExtension()
+                ),
                 'public'
             );
         }

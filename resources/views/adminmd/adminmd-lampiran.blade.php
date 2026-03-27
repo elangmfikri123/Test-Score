@@ -25,7 +25,7 @@
                                                 <th class="text-center" style="width: 100px;">1</th>
                                                 <td class="text-center">Template Lampiran Peserta Customer Relation Officer</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/spreadsheets/d/1MClKMhVJYO7VX1bEwggBJUlL06JLK92C/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/16RzcMY34geGGwxYINA5IyuoDFvA5UPqc/edit?usp=sharing&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
@@ -34,9 +34,9 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-center" style="width: 100px;">2</th>
-                                                <td class="text-center">Template Lampiran Peserta Pimpinan Jaringan</td>
+                                                <td class="text-center">Template Lampiran Peserta Dealer AHASS Head</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/spreadsheets/d/1Akxd_oixGeg6j7ZlZSxFof6saOvy-7Le/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/1y7VX8EyK788ecnTo6TME-0_3hZd07iqF/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
@@ -47,7 +47,7 @@
                                                 <th class="text-center" style="width: 100px;">3</th>
                                                 <td class="text-center">Template Lampiran Peserta Team Leader</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/spreadsheets/d/1uEeXNxn4XEZH9btziejpAQPZ_viBSIA1QapulppULr8/edit?usp=drive_link" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/1iZ1YBHCZ66A_eoyhZfXOAHfPbI_mdB24/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
@@ -69,7 +69,7 @@
                                                 <th class="text-center" style="width: 100px;">5</th>
                                                 <td class="text-center">Template Evidence KLHR</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/presentation/d/1iviSSpHTpEkjCIHSvp7RCzktj5Fjp7kC/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/1cTuEIEYOzFakZ3ADBMqnXOVi-1rFykov/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download

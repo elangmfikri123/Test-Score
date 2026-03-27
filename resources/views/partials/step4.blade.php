@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="form-group row">
-        <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 20 Mb *</label>
+        <label class="col-sm-3 col-form-label">File Project (.ppt,.pdf) - Max.File 50 Mb *</label>
         <div class="col-sm-9">
             <input type="file" class="form-control" accept=".pdf,.ppt,.pptx" name="file_project">
         </div>
@@ -46,13 +46,13 @@
         </div>
     </div>
 
-    {{-- Untuk Pimpinan Jaringan --}}
+    {{-- Untuk Dealer AHASS Head --}}
     <div class="form-group row template-download" id="template-pj" style="display: none;">
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <i class="feather icon-file" style="italic"></i><em>
                 <a href="https://docs.google.com/spreadsheets/d/1Akxd_oixGeg6j7ZlZSxFof6saOvy-7Le/edit?usp=sharing&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
-                    Download Template File Lampiran Peserta Pimpinan Jaringan
+                    Download Template File Lampiran Peserta Dealer AHASS Head
                 </a>
             </em>
         </div>

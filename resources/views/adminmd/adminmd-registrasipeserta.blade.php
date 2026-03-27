@@ -144,7 +144,7 @@
 
             const hiddenCategoryNames = [
                 'Team Leader',
-                'Pimpinan Jaringan',
+                'Dealer AHASS Head',
                 'Customer Relation Officer'
             ];
             const categoryMapping = {
@@ -164,7 +164,6 @@
                     projectFields.show();
                     inputs.addClass('requiredform');
 
-                            // Kondisi khusus: jika Team Leader, sembunyikan dan disable Tahun Pembuatan
                         if (selectedName === 'Team Leader') {
                             const tahunPembuatanInput = $('input[name="tahun_pembuatan_project"]');
                             tahunPembuatanInput.closest('.form-group').hide();
@@ -189,7 +188,7 @@
 
                 if (selectedName === 'Team Leader') {
                     $('#template-tl').show();
-                } else if (selectedName === 'Pimpinan Jaringan') {
+                } else if (selectedName === 'Dealer AHASS Head') {
                     $('#template-pj').show();
                 } else if (selectedName === 'Customer Relation Officer') {
                     $('#template-cro').show();
@@ -217,22 +216,27 @@
 
         //Alert Maksimum File
         $(document).ready(function() {
-            function setupFileSizeValidator(selector, maxSizeMB, message) {
+            function setupFileSizeValidator(selector, maxSizeMB, label) {
                 $(selector).on('change', function() {
                     const file = this.files[0];
                     if (file && file.size / (1024 * 1024) > maxSizeMB) {
-                        alert(message);
                         this.value = '';
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Ukuran File Melebihi Batas',
+                            text: `${label} maksimal ${maxSizeMB} MB.`,
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             }
             setupFileSizeValidator('input[name="file_project"]', 50,
-                'Ukuran file project terlalu besar. Maksimum 50 MB.');
+                'File project');
             setupFileSizeValidator('input[name="foto_profil"]', 5,
-                'Ukuran file foto profil terlalu besar. Maksimum 5 MB.');
-            setupFileSizeValidator('input[name="ktp"]', 5, 'Ukuran file KTP terlalu besar. Maksimum 5 MB.');
+                'Foto profil');
+            setupFileSizeValidator('input[name="ktp"]', 5, 'File KTP');
             setupFileSizeValidator('input[name="file_lampiranklhn"]', 20,
-                'Ukuran file lampiran terlalu besar. Maksimum 20 MB.');
+                'File lampiran');
         });
     </script>
 
@@ -285,31 +289,118 @@
             const forms = document.querySelectorAll('.step-form');
             const progressBar = document.querySelector('.progress-bar');
             const stepIndicator = document.querySelector('.d-flex.justify-content-between.mb-4 span');
+            const allInputs = document.querySelectorAll('#step4Form input, #step4Form select, #step4Form textarea');
+            const urlFields = [
+                'link_facebook',
+                'link_instagram',
+                'link_tiktok',
+                'link_google_business',
+                'link_facebook_dealer',
+                'link_instagram_dealer',
+                'link_tiktok_dealer'
+            ];
+
+            function getMessageEl(input) {
+                return input.closest('.col-sm-9, .form-check')?.querySelector('.messages') || null;
+            }
+
+            function isVisible(input) {
+                return input.offsetParent !== null && !input.closest('.d-none');
+            }
+
+            function isValidUrl(value) {
+                try {
+                    const parsed = new URL(value);
+                    return ['http:', 'https:'].includes(parsed.protocol);
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function showError(input, message) {
+                input.classList.add('is-invalid');
+                const messageEl = getMessageEl(input);
+                if (messageEl) messageEl.textContent = message;
+            }
+
+            function clearError(input) {
+                input.classList.remove('is-invalid');
+                const messageEl = getMessageEl(input);
+                if (messageEl) messageEl.textContent = '';
+            }
+
+            function validateField(input) {
+                if (!isVisible(input)) {
+                    clearError(input);
+                    return true;
+                }
+
+                const rawValue = (input.value || '').trim();
+                const isRequired = input.classList.contains('requiredform');
+                const value = input.type === 'checkbox' ? (input.checked ? 'checked' : '') : rawValue;
+
+                if (isRequired && !value) {
+                    showError(input, 'Perlu diisi / Tidak boleh kosong.');
+                    return false;
+                }
+
+                if (rawValue && (input.type === 'url' || urlFields.includes(input.name)) && !isValidUrl(rawValue)) {
+                    showError(input, 'Format link tidak valid. Gunakan http:// atau https://');
+                    return false;
+                }
+
+                clearError(input);
+                return true;
+            }
+
+            function validateForm(form) {
+                let firstInvalidInput = null;
+                let isValid = true;
+
+                form.querySelectorAll('.requiredform, input[type="url"]').forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                        if (!firstInvalidInput) firstInvalidInput = input;
+                    }
+                });
+
+                if (!isValid && firstInvalidInput) {
+                    firstInvalidInput.focus();
+                    window.scrollTo({
+                        top: firstInvalidInput.getBoundingClientRect().top + window.scrollY - 100,
+                        behavior: 'smooth'
+                    });
+                }
+
+                return isValid;
+            }
+
+            allInputs.forEach(input => {
+                input.addEventListener('input', () => validateField(input));
+                input.addEventListener('change', () => validateField(input));
+            });
 
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
                 button.addEventListener('click', function () {
                     const currentForm = this.closest('.step-form');
+                    if (!validateForm(currentForm)) return;
+
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
                     forms.forEach(form => form.classList.add('d-none'));
 
-                    const nextForm = document.querySelector(
-                        `.step-form[data-step="${nextStep}"]`);
+                    const nextForm = document.querySelector(`.step-form[data-step="${nextStep}"]`);
                     if (nextForm) {
                         nextForm.classList.remove('d-none');
 
                         const progressPercentage = (nextStep / 4) * 100;
                         progressBar.style.width = `${progressPercentage}%`;
                         progressBar.setAttribute('aria-valuenow', progressPercentage);
-
                         stepIndicator.textContent = `Step ${nextStep} of 4`;
 
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                     scheduleDraftSave(false);
                 });
@@ -323,21 +414,16 @@
 
                     forms.forEach(form => form.classList.add('d-none'));
 
-                    const prevForm = document.getElementById(prevStep === 1 ? 'registrationForm' :
-                        `step${prevStep}Form`);
+                    const prevForm = document.getElementById(prevStep === 1 ? 'registrationForm' : `step${prevStep}Form`);
                     if (prevForm) {
                         prevForm.classList.remove('d-none');
 
                         const progressPercentage = (prevStep / 4) * 100;
                         progressBar.style.width = `${progressPercentage}%`;
                         progressBar.setAttribute('aria-valuenow', progressPercentage);
-
                         stepIndicator.textContent = `Step ${prevStep} of 4`;
 
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                     scheduleDraftSave(false);
                 });
@@ -345,37 +431,14 @@
 
             document.getElementById('step4Form').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                let isValid = true;
-                const requiredFields = this.querySelectorAll('.requiredform');
 
-                requiredFields.forEach(function(field) {
-                    const value = field.value.trim();
-                    const messageSpan = field.closest('.col-sm-9').querySelector('.messages');
+                if (!validateForm(this)) return;
 
-                    if (!value) {
-                        isValid = false;
-                        field.classList.add('is-invalid');
-                        if (messageSpan) {
-                            messageSpan.textContent = 'Perlu diisi / Tidak boleh kosong.';
-                        }
-                    } else {
-                        field.classList.remove('is-invalid');
-                        if (messageSpan) {
-                            messageSpan.textContent = '';
-                        }
-                    }
-                });
-
-                if (!isValid) {
-                    return;
-                }
                 const isValidHonda = await checkHondaIdEmail();
-                if (!isValidHonda) {
-                    return;
-                }
+                if (!isValidHonda) return;
+
                 this.submit();
             });
-
         });
     </script>
 
@@ -435,7 +498,7 @@
                 scheduleDraftSave(false);
             });
             $form.on('change', 'input[type="file"]', function () {
-                scheduleDraftSave(true);
+                scheduleDraftSave(false);
             });
         });
     </script>
