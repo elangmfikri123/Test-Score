@@ -315,6 +315,12 @@ class AdminMDController extends Controller
 
     public function saveDraftRegister(Request $request)
     {
+        $request->merge([
+            'peserta_id' => $request->filled('peserta_id') ? $request->input('peserta_id') : null,
+            'honda_id' => trim((string) $request->input('honda_id')) !== '' ? trim((string) $request->input('honda_id')) : null,
+            'email' => trim((string) $request->input('email')) !== '' ? trim((string) $request->input('email')) : null,
+        ]);
+
         $pesertaId = $request->input('peserta_id');
         $uniqueHondaRule = Rule::unique('peserta', 'honda_id');
         $uniqueEmailRule = Rule::unique('peserta', 'email');
@@ -325,12 +331,20 @@ class AdminMDController extends Controller
 
         $request->validate([
             'peserta_id' => 'nullable|exists:peserta,id',
+            'maindealer_id' => 'required|exists:maindealer,id',
+            'nama' => 'required|string|max:255',
             'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
             'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             'ktp' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
-            'honda_id' => ['nullable', $uniqueHondaRule],
+            'honda_id' => ['required', $uniqueHondaRule],
             'email' => ['nullable', 'email', $uniqueEmailRule],
+        ], [
+            'maindealer_id.required' => 'Main Dealer wajib diisi untuk simpan draft.',
+            'nama.required' => 'Nama wajib diisi untuk simpan draft.',
+            'honda_id.required' => 'Honda ID wajib diisi untuk simpan draft.',
+            'honda_id.unique' => 'Honda ID sudah ada, gunakan Honda ID lain.',
+            'email.unique' => 'Email sudah ada, gunakan email lain.',
         ]);
 
         DB::beginTransaction();

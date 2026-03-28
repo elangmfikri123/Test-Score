@@ -27,6 +27,7 @@
                                             method="POST" enctype="multipart/form-data">
                                             @csrf
                                             @method('PUT')
+                                            <input type="hidden" name="peserta_id" id="peserta_id" value="{{ $peserta->id }}">
                                             <div id="registrationForm" class="step-form" data-step="1">
                                                 @include('partials.editstep1')
                                                 <div class="text-right mt-4">
@@ -57,10 +58,14 @@
                                                 @include('partials.editstep4')
 
                                                 <!-- Konten step 4 -->
-                                                <div class="text-right mt-4">
+                                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                                    <small id="draft-status" class="text-muted">Draft belum disimpan</small>
+                                                    <div>
+                                                    <button type="button" class="btn btn-warning" id="save-draft-btn">Simpan Draft</button>
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
                                                     <button type="submit" class="btn btn-success">Update</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
@@ -308,7 +313,8 @@ function checkHondaIdEmail() {
             ];
 
             function getMessageEl(input) {
-                return input.closest('.col-sm-9, .form-check')?.querySelector('.messages') || null;
+                const container = input.closest('.col-sm-9') || input.closest('.form-check');
+                return container ? container.querySelector('.messages') : null;
             }
 
             function isVisible(input) {
@@ -325,13 +331,17 @@ function checkHondaIdEmail() {
             }
 
             function showError(input, message) {
-                input.classList.add('is-invalid');
+                if (input.type !== 'checkbox') {
+                    input.classList.add('is-invalid');
+                }
                 const messageEl = getMessageEl(input);
                 if (messageEl) messageEl.textContent = message;
             }
 
             function clearError(input) {
-                input.classList.remove('is-invalid');
+                if (input.type !== 'checkbox') {
+                    input.classList.remove('is-invalid');
+                }
                 const messageEl = getMessageEl(input);
                 if (messageEl) messageEl.textContent = '';
             }
@@ -373,31 +383,30 @@ function checkHondaIdEmail() {
                         if (!isValidHonda) return; // Hentikan proses next
                     }
 
-                    if (validateForm(currentForm)) {
-                        forms.forEach(form => form.classList.add('d-none'));
+                    forms.forEach(form => form.classList.add('d-none'));
 
-                        const nextForm = document.querySelector(
-                            `.step-form[data-step="${nextStep}"]`);
-                        if (nextForm) {
-                            nextForm.classList.remove('d-none');
+                    const nextForm = document.querySelector(
+                        `.step-form[data-step="${nextStep}"]`);
+                    if (nextForm) {
+                        nextForm.classList.remove('d-none');
 
-                            const progressPercentage = (nextStep / 4) * 100;
-                            progressBar.style.width = `${progressPercentage}%`;
-                            progressBar.setAttribute('aria-valuenow', progressPercentage);
+                        const progressPercentage = (nextStep / 4) * 100;
+                        progressBar.style.width = `${progressPercentage}%`;
+                        progressBar.setAttribute('aria-valuenow', progressPercentage);
 
-                            stepIndicator.textContent = `Step ${nextStep} of 4`;
+                        stepIndicator.textContent = `Step ${nextStep} of 4`;
 
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                        }
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
                     }
+                    await saveDraft(false, true);
                 });
             });
 
             document.querySelectorAll('.prev-step').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function() {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const prevStep = currentStep - 1;
@@ -420,6 +429,7 @@ function checkHondaIdEmail() {
                             behavior: 'smooth'
                         });
                     }
+                    await saveDraft(false, true);
                 });
             });
 
@@ -455,6 +465,132 @@ function checkHondaIdEmail() {
                 }
             });
 
+        });
+    </script>
+
+    <script>
+        const draftStatusEl = document.getElementById('draft-status');
+        let draftTimer = null;
+
+        function setDraftStatus(text, isError = false) {
+            if (!draftStatusEl) return;
+            draftStatusEl.textContent = text;
+            draftStatusEl.classList.toggle('text-danger', isError);
+            draftStatusEl.classList.toggle('text-muted', !isError);
+        }
+
+        function scheduleDraftSave(includeFiles) {
+            if (draftTimer) clearTimeout(draftTimer);
+            draftTimer = setTimeout(() => saveDraft(includeFiles, true), 1200);
+        }
+
+        function hasAnyDraftData(form) {
+            const inputs = form.querySelectorAll('input, select, textarea');
+            for (const input of inputs) {
+                if (!input.name || input.name === '_token' || input.name === '_method' || input.name === 'peserta_id' || input.type === 'file') {
+                    continue;
+                }
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    if (input.checked) return true;
+                    continue;
+                }
+                if ((input.value || '').trim() !== '') return true;
+            }
+            return false;
+        }
+
+        function saveDraft(includeFiles, silent = false) {
+            const form = document.getElementById('step4Form');
+            if (!form) return Promise.resolve(false);
+
+            const formData = new FormData(form);
+            formData.set('_method', 'POST');
+            if (!includeFiles) {
+                form.querySelectorAll('input[type="file"]').forEach(input => {
+                    if (input.name) formData.delete(input.name);
+                });
+            }
+
+            if (!silent) {
+                setDraftStatus('Menyimpan draft...');
+            }
+
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '{{ route("registrasi.draft") }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response && response.peserta_id) {
+                            $('#peserta_id').val(response.peserta_id);
+                        }
+                        setDraftStatus('Draft tersimpan');
+                        resolve(true);
+                    },
+                    error: function (xhr) {
+                        const msg = xhr?.responseJSON?.message || 'Gagal menyimpan draft';
+                        setDraftStatus(msg, true);
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            const $form = $('#step4Form');
+            function clearAllValidationUI() {
+                const formEl = document.getElementById('step4Form');
+                if (!formEl) return;
+                formEl.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                formEl.querySelectorAll('.messages').forEach(el => el.textContent = '');
+            }
+
+            $form.on('input', 'input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"], textarea', function () {
+                scheduleDraftSave(false);
+            });
+            $form.on('change', 'select, input[type="checkbox"], input[type="radio"]', function () {
+                scheduleDraftSave(false);
+            });
+            $form.on('change', 'input[type="file"]', function () {
+                scheduleDraftSave(false);
+            });
+
+            $('#save-draft-btn').on('click', async function () {
+                clearAllValidationUI();
+                const formEl = document.getElementById('step4Form');
+                if (!hasAnyDraftData(formEl)) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Belum Ada Data',
+                        text: 'Isi minimal 1 field sebelum simpan draft.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                const ok = await saveDraft(false, false);
+                if (!ok) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyimpan Draft',
+                        text: 'Silakan coba lagi.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Draft Disimpan',
+                    text: 'Draft edit tersimpan dan akan diarahkan ke daftar peserta.',
+                    timer: 1400,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '{{ route("list.peserta") }}';
+                });
+            });
         });
     </script>
 

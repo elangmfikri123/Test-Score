@@ -59,6 +59,7 @@
                                                 <div class="d-flex justify-content-between align-items-center mt-4">
                                                     <small id="draft-status" class="text-muted">Draft belum disimpan</small>
                                                     <div>
+                                                    <button type="button" class="btn btn-warning" id="save-draft-btn">Simpan Draft</button>
                                                     <button type="button"
                                                         class="btn btn-secondary prev-step">Previous</button>
                                                     <button type="submit" class="btn btn-success">Submit</button>
@@ -301,7 +302,8 @@
             ];
 
             function getMessageEl(input) {
-                return input.closest('.col-sm-9, .form-check')?.querySelector('.messages') || null;
+                const container = input.closest('.col-sm-9') || input.closest('.form-check');
+                return container ? container.querySelector('.messages') : null;
             }
 
             function isVisible(input) {
@@ -318,18 +320,22 @@
             }
 
             function showError(input, message) {
-                input.classList.add('is-invalid');
+                if (input.type !== 'checkbox') {
+                    input.classList.add('is-invalid');
+                }
                 const messageEl = getMessageEl(input);
                 if (messageEl) messageEl.textContent = message;
             }
 
             function clearError(input) {
-                input.classList.remove('is-invalid');
+                if (input.type !== 'checkbox') {
+                    input.classList.remove('is-invalid');
+                }
                 const messageEl = getMessageEl(input);
                 if (messageEl) messageEl.textContent = '';
             }
 
-            function validateField(input) {
+            function validateField(input, enforceRequired = false) {
                 if (!isVisible(input)) {
                     clearError(input);
                     return true;
@@ -339,7 +345,7 @@
                 const isRequired = input.classList.contains('requiredform');
                 const value = input.type === 'checkbox' ? (input.checked ? 'checked' : '') : rawValue;
 
-                if (isRequired && !value) {
+                if (enforceRequired && isRequired && !value) {
                     showError(input, 'Perlu diisi / Tidak boleh kosong.');
                     return false;
                 }
@@ -353,12 +359,12 @@
                 return true;
             }
 
-            function validateForm(form) {
+            function validateForm(form, enforceRequired = true) {
                 let firstInvalidInput = null;
                 let isValid = true;
 
                 form.querySelectorAll('.requiredform, input[type="url"]').forEach(input => {
-                    if (!validateField(input)) {
+                    if (!validateField(input, enforceRequired)) {
                         isValid = false;
                         if (!firstInvalidInput) firstInvalidInput = input;
                     }
@@ -376,16 +382,15 @@
             }
 
             allInputs.forEach(input => {
-                input.addEventListener('input', () => validateField(input));
-                input.addEventListener('change', () => validateField(input));
+                input.addEventListener('input', () => validateField(input, false));
+                input.addEventListener('change', () => validateField(input, false));
             });
 
             document.getElementById('registrationForm').classList.remove('d-none');
 
             document.querySelectorAll('.next-step').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', async function () {
                     const currentForm = this.closest('.step-form');
-                    if (!validateForm(currentForm)) return;
 
                     const currentStep = parseInt(currentForm.dataset.step);
                     const nextStep = currentStep + 1;
@@ -402,12 +407,12 @@
 
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                    scheduleDraftSave(false);
+                    await saveDraft(false, true);
                 });
             });
 
             document.querySelectorAll('.prev-step').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', async function() {
                     const currentForm = this.closest('.step-form');
                     const currentStep = parseInt(currentForm.dataset.step);
                     const prevStep = currentStep - 1;
@@ -425,14 +430,14 @@
 
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                    scheduleDraftSave(false);
+                    await saveDraft(false, true);
                 });
             });
 
             document.getElementById('step4Form').addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                if (!validateForm(this)) return;
+                if (!validateForm(this, true)) return;
 
                 const isValidHonda = await checkHondaIdEmail();
                 if (!isValidHonda) return;
@@ -455,12 +460,26 @@
 
         function scheduleDraftSave(includeFiles) {
             if (draftTimer) clearTimeout(draftTimer);
-            draftTimer = setTimeout(() => saveDraft(includeFiles), 1200);
+            draftTimer = setTimeout(() => saveDraft(includeFiles, true), 1200);
         }
 
-        function saveDraft(includeFiles) {
+        function hasMinimumDraftFields(form) {
+            const hondaId = (form.querySelector('[name="honda_id"]')?.value || '').trim();
+            const nama = (form.querySelector('[name="nama"]')?.value || '').trim();
+            const maindealer = (form.querySelector('[name="maindealer_id"]')?.value || '').trim();
+            return hondaId !== '' && nama !== '' && maindealer !== '';
+        }
+
+        function saveDraft(includeFiles, silent = false) {
             const form = document.getElementById('step4Form');
-            if (!form) return;
+            if (!form) return Promise.resolve(false);
+
+            if (!hasMinimumDraftFields(form)) {
+                if (!silent) {
+                    setDraftStatus('Honda ID, Nama, dan Main Dealer wajib diisi untuk draft.', true);
+                }
+                return Promise.resolve(false);
+            }
 
             const formData = new FormData(form);
             if (!includeFiles) {
@@ -469,28 +488,42 @@
                 });
             }
 
-            setDraftStatus('Menyimpan draft...');
+            if (!silent) {
+                setDraftStatus('Menyimpan draft...');
+            }
 
-            $.ajax({
-                url: '{{ route("registrasi.draft") }}',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response && response.peserta_id) {
-                        $('#peserta_id').val(response.peserta_id);
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '{{ route("registrasi.draft") }}',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response && response.peserta_id) {
+                            $('#peserta_id').val(response.peserta_id);
+                        }
+                        setDraftStatus('Draft tersimpan');
+                        resolve(true);
+                    },
+                    error: function (xhr) {
+                        const msg = xhr?.responseJSON?.message || 'Gagal menyimpan draft';
+                        setDraftStatus(msg, true);
+                        resolve(false);
                     }
-                    setDraftStatus('Draft tersimpan');
-                },
-                error: function () {
-                    setDraftStatus('Gagal menyimpan draft', true);
-                }
+                });
             });
         }
 
         $(document).ready(function () {
             const $form = $('#step4Form');
+            function clearAllValidationUI() {
+                const formEl = document.getElementById('step4Form');
+                if (!formEl) return;
+                formEl.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                formEl.querySelectorAll('.messages').forEach(el => el.textContent = '');
+            }
+
             $form.on('input', 'input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"], textarea', function () {
                 scheduleDraftSave(false);
             });
@@ -499,6 +532,40 @@
             });
             $form.on('change', 'input[type="file"]', function () {
                 scheduleDraftSave(false);
+            });
+            $('#save-draft-btn').on('click', async function () {
+                clearAllValidationUI();
+                const formEl = document.getElementById('step4Form');
+                if (!hasMinimumDraftFields(formEl)) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Field Draft Wajib',
+                        text: 'Honda ID, Nama, dan Main Dealer wajib diisi sebelum simpan draft.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                const ok = await saveDraft(false, false);
+                if (!ok) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyimpan Draft',
+                        text: draftStatusEl?.textContent || 'Silakan coba lagi.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Draft Disimpan',
+                    text: 'Draft tersimpan dan akan diarahkan ke daftar peserta.',
+                    timer: 1400,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '{{ route("list.peserta") }}';
+                });
             });
         });
     </script>
