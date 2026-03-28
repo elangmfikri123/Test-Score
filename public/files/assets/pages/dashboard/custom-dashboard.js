@@ -1,28 +1,44 @@
 'use strict';
 $(document).ready(function() {
-    var ctx = document.getElementById('update-chart-1').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: valincome('#fff', [25, 30, 20, 15, 20], '#fff'),
-        options: valincomebuildoption(),
+    function createChartIfExists(id, configBuilder) {
+        var element = document.getElementById(id);
+        if (!element || typeof Chart === 'undefined') {
+            return null;
+        }
+        var context = element.getContext("2d");
+        if (!context) {
+            return null;
+        }
+        return new Chart(context, configBuilder());
+    }
+
+    createChartIfExists('update-chart-1', function() {
+        return {
+            type: 'bar',
+            data: valincome('#fff', [25, 30, 20, 15, 20], '#fff'),
+            options: valincomebuildoption(),
+        };
     });
-    var ctx = document.getElementById('update-chart-2').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: valincome('#fff', [10, 30, 20, 15, 30], '#fff'),
-        options: valincomebuildoption(),
+    createChartIfExists('update-chart-2', function() {
+        return {
+            type: 'bar',
+            data: valincome('#fff', [10, 30, 20, 15, 30], '#fff'),
+            options: valincomebuildoption(),
+        };
     });
-    var ctx = document.getElementById('update-chart-3').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: valincome('#fff', [25, 10, 20, 15, 20], '#fff'),
-        options: valincomebuildoption(),
+    createChartIfExists('update-chart-3', function() {
+        return {
+            type: 'bar',
+            data: valincome('#fff', [25, 10, 20, 15, 20], '#fff'),
+            options: valincomebuildoption(),
+        };
     });
-    var ctx = document.getElementById('update-chart-4').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: valincome('#fff', [25, 30, 20, 15, 10], '#fff'),
-        options: valincomebuildoption(),
+    createChartIfExists('update-chart-4', function() {
+        return {
+            type: 'bar',
+            data: valincome('#fff', [25, 30, 20, 15, 10], '#fff'),
+            options: valincomebuildoption(),
+        };
     });
 
     function valincome(a, b, f) {
@@ -105,6 +121,10 @@ $(document).ready(function() {
     }
 
     $(function() {
+        var salesAnalyticsElement = document.getElementById("sales-analytics");
+        if (!salesAnalyticsElement || typeof AmCharts === 'undefined' || typeof AmCharts.makeChart !== 'function') {
+            return;
+        }
         var amchart = AmCharts.makeChart("sales-analytics", {
             "type": "serial",
             "theme": "light",
@@ -343,29 +363,33 @@ $(document).ready(function() {
         }
     });
 
-    var ctx = document.getElementById('app-sale1').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: amuntchart('#11c15b', [1, 15, 30, 15, 25, 35, 45, 20, 25, 30], 'transparent'),
-        options: buildchartoption(),
+    createChartIfExists('app-sale1', function() {
+        return {
+            type: 'line',
+            data: amuntchart('#11c15b', [1, 15, 30, 15, 25, 35, 45, 20, 25, 30], 'transparent'),
+            options: buildchartoption(),
+        };
     });
-    var ctx = document.getElementById('app-sale2').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: amuntchart('#448aff', [45, 30, 25, 35, 20, 35, 45, 20, 25, 1], 'transparent'),
-        options: buildchartoption(),
+    createChartIfExists('app-sale2', function() {
+        return {
+            type: 'line',
+            data: amuntchart('#448aff', [45, 30, 25, 35, 20, 35, 45, 20, 25, 1], 'transparent'),
+            options: buildchartoption(),
+        };
     });
-    var ctx = document.getElementById('app-sale3').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: amuntchart('#ff5252', [1, 45, 24, 40, 20, 35, 10, 20, 45, 30], 'transparent'),
-        options: buildchartoption(),
+    createChartIfExists('app-sale3', function() {
+        return {
+            type: 'line',
+            data: amuntchart('#ff5252', [1, 45, 24, 40, 20, 35, 10, 20, 45, 30], 'transparent'),
+            options: buildchartoption(),
+        };
     });
-    var ctx = document.getElementById('app-sale4').getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: amuntchart('#536dfe', [1, 15, 45, 15, 25, 35, 45, 20, 25, 30], 'transparent'),
-        options: buildchartoption(),
+    createChartIfExists('app-sale4', function() {
+        return {
+            type: 'line',
+            data: amuntchart('#536dfe', [1, 15, 45, 15, 25, 35, 45, 20, 25, 30], 'transparent'),
+            options: buildchartoption(),
+        };
     });
 
     function amuntchart(a, b, f) {
