@@ -23,7 +23,7 @@
                                 <div class="cover-profile">
                                     <div class="profile-bg-img position-relative">
                                         <img class="profile-bg-img img-fluid w-100" 
-                                             src="{{ asset('files\assets\images\user-profile\bg-img1.jpg') }}" 
+                                             src="{{ asset('files\assets\images\user-profile\bg-img.png') }}" 
                                              alt="bg-img">
                                         <div class="card-block user-info">
                                             <div class="col-md-12">
