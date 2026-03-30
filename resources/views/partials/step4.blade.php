@@ -1,5 +1,5 @@
 <h6 class="mb-3"><strong>Upload File Peserta</strong></h6>
-<div id="project_fields"> <!-- Tambahkan wrapper ini -->
+<div id="project_fields"> 
     <div class="form-group row">
         <label class="col-sm-3 col-form-label">Judul Project *</label>
         <div class="col-sm-9">
