@@ -78,7 +78,7 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-center" style="width: 100px;">6</th>
-                                                <td class="text-center">Panduan Presentasi Pimpinan Jaringan, CRO, Team Leader</td>
+                                                <td class="text-center">Panduan Presentasi Dealer AHASS Head, CRO, Team Leader</td>
                                                 <td class="text-center">
                                                     <a href="https://drive.google.com/drive/folders/1Mu-QE_TKOI6G0Co4lAoqHN0x6_MwAIG9?usp=drive_link" 
                                                        target="_blank" 

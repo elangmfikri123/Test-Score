@@ -13,7 +13,10 @@
                                     <div class="countdown-wrap">
                                         <div class="countdown-info">
                                             <h5 class="text-white m-b-8 countdown-title">Countdown Penutupan Pendaftaran</h5>
-                                            <div class="text-danger countdown-deadline">Deadline: {{ $pesertaDeadline->format('d M Y H:i') }}</div>
+                                            <div class="countdown-deadline-card">
+                                                <span class="deadline-label">Deadline</span>
+                                                <span class="deadline-date">{{ $pesertaDeadline->format('d M Y H:i') }}</span>
+                                            </div>
                                         </div>
                                         <div class="countdown-grid">
                                             <div class="time-box">
@@ -103,8 +106,29 @@
         margin: 0;
         word-break: normal;
     }
-    .countdown-deadline {
-        font-size: 17px;
+    .countdown-deadline-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid #f4c2c2;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        line-height: 1.2;
+    }
+    .deadline-label {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #a11b1b;
+        letter-spacing: 0.3px;
+    }
+    .deadline-date {
+        font-size: 16px;
+        font-weight: 600;
+        color: #d12a2a;
     }
     .countdown-grid {
         display: grid;
@@ -141,6 +165,10 @@
         }
         .countdown-title {
             font-size: 26px;
+        }
+        .countdown-deadline-card {
+            width: 100%;
+            justify-content: space-between;
         }
     }
 </style>
