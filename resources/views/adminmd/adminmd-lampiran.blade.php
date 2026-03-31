@@ -58,7 +58,7 @@
                                                 <th class="text-center" style="width: 100px;">4</th>
                                                 <td class="text-center">Template Submission KLHR</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/spreadsheets/d/19d5IDyn23V8-Jlk0JyNVrxXzuapCZdl5/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
+                                                    <a href="https://docs.google.com/spreadsheets/d/1cTuEIEYOzFakZ3ADBMqnXOVi-1rFykov/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
