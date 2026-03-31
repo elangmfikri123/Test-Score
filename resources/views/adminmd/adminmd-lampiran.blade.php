@@ -91,7 +91,7 @@
                                                 <th class="text-center" style="width: 100px;">7</th>
                                                 <td class="text-center">File Video Pendukung Project</td>
                                                 <td class="text-center">
-                                                    <a href="https://drive.google.com/drive/folders/1-PtNFx19Yr1SbX91PnyOuEoNAl_KhR2d" 
+                                                    <a href="https://drive.google.com/drive/folders/1Bbxw9IKNlCqHlkO2ydNYKpxwJMXh11at?usp=drive_link" 
                                                        target="_blank" 
                                                        class="btn btn-sm btn-warning ">
                                                        <i class="feather icon-upload"></i> Upload
