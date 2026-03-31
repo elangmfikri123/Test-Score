@@ -69,7 +69,7 @@
                                                 <th class="text-center" style="width: 100px;">5</th>
                                                 <td class="text-center">Template Evidence KLHR</td>
                                                 <td class="text-center">
-                                                    <a href="https://docs.google.com/spreadsheets/d/1cTuEIEYOzFakZ3ADBMqnXOVi-1rFykov/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
+                                                    <a href="https://docs.google.com/presentation/d/1iBjGLE4uWSe1pNf3-77BImmeoRh-Va1U/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" 
                                                         target="_blank" 
                                                         class="btn btn-sm btn-info">
                                                         <i class="feather icon-download"></i> Download
@@ -78,9 +78,9 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-center" style="width: 100px;">6</th>
-                                                <td class="text-center">Panduan Presentasi Team Leader</td>
+                                                <td class="text-center">Panduan Presentasi Pimpinan Jaringan, CRO, Team Leader</td>
                                                 <td class="text-center">
-                                                    <a href="https://drive.google.com/file/d/10gnlLlOPSvhAqswRiP5sCEGZ7Tqi3Epy/view?usp=drive_link" 
+                                                    <a href="https://drive.google.com/drive/folders/1Mu-QE_TKOI6G0Co4lAoqHN0x6_MwAIG9?usp=drive_link" 
                                                        target="_blank" 
                                                        class="btn btn-sm btn-info ">
                                                        <i class="feather icon-download"></i> Download

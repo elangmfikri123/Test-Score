@@ -5,15 +5,6 @@
     <div class="pcoded-inner-content">
         <div class="main-body">
             <div class="page-wrapper">
-                {{-- <div class="card borderless-card">
-                    <div class="card-block info-breadcrumb">
-                        <div class="breadcrumb-header">
-                            <h5>Selamat Datang Admin Main Dealer</h5>
-                        </div>
-                        <div class="page-header-breadcrumb">
-                        </div>
-                    </div>
-                </div> --}}
                 <div class="page-body">
                     <div class="row">
                         <div class="col-12">
@@ -22,7 +13,7 @@
                                     <div class="countdown-wrap">
                                         <div class="countdown-info">
                                             <h5 class="text-white m-b-8 countdown-title">Countdown Penutupan Pendaftaran</h5>
-                                            <div class="text-white-50 countdown-deadline">Deadline: {{ $pesertaDeadline->format('d M Y H:i') }}</div>
+                                            <div class="text-danger countdown-deadline">Deadline: {{ $pesertaDeadline->format('d M Y H:i') }}</div>
                                         </div>
                                         <div class="countdown-grid">
                                             <div class="time-box">

@@ -28,7 +28,7 @@
                                                             {{ $now->lessThanOrEqualTo($pesertaDeadlineDate) ? 'AKTIF' : 'DITUTUP' }}
                                                         </span>
                                                     </div>
-                                                    <small class="text-muted d-block m-t-5">
+                                                    <small class="text-danger d-block m-t-5">
                                                         Deadline: {{ $pesertaDeadlineDate->format('d M Y H:i') }}
                                                     </small>
                                                 </div>
@@ -41,7 +41,7 @@
                                                             {{ $now->lessThanOrEqualTo($klhrDeadlineDate) ? 'AKTIF' : 'DITUTUP' }}
                                                         </span>
                                                     </div>
-                                                    <small class="text-muted d-block m-t-5">
+                                                    <small class="text-danger d-block m-t-5">
                                                         Deadline: {{ $klhrDeadlineDate->format('d M Y H:i') }}
                                                     </small>
                                                 </div>
