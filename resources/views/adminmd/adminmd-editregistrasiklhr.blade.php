@@ -82,7 +82,7 @@
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <button type="submit" class="btn btn-success"><i class="ion-checkmark"></i> Update</button>
+                                                <button type="submit" class="btn btn-success"><i class="ion-checkmark"></i> Submit</button>
                                             </div>
                                         </form>
                                     </div>
