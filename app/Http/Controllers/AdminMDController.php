@@ -671,14 +671,30 @@ class AdminMDController extends Controller
     public function updatePeserta(Request $request, $id)
     {
         $peserta = Peserta::findOrFail($id);
+        $existingFiles = FilesPeserta::where('peserta_id', $peserta->id)->first();
 
         $request->validate([
             'file_lampiranklhn' => 'nullable|file|mimes:xlsx,xls|max:51200',
             'file_project' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
-            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'ktp' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:5120',
+            'foto_profil' => [
+                Rule::requiredIf(empty(optional($existingFiles)->foto_profil)),
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:5120',
+            ],
+            'ktp' => [
+                Rule::requiredIf(empty(optional($existingFiles)->ktp)),
+                'nullable',
+                'file',
+                'mimes:pdf,jpeg,png,jpg',
+                'max:5120',
+            ],
             'honda_id' => 'required|unique:peserta,honda_id,' . $peserta->id,
             'email' => 'required|email|unique:peserta,email,' . $peserta->id,
+        ], [
+            'foto_profil.required' => 'Foto profil wajib diupload sebelum update final.',
+            'ktp.required' => 'File KTP wajib diupload sebelum update final.',
         ]);
 
         DB::beginTransaction();
@@ -708,6 +724,7 @@ class AdminMDController extends Controller
                 'link_facebook' => $request->link_facebook ?? null,
                 'link_instagram' => $request->link_instagram ?? null,
                 'link_tiktok' => $request->link_tiktok ?? null,
+                'status_lolos' => $peserta->status_lolos === 'Draft' ? 'Verified' : $peserta->status_lolos,
             ]);
 
             if ($peserta->user) {

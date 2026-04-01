@@ -471,6 +471,7 @@ function checkHondaIdEmail() {
     <script>
         const draftStatusEl = document.getElementById('draft-status');
         let draftTimer = null;
+        let isFinalSubmitting = false;
 
         function setDraftStatus(text, isError = false) {
             if (!draftStatusEl) return;
@@ -480,6 +481,7 @@ function checkHondaIdEmail() {
         }
 
         function scheduleDraftSave(includeFiles) {
+            if (isFinalSubmitting) return;
             if (draftTimer) clearTimeout(draftTimer);
             draftTimer = setTimeout(() => saveDraft(includeFiles, true), 1200);
         }
@@ -500,6 +502,7 @@ function checkHondaIdEmail() {
         }
 
         function saveDraft(includeFiles, silent = false) {
+            if (isFinalSubmitting) return Promise.resolve(false);
             const form = document.getElementById('step4Form');
             if (!form) return Promise.resolve(false);
 
@@ -590,6 +593,17 @@ function checkHondaIdEmail() {
                 }).then(() => {
                     window.location.href = '{{ route("list.peserta") }}';
                 });
+            });
+
+            $form.on('submit', function (e) {
+                if (e.isDefaultPrevented()) {
+                    return;
+                }
+                isFinalSubmitting = true;
+                if (draftTimer) {
+                    clearTimeout(draftTimer);
+                    draftTimer = null;
+                }
             });
         });
     </script>
