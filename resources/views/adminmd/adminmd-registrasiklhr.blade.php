@@ -57,7 +57,7 @@
                                                 <label class="col-sm-3 col-form-label"></label>
                                                 <div class="col-sm-9">
                                                     <i class="feather icon-file" style="italic"></i><em><a
-                                                            href="https://docs.google.com/spreadsheets/d/19d5IDyn23V8-Jlk0JyNVrxXzuapCZdl5/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
+                                                            href="https://docs.google.com/spreadsheets/d/1cTuEIEYOzFakZ3ADBMqnXOVi-1rFykov/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
                                                             target="_blank">Download Template File Submission</a></em>
                                                 </div>
                                             </div>
@@ -84,7 +84,7 @@
                                                 <label class="col-sm-3 col-form-label"></label>
                                                 <div class="col-sm-9">
                                                     <i class="feather icon-file" style="italic"></i><em><a
-                                                            href="https://docs.google.com/presentation/d/1iviSSpHTpEkjCIHSvp7RCzktj5Fjp7kC/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
+                                                            href="https://docs.google.com/presentation/d/1iBjGLE4uWSe1pNf3-77BImmeoRh-Va1U/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true"
                                                             target="_blank">Download Template File Submission
                                                             Evidence</a></em>
                                                 </div>

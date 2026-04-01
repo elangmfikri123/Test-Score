@@ -22,6 +22,13 @@ use Illuminate\Validation\Rule;
 
 class AdminMDController extends Controller
 {
+    private function deletePublicFileIfPresent(?string $path): void
+    {
+        if (is_string($path) && trim($path) !== '') {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
     private function shortPesertaName(?string $name): string
     {
         $parts = preg_split('/\s+/', trim((string) $name));
@@ -755,7 +762,7 @@ class AdminMDController extends Controller
 
 
             if ($request->hasFile('file_lampiranklhn')) {
-                Storage::disk('public')->delete($files->file_lampiranklhn);
+                $this->deletePublicFileIfPresent($files->file_lampiranklhn);
                 $file = $request->file('file_lampiranklhn');
                 $newFileName = $this->buildPesertaFileName(
                     'File Lampiran',
@@ -769,7 +776,7 @@ class AdminMDController extends Controller
             }
 
             if ($request->hasFile('file_project')) {
-                Storage::disk('public')->delete($files->file_project);
+                $this->deletePublicFileIfPresent($files->file_project);
                 $file = $request->file('file_project');
                 $newFileName = $this->buildPesertaFileName(
                     'File Project',
@@ -783,7 +790,7 @@ class AdminMDController extends Controller
             }
 
             if ($request->hasFile('foto_profil')) {
-                Storage::disk('public')->delete($files->foto_profil);
+                $this->deletePublicFileIfPresent($files->foto_profil);
                 $file = $request->file('foto_profil');
                 $newFileName = $this->buildPesertaFileName(
                     'Foto Profile',
@@ -797,7 +804,7 @@ class AdminMDController extends Controller
             }
 
             if ($request->hasFile('ktp')) {
-                Storage::disk('public')->delete($files->ktp);
+                $this->deletePublicFileIfPresent($files->ktp);
                 $file = $request->file('ktp');
                 $newFileName = $this->buildPesertaFileName(
                     'KTP',
