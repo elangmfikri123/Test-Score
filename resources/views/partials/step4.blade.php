@@ -27,7 +27,7 @@
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <i class="feather icon-file" style="italic"></i><em>
-                <a href="https://docs.google.com/spreadsheets/d/1MClKMhVJYO7VX1bEwggBJUlL06JLK92C/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
+                <a href="https://docs.google.com/spreadsheets/d/1y7VX8EyK788ecnTo6TME-0_3hZd07iqF/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
                     Download Template File Lampiran Peserta CRO
                 </a>
             </em>
@@ -39,7 +39,7 @@
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <i class="feather icon-file" style="italic"></i><em>
-                <a href="https://docs.google.com/spreadsheets/d/1uEeXNxn4XEZH9btziejpAQPZ_viBSIA1QapulppULr8/edit?usp=sharing" target="_blank">
+                <a href="https://docs.google.com/spreadsheets/d/1iZ1YBHCZ66A_eoyhZfXOAHfPbI_mdB24/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
                     Download Template File Lampiran Peserta Team Leader
                 </a>
             </em>
@@ -51,7 +51,7 @@
         <label class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <i class="feather icon-file" style="italic"></i><em>
-                <a href="https://docs.google.com/spreadsheets/d/1Akxd_oixGeg6j7ZlZSxFof6saOvy-7Le/edit?usp=sharing&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
+                <a href="https://docs.google.com/spreadsheets/d/1y7VX8EyK788ecnTo6TME-0_3hZd07iqF/edit?usp=drive_link&ouid=106276902669714169102&rtpof=true&sd=true" target="_blank">
                     Download Template File Lampiran Peserta Dealer AHASS Head
                 </a>
             </em>
