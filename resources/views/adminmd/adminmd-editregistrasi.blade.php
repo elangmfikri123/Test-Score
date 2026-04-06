@@ -148,7 +148,7 @@ function checkHondaIdEmail() {
             const hiddenCategoryNames = [
                 'Team Leader',
                 'Dealer AHASS Head',
-                'Customer Relation Officer'
+                'Customer Retention Officer'
             ];
             const categoryMapping = {
                 @foreach ($categories as $category)
@@ -196,7 +196,7 @@ function checkHondaIdEmail() {
                     $('#template-tl').show();
                 } else if (selectedName === 'Dealer AHASS Head') {
                     $('#template-pj').show();
-                } else if (selectedName === 'Customer Relation Officer') {
+                } else if (selectedName === 'Customer Retention Officer') {
                     $('#template-cro').show();
                 }
             }
