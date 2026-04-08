@@ -156,22 +156,22 @@ class ExportController extends Controller
                 $sheet->setCellValue($colLetter . $row, $kategori);
             }
 
-            $sheet->setCellValue('AG' . $row, $peserta->identitasAtasan->nama_lengkap_atasan ?? '');
-            $sheet->setCellValue('AH' . $row, $peserta->identitasAtasan->jabatan ?? '');
-            $sheet->setCellValue('AI' . $row, $peserta->identitasAtasan->no_hp ?? '');
-            $sheet->setCellValue('AJ' . $row, $peserta->identitasDealer->kode_dealer ?? '');
-            $sheet->setCellValue('AK' . $row, $peserta->identitasDealer->nama_dealer ?? '');
-            $sheet->setCellValue('AL' . $row, $peserta->identitasDealer->no_telp_dealer ?? '');
-            $sheet->setCellValue('AM' . $row, $peserta->identitasDealer->link_google_business ?? '');
-            $sheet->setCellValue('AN' . $row, $peserta->identitasDealer->kota ?? '');
-            $sheet->setCellValue('AO' . $row, $peserta->identitasDealer->provinsi ?? '');
-            $sheet->setCellValue('AP' . $row, $peserta->identitasDealer->tahun_menang_klhn ?? '');
-            $sheet->setCellValue('AQ' . $row, $peserta->identitasDealer->kategori_juara_klhn ?? '');
-            $sheet->setCellValue('AR' . $row, $peserta->identitasDealer->link_facebook);
-            $sheet->setCellValue('AS' . $row, $peserta->identitasDealer->link_instagram);
-            $sheet->setCellValue('AT' . $row, $peserta->identitasDealer->link_tiktok);
-            $sheet->setCellValue('AU' . $row, $peserta->filesPeserta->judul_project);
-            $sheet->setCellValue('AV' . $row, $peserta->filesPeserta->tahun_pembuatan_project);
+            $sheet->setCellValue('AG' . $row, optional($peserta->identitasAtasan)->nama_lengkap_atasan ?? '');
+            $sheet->setCellValue('AH' . $row, optional($peserta->identitasAtasan)->jabatan ?? '');
+            $sheet->setCellValue('AI' . $row, optional($peserta->identitasAtasan)->no_hp ?? '');
+            $sheet->setCellValue('AJ' . $row, optional($peserta->identitasDealer)->kode_dealer ?? '');
+            $sheet->setCellValue('AK' . $row, optional($peserta->identitasDealer)->nama_dealer ?? '');
+            $sheet->setCellValue('AL' . $row, optional($peserta->identitasDealer)->no_telp_dealer ?? '');
+            $sheet->setCellValue('AM' . $row, optional($peserta->identitasDealer)->link_google_business ?? '');
+            $sheet->setCellValue('AN' . $row, optional($peserta->identitasDealer)->kota ?? '');
+            $sheet->setCellValue('AO' . $row, optional($peserta->identitasDealer)->provinsi ?? '');
+            $sheet->setCellValue('AP' . $row, optional($peserta->identitasDealer)->tahun_menang_klhn ?? '');
+            $sheet->setCellValue('AQ' . $row, optional($peserta->identitasDealer)->kategori_juara_klhn ?? '');
+            $sheet->setCellValue('AR' . $row, optional($peserta->identitasDealer)->link_facebook ?? '');
+            $sheet->setCellValue('AS' . $row, optional($peserta->identitasDealer)->link_instagram ?? '');
+            $sheet->setCellValue('AT' . $row, optional($peserta->identitasDealer)->link_tiktok ?? '');
+            $sheet->setCellValue('AU' . $row, optional($peserta->filesPeserta)->judul_project ?? '');
+            $sheet->setCellValue('AV' . $row, optional($peserta->filesPeserta)->tahun_pembuatan_project ?? '');
             $sheet->setCellValue('AW' . $row, $peserta->status_lolos);
             $sheet->setCellValue('AX' . $row, $peserta->created_at ? $peserta->created_at->format('d-M-Y H:i:s') : '');
             $linkFoto = '';

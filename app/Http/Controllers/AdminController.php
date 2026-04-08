@@ -353,7 +353,13 @@ class AdminController extends Controller
                 } else {
                     $edit = '<a href="' . url('/registrasidata/edit/' . $row->id) . '" class="btn btn-sm btn-warning">Edit</a>';
                 }
-                return $detail . ' ' . $edit;
+
+                $delete = '';
+                if ($user->role === 'Admin') {
+                    $delete = ' <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeletePeserta(' . $row->id . ')">Delete</button>';
+                }
+
+                return $detail . ' ' . $edit . $delete;
             })
             ->rawColumns(['status', 'action'])
             ->toJson();

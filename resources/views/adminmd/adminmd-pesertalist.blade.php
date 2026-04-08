@@ -206,5 +206,49 @@
             confirmButtonText: 'OK'
         });
     }
+
+    function confirmDeletePeserta(id) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hapus Data Peserta?',
+            text: 'Data peserta beserta relasinya akan dihapus permanen.',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#d33'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            $.ajax({
+                url: `{{ url('/peserta/delete') }}/${id}`,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data peserta berhasil dihapus.',
+                        confirmButtonText: 'OK'
+                    });
+
+                    if (dataTable) {
+                        dataTable.ajax.reload(null, false);
+                    }
+                },
+                error: function(xhr) {
+                    const message = xhr?.responseJSON?.message || 'Gagal menghapus data peserta.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+    }
 </script>
 @endsection

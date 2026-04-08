@@ -58,6 +58,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/admin/deadline-settings', [AdminDeadlineController::class, 'update'])->name('admin.deadline-settings.update');
 
     Route::post('/peserta/{id}/update-status', [AdminController::class, 'updateStatus'])->name('peserta.updateStatus');
+    Route::delete('/peserta/delete/{id}', [AdminMDController::class, 'deletePeserta'])->name('peserta.master.delete');
     Route::get('/listjuri', [AdminController::class, 'jurilist']);
     Route::get('/datajuri/json', [AdminController::class, 'juriJson']);
 

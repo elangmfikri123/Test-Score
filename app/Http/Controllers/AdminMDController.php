@@ -847,6 +847,59 @@ class AdminMDController extends Controller
         }
     }
 
+    public function deletePeserta(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'Admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki izin untuk menghapus data peserta.',
+            ], 403);
+        }
+
+        $peserta = Peserta::with(['filesPeserta', 'user'])->findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            if ($peserta->filesPeserta) {
+                $this->deletePublicFileIfPresent($peserta->filesPeserta->file_lampiranklhn);
+                $this->deletePublicFileIfPresent($peserta->filesPeserta->file_project);
+                $this->deletePublicFileIfPresent($peserta->filesPeserta->foto_profil);
+                $this->deletePublicFileIfPresent($peserta->filesPeserta->ktp);
+                $peserta->filesPeserta()->delete();
+            }
+
+            $peserta->riwayatKlhn()->delete();
+            $peserta->identitasAtasan()->delete();
+            $peserta->identitasDealer()->delete();
+
+            $user = $peserta->user;
+            $peserta->delete();
+
+            if ($user && $user->role === 'Peserta') {
+                $user->delete();
+            }
+
+            DB::commit();
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data peserta beserta relasi berhasil dihapus.',
+                ]);
+            }
+
+            return redirect()->route('list.peserta')->with('success', 'Data peserta berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data peserta.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function showSubmission()
     {
         $klhrDeadline = AppDeadlineSettings::klhrRegistrationDeadline();
