@@ -7,6 +7,8 @@ use App\Models\Admin;
 use App\Models\Course;
 use App\Models\Peserta;
 use App\Models\Question;
+use App\Models\MainDealer;
+use App\Models\SubmissionKlhr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PesertaAnswer;
@@ -486,6 +488,73 @@ class ExportController extends Controller
         $writer->save($tempFile);
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function downloadSubmissions()
+    {
+        $admin = Admin::where('user_id', auth()->id())->first();
+        $query = SubmissionKlhr::with('maindealer');
+
+        if (auth()->user()->role === 'AdminMD' && $admin && $admin->maindealer_id) {
+            $query->where('maindealer_id', $admin->maindealer_id);
+        }
+
+        $data = $query->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->setCellValue('A1', 'No Urut');
+        $sheet->setCellValue('B1', 'Main Dealer');
+        $sheet->setCellValue('C1', 'Link Publikasi 1');
+        $sheet->setCellValue('D1', 'Link Publikasi 2');
+        $sheet->setCellValue('E1', 'Link Publikasi 3');
+        $sheet->setCellValue('F1', 'File Submission');
+        $sheet->setCellValue('G1', 'File TTD Kawil');
+        $sheet->setCellValue('H1', 'File Evidence Pelaksaan');
+        $sheet->setCellValue('I1', 'Created Time');
+
+        // Style Header
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ];
+        $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
+
+        // Data
+        $row = 2;
+        foreach ($data as $index => $item) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->maindealer ? $item->maindealer->nama_md : '-');
+            $sheet->setCellValue('C' . $row, $item->link_klhr1 ?? '-');
+            $sheet->setCellValue('D' . $row, $item->link_klhr2 ?? '-');
+            $sheet->setCellValue('E' . $row, $item->link_klhr3 ?? '-');
+            $sheet->setCellValue('F' . $row, $item->file_submission ? url('storage/' . $item->file_submission) : '-');
+            $sheet->setCellValue('G' . $row, $item->file_ttdkanwil ? url('storage/' . $item->file_ttdkanwil) : '-');
+            $sheet->setCellValue('H' . $row, $item->file_dokumpelaksanaan ? url('storage/' . $item->file_dokumpelaksanaan) : '-');
+            $sheet->setCellValue('I' . $row, $item->created_at ? $item->created_at->format('d-F-Y H:i') : '-');
+            $row++;
+        }
+
+        // Border
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1:I' . ($row - 1))->applyFromArray($styleArray);
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'submission_klhr_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $filePath = storage_path("app/public/{$fileName}");
+
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
     private function cleanQuestionText($text)

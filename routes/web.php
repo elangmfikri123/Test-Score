@@ -152,6 +152,7 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
     Route::get('/admin/resultscorecard', [ResultScoreCardController::class, 'showResultsScoring'])->name('admin.resultscorecard');
     Route::get('/admin/resultscorecard/data', [ResultScoreCardController::class, 'dataResultsScoringJson'])->name('admin.resultscorecard.data');
+    Route::get('/submissionklhr/download', [ExportController::class, 'downloadSubmissions']);
 });
 
 // ADMIN MAIN DEALERS
