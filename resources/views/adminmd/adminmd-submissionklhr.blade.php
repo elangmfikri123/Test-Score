@@ -39,6 +39,7 @@
                                     </a>
                                 @endif     
                                 </div>
+                                </div>
                                 <div class="card-block">
                                     <div class="table-responsive">
                                         <table class="display table table-striped table-bordered" id="myTable" cellspacing="0" width="100%">
