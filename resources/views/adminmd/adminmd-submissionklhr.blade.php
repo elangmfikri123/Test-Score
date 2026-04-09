@@ -21,7 +21,7 @@
                                     $deadlineText = $deadline->format('d M Y H:i');
                                 @endphp
                                 
-                                <div class="d-flex gap-2">
+                                <div class="d-flex gap-3">
                                     @if($user->role === 'AdminMD' && now()->lessThanOrEqualTo($deadline))
                                     <a href="{{ url('/submissionklhr/create') }}" class="btn btn-primary btn-sm">
                                         <i class="ion-plus-round"></i> Tambah
@@ -31,11 +31,11 @@
                                         <i class="ion-plus-round"></i> Tambah
                                     </button>
                                 @elseif($user->role === 'Admin')
-                                    <a href="{{ url('/submissionklhr/create') }}" class="btn btn-primary btn-sm">
-                                        <i class="ion-plus-round"></i> Tambah
-                                    </a>
                                     <a href="{{ url('/submissionklhr/download') }}" class="btn btn-success btn-sm">
                                         <i class="ion-android-download"></i> Download
+                                    </a>
+                                    <a href="{{ url('/submissionklhr/create') }}" class="btn btn-primary btn-sm">
+                                        <i class="ion-plus-round"></i> Tambah
                                     </a>
                                 @endif     
                                 </div>

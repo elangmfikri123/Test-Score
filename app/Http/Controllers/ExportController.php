@@ -549,7 +549,7 @@ class ExportController extends Controller
         $sheet->getStyle('A1:I' . ($row - 1))->applyFromArray($styleArray);
 
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'submission_klhr_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $fileName = 'Submission_KLHR_' . now()->format('Y') . '.xlsx';
         $filePath = storage_path("app/public/{$fileName}");
 
         $writer->save($filePath);
