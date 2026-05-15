@@ -98,16 +98,16 @@ class ImportQuestionController extends Controller
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file->getRealPath());
         $spreadsheet = $reader->load($file->getRealPath());
         $sheet = $spreadsheet->getActiveSheet();
-        $rows = $sheet->toArray();
+        $rows = $sheet->rangeToArray('A1:O' . $sheet->getHighestDataRow(), null, true, true, false);
         
         array_shift($rows); // Remove header
         
         $importedCount = 0;
         
         foreach ($rows as $row) {
-            if (empty($row[2])) continue;
+            if (empty(trim((string)($row[2] ?? '')))) continue;
             
-            $category = CategoryQuestion::where('vnamacategory', $row[1])
+            $category = CategoryQuestion::where('vnamacategory', trim((string)($row[1] ?? '')))
                         ->where('course_id', $courseId)
                         ->first();
             
@@ -123,8 +123,8 @@ class ImportQuestionController extends Controller
             $answers = [];
             for ($columnIndex = 3; $columnIndex <= 13; $columnIndex += 2) {
                 $answers[] = [
-                    'text' => $row[$columnIndex] ?? '',
-                    'correct' => (bool)($row[$columnIndex + 1] ?? 0)
+                    'text' => trim((string)($row[$columnIndex] ?? '')),
+                    'correct' => $this->isCorrectValue($row[$columnIndex + 1] ?? 0)
                 ];
             }
             
@@ -142,5 +142,16 @@ class ImportQuestionController extends Controller
         }
         
         return $importedCount;
+    }
+
+    private function isCorrectValue($value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $value = strtolower(trim((string)$value));
+
+        return in_array($value, ['1', 'true', 'yes', 'ya', 'benar'], true);
     }
 }
