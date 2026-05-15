@@ -30,7 +30,11 @@ class ImportQuestionController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set header with styling
-        $headers = ['No Soal', 'Kategori', 'Pertanyaan', 'Pilihan A', 'Koreksi A', 'Pilihan B', 'Koreksi B', 'Pilihan C', 'Koreksi C', 'Pilihan D', 'Koreksi D'];
+        $headers = ['No Soal', 'Kategori', 'Pertanyaan'];
+        foreach (range('A', 'D') as $option) {
+            $headers[] = 'Pilihan ' . $option;
+            $headers[] = 'Koreksi ' . $option;
+        }
         $sheet->fromArray($headers, null, 'A1');
 
         // Style header
@@ -116,12 +120,13 @@ class ImportQuestionController extends Controller
                 'created_by' => auth()->id()
             ]);
             
-            $answers = [
-                ['text' => $row[3], 'correct' => (bool)$row[4]],
-                ['text' => $row[5], 'correct' => (bool)$row[6]],
-                ['text' => $row[7] ?? '', 'correct' => (bool)($row[8] ?? 0)],
-                ['text' => $row[9] ?? '', 'correct' => (bool)($row[10] ?? 0)]
-            ];
+            $answers = [];
+            for ($columnIndex = 3; $columnIndex <= 13; $columnIndex += 2) {
+                $answers[] = [
+                    'text' => $row[$columnIndex] ?? '',
+                    'correct' => (bool)($row[$columnIndex + 1] ?? 0)
+                ];
+            }
             
             foreach ($answers as $answer) {
                 if (!empty($answer['text'])) {
