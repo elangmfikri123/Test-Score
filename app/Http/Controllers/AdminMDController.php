@@ -17,6 +17,7 @@ use App\Models\IdentitasAtasan;
 use App\Models\IdentitasDealer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -82,6 +83,43 @@ class AdminMDController extends Controller
         ]);
 
         return $baseName . '.' . strtolower($extension);
+    }
+
+    private function ensurePesertaUser(Peserta $peserta, string $hondaId): void
+    {
+        $username = trim($hondaId);
+
+        if ($peserta->user) {
+            $peserta->user->update([
+                'username' => $username,
+                'role' => 'Peserta',
+            ]);
+
+            return;
+        }
+
+        $user = User::where('username', $username)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'username' => $username,
+                'password' => Hash::make($username . 'klhn2026'),
+                'role' => 'Peserta',
+                'login_token' => false,
+            ]);
+        } elseif ($user->role !== 'Peserta') {
+            throw new \RuntimeException("Username {$username} sudah digunakan oleh role {$user->role}.");
+        }
+
+        $usedByOtherPeserta = Peserta::where('user_id', $user->id)
+            ->where('id', '!=', $peserta->id)
+            ->exists();
+
+        if ($usedByOtherPeserta) {
+            throw new \RuntimeException("Username {$username} sudah terhubung ke peserta lain.");
+        }
+
+        $peserta->update(['user_id' => $user->id]);
     }
 
     public function index()
@@ -187,15 +225,7 @@ class AdminMDController extends Controller
                 $peserta = Peserta::create($pesertaData);
             }
 
-            if (!$peserta->user_id) {
-                $user = User::create([
-                    'username' => $request->honda_id,
-                    'password' => bcrypt($request->honda_id . 'klhn2026'),
-                    'role' => 'Peserta',
-                    'login_token' => false,
-                ]);
-                $peserta->update(['user_id' => $user->id]);
-            }
+            $this->ensurePesertaUser($peserta, $request->honda_id);
 
             if ($request->has('riwayat_klhn') && is_array($request->riwayat_klhn)) {
                 RiwayatKlhn::where('peserta_id', $peserta->id)->delete();
@@ -727,12 +757,7 @@ class AdminMDController extends Controller
                 'status_lolos' => $peserta->status_lolos === 'Draft' ? 'Verified' : $peserta->status_lolos,
             ]);
 
-            if ($peserta->user) {
-                $peserta->user->update([
-                    'username' => $request->honda_id,
-                    'role' => 'Peserta',
-                ]);
-            }
+            $this->ensurePesertaUser($peserta, $request->honda_id);
             IdentitasAtasan::updateOrCreate(
                 ['peserta_id' => $peserta->id],
                 [

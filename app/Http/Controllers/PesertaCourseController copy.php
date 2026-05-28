@@ -61,7 +61,6 @@ class PesertaCourseController extends Controller
 
         $allAnswersRaw = PesertaAnswer::where('peserta_course_id', $pesertaCourse->id)->get();
         $answeredNumbers = [];
-
         foreach ($questions as $index => $q) {
             $jawaban = $allAnswersRaw->firstWhere('question_id', $q->id);
             if ($jawaban) {
